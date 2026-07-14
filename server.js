@@ -4,10 +4,27 @@
  * Run: node server.js   (then open http://localhost:3000)
  */
 
-const express = require('express');
-const fs      = require('fs');
-const path    = require('path');
-const crypto  = require('crypto');
+const express   = require('express');
+const fs        = require('fs');
+const path      = require('path');
+const crypto    = require('crypto');
+const Anthropic = require('@anthropic-ai/sdk');
+const multer    = require('multer');
+
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+// File upload storage
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dir = path.join(__dirname, 'data', 'uploads');
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  }
+});
+const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
 
 // ─── Role definitions ─────────────────────────────────────────────────────────
 // company  → read + write own assessment only
@@ -289,6 +306,150 @@ app.get('/api/portfolio', auth, (req, res) => {
       submittedCMIs
     }
   });
+});
+
+// ─── POST /api/upload-file ───────────────────────────────────────────────────
+app.post('/api/upload-file', auth, upload.single('file'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No file' });
+  res.json({ ok: true, filename: req.file.filename, original: req.file.originalname });
+});
+
+// ─── POST /api/analyze ────────────────────────────────────────────────────────
+// AI scores all answers for a company
+app.post('/api/analyze', auth, requireWrite, async (req, res) => {
+  const { answers, rubrics, targetCompany } = req.body;
+  const companyId = req.identity.role === 'company' ? req.identity.id : (targetCompany || req.identity.id);
+
+  try {
+    const aiScores    = {};
+    const aiReasoning = {};
+
+    // Score each answer with Claude
+    for (const [stepId, stepAnswers] of Object.entries(answers || {})) {
+      aiScores[stepId]    = {};
+      aiReasoning[stepId] = {};
+      for (const [qId, answer] of Object.entries(stepAnswers || {})) {
+        const rubric = rubrics?.[stepId]?.[qId];
+        if (!rubric || !answer?.text?.trim()) { aiScores[stepId][qId] = null; continue; }
+
+        const prompt = `You are an expert procurement AI maturity assessor scoring a CPO's self-assessment.
+
+Question: ${rubric.text}
+
+Scoring rubric:
+1 – None: ${rubric.scores[0]}
+2 – Piloting: ${rubric.scores[1]}
+3 – Deployed: ${rubric.scores[2]}
+4 – Scaled: ${rubric.scores[3]}
+
+CPO's answer: "${answer.text}"
+
+Score this answer strictly against the rubric. Be objective — the CPO cannot see the score during the assessment.
+Respond ONLY with valid JSON: {"score": <integer 1-4>, "reasoning": "<one concise sentence explaining the score>"}`;
+
+        const msg = await anthropic.messages.create({
+          model: 'claude-opus-4-5',
+          max_tokens: 150,
+          messages: [{ role: 'user', content: prompt }]
+        });
+
+        try {
+          const parsed = JSON.parse(msg.content[0].text.trim());
+          aiScores[stepId][qId]    = Math.min(4, Math.max(1, Math.round(parsed.score)));
+          aiReasoning[stepId][qId] = parsed.reasoning;
+        } catch {
+          aiScores[stepId][qId] = 1;
+          aiReasoning[stepId][qId] = 'Could not parse AI response.';
+        }
+      }
+    }
+
+    // Aggregate step scores: D1=Foundation(avg q1,q2), D2=InPlace(avg q3,q4), D3=Frontier(q5)
+    const scores = {};
+    for (const [stepId, qScores] of Object.entries(aiScores)) {
+      const vals = Object.values(qScores).filter(v => v !== null);
+      if (!vals.length) continue;
+      const n = vals.length;
+      const foundation = vals.slice(0, Math.ceil(n * 0.4));
+      const inPlace    = vals.slice(Math.ceil(n * 0.4), Math.ceil(n * 0.7));
+      const frontier   = vals.slice(Math.ceil(n * 0.7));
+      const avg = arr => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null;
+      scores[stepId] = {
+        D1: avg(foundation) || avg(vals),
+        D2: avg(inPlace)    || avg(vals),
+        D3: avg(frontier)   || avg(vals)
+      };
+    }
+
+    // Compute CMI
+    const stepCMIs = Object.values(scores).map(s => {
+      const w = { D1: 0.30, D2: 0.45, D3: 0.25 };
+      return (s.D1||0)*w.D1 + (s.D2||0)*w.D2 + (s.D3||0)*w.D3;
+    });
+    const cmi = stepCMIs.length ? +(stepCMIs.reduce((a,b)=>a+b,0)/stepCMIs.length).toFixed(2) : null;
+
+    // Persist
+    const data = readData();
+    data[companyId] = {
+      ...data[companyId],
+      answers,
+      aiScores,
+      aiReasoning,
+      scores,
+      cmi,
+      _analyzedAt: new Date().toISOString(),
+      _company: companyId,
+      _savedBy: req.identity.role,
+      _savedAt: new Date().toISOString()
+    };
+    writeData(data);
+
+    res.json({ ok: true, scores, cmi, aiScores, aiReasoning });
+  } catch (err) {
+    console.error('Analyze error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── POST /api/override ───────────────────────────────────────────────────────
+// BCG/admin overrides an AI score for a specific question
+app.post('/api/override', auth, (req, res) => {
+  if (!['bcg', 'admin'].includes(req.identity.role)) {
+    return res.status(403).json({ error: 'BCG/Admin only' });
+  }
+  const { companyId, stepId, qId, score, reasoning } = req.body;
+  const data = readData();
+  if (!data[companyId]) return res.status(404).json({ error: 'No data for company' });
+
+  data[companyId].aiScores                     = data[companyId].aiScores || {};
+  data[companyId].aiScores[stepId]             = data[companyId].aiScores[stepId] || {};
+  data[companyId].aiScores[stepId][qId]        = Math.min(4, Math.max(1, score));
+  data[companyId].aiReasoning                  = data[companyId].aiReasoning || {};
+  data[companyId].aiReasoning[stepId]          = data[companyId].aiReasoning[stepId] || {};
+  data[companyId].aiReasoning[stepId][qId]     = `[BCG Override] ${reasoning}`;
+
+  // Re-aggregate scores
+  const aiScores = data[companyId].aiScores;
+  const scores   = {};
+  for (const [sid, qScores] of Object.entries(aiScores)) {
+    const vals = Object.values(qScores).filter(v => v !== null);
+    if (!vals.length) continue;
+    const n = vals.length;
+    const avg = arr => arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : null;
+    scores[sid] = {
+      D1: avg(vals.slice(0, Math.ceil(n*0.4))) || avg(vals),
+      D2: avg(vals.slice(Math.ceil(n*0.4), Math.ceil(n*0.7))) || avg(vals),
+      D3: avg(vals.slice(Math.ceil(n*0.7))) || avg(vals)
+    };
+  }
+  const stepCMIs = Object.values(scores).map(s=>(s.D1||0)*0.30+(s.D2||0)*0.45+(s.D3||0)*0.25);
+  data[companyId].scores = scores;
+  data[companyId].cmi    = stepCMIs.length ? +(stepCMIs.reduce((a,b)=>a+b,0)/stepCMIs.length).toFixed(2) : null;
+  data[companyId]._overriddenAt = new Date().toISOString();
+  data[companyId]._overriddenBy = req.identity.name;
+  writeData(data);
+
+  res.json({ ok: true, scores: data[companyId].scores, cmi: data[companyId].cmi });
 });
 
 // ─── GET /api/admin/all  (admin only) ─────────────────────────────────────────
