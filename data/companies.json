@@ -1,0 +1,114 @@
+[
+  {
+    "id": "mkm",
+    "name": "MKM",
+    "cpo": "Ian McConville",
+    "sector": "Distribution",
+    "code": "MKM2025"
+  },
+  {
+    "id": "fis",
+    "name": "FIS",
+    "cpo": "Gianluca Valente",
+    "sector": "Financial Services",
+    "code": "FIS2025"
+  },
+  {
+    "id": "apleona",
+    "name": "Apleona",
+    "cpo": "Sascha Kwiatkowski",
+    "sector": "Facilities Mgmt",
+    "code": "APL2025"
+  },
+  {
+    "id": "itp",
+    "name": "ITP",
+    "cpo": "Elena Vicente",
+    "sector": "Technology",
+    "code": "ITP2025"
+  },
+  {
+    "id": "fedrigoni",
+    "name": "Fedrigoni",
+    "cpo": "Alessandro Gaiati",
+    "sector": "Packaging & Paper",
+    "code": "FED2025"
+  },
+  {
+    "id": "softway",
+    "name": "Softway",
+    "cpo": "Bastien Python-Curt",
+    "sector": "Software",
+    "code": "SFW2025"
+  },
+  {
+    "id": "namirial",
+    "name": "Namirial",
+    "cpo": "Luca Mocerino",
+    "sector": "Digital Services",
+    "code": "NAM2025"
+  },
+  {
+    "id": "inetum",
+    "name": "Inetum",
+    "cpo": "Norbert Meurgues",
+    "sector": "IT Services",
+    "code": "INE2025"
+  },
+  {
+    "id": "nexi",
+    "name": "Nexi",
+    "cpo": "Paolo Rosato",
+    "sector": "Payments",
+    "code": "NEX2025"
+  },
+  {
+    "id": "kantar",
+    "name": "Kantar",
+    "cpo": "Stephen Day",
+    "sector": "Data & Analytics",
+    "code": "KAN2025"
+  },
+  {
+    "id": "valeo",
+    "name": "Valeo",
+    "cpo": "Thibaut Eissautier",
+    "sector": "Automotive",
+    "code": "VAL2025"
+  },
+  {
+    "id": "somacis",
+    "name": "Somacis",
+    "cpo": "Matteo Fontanella",
+    "sector": "Electronics",
+    "code": "SOM2025"
+  },
+  {
+    "id": "italmatch",
+    "name": "Italmatch",
+    "cpo": "Antonio Autuori",
+    "sector": "Chemicals",
+    "code": "ITM2025"
+  },
+  {
+    "id": "tingstad",
+    "name": "Tingstad",
+    "cpo": "Johan Larsson",
+    "sector": "Distribution",
+    "code": "TIN2025"
+  },
+  {
+    "id": "centrient",
+    "name": "Centrient",
+    "cpo": "Ian Watkins",
+    "sector": "Pharma",
+    "code": "CEN2025"
+  },
+  {
+    "id": "company16",
+    "name": "Portfolio Co.16",
+    "cpo": "—",
+    "sector": "—",
+    "code": "PC162025"
+  }
+]
