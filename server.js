@@ -136,7 +136,7 @@ function requireWrite(req, res, next) {
 }
 
 function requireAdmin(req, res, next) {
-  if (req.identity.role !== 'admin') return res.status(403).json({ error: 'Admin only' });
+  if (!['admin', 'baincap'].includes(req.identity.role)) return res.status(403).json({ error: 'Admin only' });
   next();
 }
 

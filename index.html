@@ -3146,26 +3146,364 @@ document.addEventListener('change', e => {
   }
 });
 
-// ─── BainCap dashboard (read-only portfolio overview) ─────────────────────────
+// ─── BainCap dashboard ─────────────────────────────────────────────────────────
+let _bcData = [];
+let _bcTab   = 'overview';
+let _bcSort  = { col: 'cmi', dir: -1 };
+let _bcFilter = '';
+
 async function showBainCapDashboard() {
-  // BainCap sees the full portfolio — go straight to CMI/inventory view
-  // Reuse the same app UI but lock all inputs and skip to results
-  applyRoleUI();
-  renderAllSteps();      // render (locked)
-  updateSidebar();
+  document.getElementById('login-screen').style.display  = 'none';
+  document.getElementById('survey-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display    = 'flex';
 
-  // Add BainCap badge in sidebar
-  const sbTop = document.querySelector('.sb-company');
-  if (sbTop) {
-    const badge = document.createElement('div');
-    badge.style.cssText = 'background:#1e40af;color:white;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;margin-top:8px;display:inline-block';
-    badge.textContent = 'VIEW ONLY · Bain Capital';
-    sbTop.appendChild(badge);
+  document.getElementById('app-screen').innerHTML = `
+    <div id="bc-shell" style="display:flex;flex-direction:column;width:100%;height:100vh;background:#f0f4f8;overflow:hidden">
+      <!-- Header -->
+      <div style="background:#0F172A;padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+        <div style="display:flex;align-items:center;gap:16px">
+          <img src="logo-baincapital.png" style="height:22px;display:block">
+          <div style="width:1px;height:20px;background:#334155"></div>
+          <div style="font-size:13px;font-weight:700;color:#94a3b8;letter-spacing:.5px;text-transform:uppercase">Portfolio Intelligence</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="font-size:11px;color:#64748b">Signed in as Bain Capital</div>
+          <button onclick="logout()" style="background:#1e293b;color:#94a3b8;border:1px solid #334155;border-radius:6px;padding:5px 12px;font-size:11px;cursor:pointer;font-weight:600">Logout</button>
+        </div>
+      </div>
+      <!-- Tab bar -->
+      <div style="background:#1e293b;padding:0 32px;display:flex;gap:2px;flex-shrink:0">
+        ${[['overview','📊 Portfolio Overview'],['heatmap','🗺 Step Heatmap'],['usecases','💡 AI Use Cases']].map(([id,label])=>
+          `<button id="bc-tab-${id}" onclick="bcShowTab('${id}')"
+            style="background:${_bcTab===id?'#0f172a':'transparent'};color:${_bcTab===id?'white':'#94a3b8'};border:none;padding:14px 20px;font-size:13px;font-weight:${_bcTab===id?'700':'500'};cursor:pointer;border-bottom:2px solid ${_bcTab===id?'#6366f1':'transparent'};transition:all .15s">${label}</button>`
+        ).join('')}
+      </div>
+      <!-- Content -->
+      <div id="bc-content" style="flex:1;overflow-y:auto;padding:32px"></div>
+    </div>`;
+
+  try {
+    _bcData = await api('GET', '/api/admin/all');
+  } catch(e) {
+    document.getElementById('bc-content').innerHTML = `<div style="color:#ef4444;padding:24px">Failed to load portfolio data: ${e.message}</div>`;
+    return;
   }
+  bcShowTab('overview');
+}
 
-  // Load portfolio data and go straight to results
-  try { STATE.portfolio = await api('GET', '/api/portfolio'); } catch {}
-  showSection('s-cmi');
+function bcShowTab(tab) {
+  _bcTab = tab;
+  // Update tab styles
+  ['overview','heatmap','usecases'].forEach(id => {
+    const btn = document.getElementById('bc-tab-'+id);
+    if (!btn) return;
+    const active = id === tab;
+    btn.style.background    = active ? '#0f172a' : 'transparent';
+    btn.style.color         = active ? 'white' : '#94a3b8';
+    btn.style.fontWeight    = active ? '700' : '500';
+    btn.style.borderBottom  = active ? '2px solid #6366f1' : '2px solid transparent';
+  });
+  const el = document.getElementById('bc-content');
+  if (!el) return;
+  if (tab === 'overview') el.innerHTML = bcRenderOverview();
+  if (tab === 'heatmap')  el.innerHTML = bcRenderHeatmap();
+  if (tab === 'usecases') el.innerHTML = bcRenderUseCases();
+}
+
+function bcKpi(label, value, sub, color) {
+  return `<div style="background:white;border-radius:12px;padding:20px 24px;border:1px solid #e2e8f0">
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:${color||'#64748b'};margin-bottom:8px">${label}</div>
+    <div style="font-size:36px;font-weight:800;color:${color||'#0F172A'};line-height:1">${value}</div>
+    ${sub ? `<div style="font-size:11px;color:#94a3b8;margin-top:4px">${sub}</div>` : ''}
+  </div>`;
+}
+
+function bcRenderOverview() {
+  const submitted = _bcData.filter(c => c.submitted && c.response?.cmi);
+  const avgCMI    = submitted.length ? (submitted.map(c=>c.response.cmi).reduce((a,b)=>a+b,0)/submitted.length).toFixed(2) : '—';
+  const avgBand   = submitted.length ? getBand(parseFloat(avgCMI)) : null;
+
+  // D1/D2/D3 portfolio averages
+  const dimAvg = d => {
+    const vals = submitted.flatMap(c => Object.values(c.response?.scores||{}).map(s=>s[d]).filter(Boolean));
+    return vals.length ? (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2) : '—';
+  };
+  const d1=dimAvg('D1'), d2=dimAvg('D2'), d3=dimAvg('D3');
+
+  // Sort & filter for table
+  const sortedData = [..._bcData].sort((a,b) => {
+    const av = a.response?.cmi||0, bv = b.response?.cmi||0;
+    return _bcSort.col === 'cmi' ? (bv - av) * _bcSort.dir :
+           _bcSort.col === 'name' ? a.name.localeCompare(b.name) * _bcSort.dir : 0;
+  }).filter(c => !_bcFilter || c.name.toLowerCase().includes(_bcFilter.toLowerCase()) || (c.sector||'').toLowerCase().includes(_bcFilter.toLowerCase()));
+
+  const rows = sortedData.map(c => {
+    const r    = c.response;
+    const band = getBand(r?.cmi);
+    const stepScores = STEP_IDS.filter(sid => !QUESTIONS[sid]?.isTechStack)
+      .map(sid => r?.scores?.[sid])
+      .filter(Boolean)
+      .map(s => {
+        const avg = (s.D1*0.30 + s.D2*0.45 + s.D3*0.25);
+        const b   = getBand(avg);
+        return `<div style="width:8px;height:8px;border-radius:50%;background:${b?.color||'#e2e8f0'};display:inline-block" title="${avg.toFixed(2)}"></div>`;
+      }).join('');
+    return `<tr style="border-bottom:1px solid #f1f5f9;cursor:pointer" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''" onclick="bcDrillCompany('${c.id}')">
+      <td style="padding:12px 16px;font-weight:700;color:#0F172A">${c.name}</td>
+      <td style="padding:12px 16px;font-size:12px;color:#64748b">${c.cpo||'—'}</td>
+      <td style="padding:12px 16px;font-size:12px;color:#64748b">${c.sector||'—'}</td>
+      <td style="padding:12px 16px"><span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;background:${c.submitted?'#dcfce7':'#f1f5f9'};color:${c.submitted?'#166534':'#94a3b8'}">${c.submitted?'✓ Submitted':'In progress'}</span></td>
+      <td style="padding:12px 16px;font-size:22px;font-weight:800;color:${band?.color||'#94a3b8'}">${r?.cmi?.toFixed?.(2)||'—'}</td>
+      <td style="padding:12px 16px"><span style="display:inline-block;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:700;background:${band?.bg||'#f1f5f9'};color:${band?.color||'#94a3b8'}">${band?.label||'—'}</span></td>
+      <td style="padding:12px 16px">${stepScores}</td>
+      <td style="padding:12px 16px;font-size:11px;color:#94a3b8">${c.savedAt?new Date(c.savedAt).toLocaleDateString('en-GB'):'—'}</td>
+    </tr>`;
+  }).join('');
+
+  return `
+    <!-- KPI row -->
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:12px;margin-bottom:28px">
+      ${bcKpi('Total Companies', _bcData.length, 'in portfolio', '#1a2e4a')}
+      ${bcKpi('Submitted', submitted.length, `${_bcData.length - submitted.length} in progress`, '#166534')}
+      ${bcKpi('Portfolio CMI', avgCMI, avgBand?.label||'', avgBand?.color||'#64748b')}
+      ${bcKpi('Avg D1', d1, 'Process Foundation', '#0369a1')}
+      ${bcKpi('Avg D2', d2, 'AI in Production', '#7c3aed')}
+      ${bcKpi('Avg D3', d3, 'AI at Scale', '#166534')}
+      <div style="background:linear-gradient(135deg,#1e40af,#6366f1);border-radius:12px;padding:20px 24px;display:flex;flex-direction:column;justify-content:space-between">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#bfdbfe;margin-bottom:8px">Heatmap</div>
+        <button onclick="bcShowTab('heatmap')" style="background:white;color:#1e40af;border:none;border-radius:7px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer">View by Step →</button>
+      </div>
+    </div>
+
+    <!-- Search + Table -->
+    <div style="background:white;border-radius:12px;border:1px solid #e2e8f0;overflow:hidden">
+      <div style="padding:16px 20px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:15px;font-weight:800;color:#0F172A">Company Leaderboard</div>
+        <input id="bc-search" type="text" placeholder="Filter by company or sector…"
+          oninput="bcFilter(this.value)"
+          style="border:1px solid #e2e8f0;border-radius:7px;padding:6px 12px;font-size:13px;outline:none;width:240px;color:#334155">
+      </div>
+      <table style="width:100%;border-collapse:collapse">
+        <thead style="background:#f8fafc">
+          <tr>${[['Company','name'],['CPO',''],['Sector',''],['Status',''],['CMI','cmi'],['Band',''],['Steps',''],['Date','']].map(([h,col])=>
+            `<th onclick="${col?`bcSortBy('${col}')`:'void 0'}" style="padding:10px 16px;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;text-align:left;border-bottom:1px solid #e2e8f0;cursor:${col?'pointer':'default'};white-space:nowrap">
+              ${h}${col&&_bcSort.col===col?(_bcSort.dir>0?' ↑':' ↓'):''}
+            </th>`).join('')}
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
+
+function bcFilter(val) { _bcFilter = val; document.getElementById('bc-content').innerHTML = bcRenderOverview(); }
+function bcSortBy(col) {
+  _bcSort = { col, dir: _bcSort.col === col ? -_bcSort.dir : -1 };
+  document.getElementById('bc-content').innerHTML = bcRenderOverview();
+}
+
+function bcRenderHeatmap() {
+  const submitted  = _bcData.filter(c => c.submitted && c.response?.scores);
+  const stepIds    = STEP_IDS.filter(sid => !QUESTIONS[sid]?.isTechStack);
+  const stepLabels = stepIds.map(sid => STEP_LABELS[sid].replace(/^\w+ · /,''));
+
+  const cell = (score) => {
+    if (!score) return `<td style="padding:6px 4px;text-align:center"><span style="display:inline-block;width:36px;height:36px;border-radius:8px;background:#f1f5f9;line-height:36px;font-size:10px;color:#cbd5e1">—</span></td>`;
+    const avg = +(score.D1*0.30 + score.D2*0.45 + score.D3*0.25).toFixed(2);
+    const b   = getBand(avg);
+    return `<td style="padding:6px 4px;text-align:center">
+      <div style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:44px;height:36px;border-radius:8px;background:${b?.bg||'#f1f5f9'};border:1px solid ${b?.color||'#e2e8f0'}22">
+        <span style="font-size:12px;font-weight:800;color:${b?.color||'#94a3b8'};line-height:1">${avg.toFixed(1)}</span>
+      </div>
+    </td>`;
+  };
+
+  // Column averages
+  const colAvgs = stepIds.map(sid => {
+    const vals = submitted.map(c => {
+      const s = c.response.scores[sid];
+      return s ? +(s.D1*0.30 + s.D2*0.45 + s.D3*0.25) : null;
+    }).filter(Boolean);
+    return vals.length ? (vals.reduce((a,b)=>a+b,0)/vals.length) : null;
+  });
+
+  const rows = submitted.map(c => {
+    const band = getBand(c.response.cmi);
+    return `<tr style="border-bottom:1px solid #f1f5f9" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+      <td style="padding:8px 16px;font-weight:700;color:#0F172A;white-space:nowrap;min-width:140px;cursor:pointer" onclick="bcDrillCompany('${c.id}')">${c.name}</td>
+      <td style="padding:8px 8px;text-align:center">
+        <span style="font-size:14px;font-weight:800;color:${band?.color||'#94a3b8'}">${c.response.cmi?.toFixed(2)||'—'}</span>
+      </td>
+      ${stepIds.map(sid => cell(c.response.scores[sid])).join('')}
+    </tr>`;
+  }).join('');
+
+  const avgRow = `<tr style="background:#f0f4f8;border-top:2px solid #e2e8f0">
+    <td style="padding:8px 16px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#64748b">Portfolio Avg</td>
+    <td style="padding:8px 8px;text-align:center">
+      <span style="font-size:12px;font-weight:800;color:#64748b">${submitted.length?(submitted.map(c=>c.response.cmi).reduce((a,b)=>a+b,0)/submitted.length).toFixed(2):'—'}</span>
+    </td>
+    ${colAvgs.map(avg => {
+      const b = avg ? getBand(avg) : null;
+      return `<td style="padding:6px 4px;text-align:center">
+        <div style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:44px;height:36px;border-radius:8px;background:${b?.bg||'#f1f5f9'};border:2px solid ${b?.color||'#e2e8f0'}">
+          <span style="font-size:11px;font-weight:800;color:${b?.color||'#94a3b8'}">${avg?avg.toFixed(1):'—'}</span>
+        </div>
+      </td>`;
+    }).join('')}
+  </tr>`;
+
+  // Dimension selector
+  return `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+      <div style="font-size:18px;font-weight:800;color:#0F172A">Step Heatmap</div>
+      <div style="font-size:13px;color:#64748b">Score = D1×30% + D2×45% + D3×25% · click a company to drill in</div>
+    </div>
+    <!-- Legend -->
+    <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
+      ${BANDS.map(b=>`<div style="display:flex;align-items:center;gap:6px;background:${b.bg};border:1px solid ${b.color}44;border-radius:6px;padding:4px 10px">
+        <div style="width:8px;height:8px;border-radius:50%;background:${b.color}"></div>
+        <span style="font-size:11px;font-weight:700;color:${b.color}">${b.label}</span>
+        <span style="font-size:10px;color:${b.color}88">${b.min}–${b.max}</span>
+      </div>`).join('')}
+    </div>
+    <div style="background:white;border-radius:12px;border:1px solid #e2e8f0;overflow:auto">
+      <table style="border-collapse:collapse;min-width:max-content">
+        <thead style="background:#f8fafc">
+          <tr>
+            <th style="padding:10px 16px;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;text-align:left;border-bottom:1px solid #e2e8f0;white-space:nowrap;min-width:140px">Company</th>
+            <th style="padding:10px 8px;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;text-align:center;border-bottom:1px solid #e2e8f0;white-space:nowrap">CMI</th>
+            ${stepLabels.map((l,i) => `<th style="padding:10px 4px;font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px;text-align:center;border-bottom:1px solid #e2e8f0;min-width:52px">
+              <div style="writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;height:80px;line-height:1.3">${l}</div>
+            </th>`).join('')}
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+          ${avgRow}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function bcRenderUseCases() {
+  const allUCs = [];
+  _bcData.filter(c => c.submitted).forEach(c => {
+    const all = c.response?.useCases?.['_all'] || c.response?.useCases || {};
+    const existing  = (all.existing  || []).filter(u => u.name);
+    const potential = (all.potential || []).filter(u => u.name);
+    existing .forEach(u => allUCs.push({ ...u, type:'existing',  company: c.name, sector: c.sector }));
+    potential.forEach(u => allUCs.push({ ...u, type:'potential', company: c.name, sector: c.sector }));
+  });
+
+  const byStep = {};
+  allUCs.forEach(u => {
+    const k = u.step || '_unknown';
+    if (!byStep[k]) byStep[k] = [];
+    byStep[k].push(u);
+  });
+
+  const stepOrder = [...STEP_IDS.filter(sid => !QUESTIONS[sid]?.isTechStack), '_unknown'];
+
+  const typeColor = { existing: { bg:'#dcfce7', c:'#166534', label:'In Place' }, potential: { bg:'#fef9c3', c:'#92400e', label:'Opportunity' } };
+
+  const cols = stepOrder.filter(sid => byStep[sid]?.length).map(sid => {
+    const label = sid === '_unknown' ? 'Unassigned' : STEP_LABELS[sid]?.replace(/^\w+ · /,'') || sid;
+    const ucs   = byStep[sid] || [];
+    const cards  = ucs.map(u => {
+      const tc = typeColor[u.type] || typeColor.potential;
+      return `<div style="background:white;border-radius:10px;border:1px solid #e2e8f0;padding:12px 14px;margin-bottom:8px">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px">
+          <div style="font-size:12px;font-weight:700;color:#0F172A;line-height:1.3">${u.name}</div>
+          <span style="flex-shrink:0;font-size:9px;font-weight:700;background:${tc.bg};color:${tc.c};border-radius:4px;padding:2px 6px">${tc.label}</span>
+        </div>
+        <div style="font-size:10px;color:#94a3b8;font-weight:600">${u.company}${u.sector?' · '+u.sector:''}</div>
+        ${u.technology ? `<div style="font-size:11px;color:#6366f1;margin-top:4px;font-weight:600">🔧 ${u.technology}</div>` : ''}
+        ${u.roi ? `<div style="font-size:11px;color:#64748b;margin-top:4px">${u.roi.slice(0,80)}${u.roi.length>80?'…':''}</div>` : ''}
+      </div>`;
+    }).join('');
+    return `<div style="min-width:240px;max-width:260px;flex-shrink:0">
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#64748b;margin-bottom:10px;padding:0 2px">${label} <span style="color:#94a3b8;font-weight:500">(${ucs.length})</span></div>
+      ${cards}
+    </div>`;
+  }).join('');
+
+  return `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+      <div style="font-size:18px;font-weight:800;color:#0F172A">AI Use Case Library</div>
+      <div style="font-size:13px;color:#64748b">${allUCs.length} use cases across ${_bcData.filter(c=>c.submitted).length} companies</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:6px;background:#dcfce7;border-radius:6px;padding:4px 10px"><div style="width:8px;height:8px;border-radius:50%;background:#166534"></div><span style="font-size:11px;font-weight:700;color:#166534">In Place — ${allUCs.filter(u=>u.type==='existing').length}</span></div>
+      <div style="display:flex;align-items:center;gap:6px;background:#fef9c3;border-radius:6px;padding:4px 10px"><div style="width:8px;height:8px;border-radius:50%;background:#92400e"></div><span style="font-size:11px;font-weight:700;color:#92400e">Opportunity — ${allUCs.filter(u=>u.type==='potential').length}</span></div>
+    </div>
+    <div style="display:flex;gap:16px;overflow-x:auto;padding-bottom:16px">${cols || '<div style="color:#94a3b8;font-style:italic">No use cases submitted yet.</div>'}</div>`;
+}
+
+async function bcDrillCompany(companyId) {
+  // Load that company's data and show read-only assessment
+  try {
+    const all = await api('GET', '/api/admin/all');
+    const co  = all.find(c => c.id === companyId);
+    if (!co || !co.response) { alert('No assessment data available for this company.'); return; }
+
+    // Restore state from that company's response
+    STATE.identity = { id: companyId, name: co.name };
+    applyRestoredState(co.response);
+    STATE.analyzed = true;
+
+    // Rebuild UI
+    document.getElementById('app-screen').innerHTML = `
+      <div class="sidebar" id="sidebar">
+        <div class="sb-company">
+          <div class="sb-company-name" id="header-co-name">${co.name}</div>
+          <div style="color:#64748b;font-size:12px;margin-top:2px">${co.sector||''}</div>
+          <div style="background:#1e40af;color:white;border-radius:6px;padding:3px 10px;font-size:10px;font-weight:700;margin-top:8px;display:inline-block">VIEW ONLY · Bain Capital</div>
+        </div>
+        <div class="sb-cmi"><div class="sb-cmi-label">MY CMI SCORE</div><div class="sb-cmi-score" id="sidebarCMI">—</div><div class="sb-cmi-band" id="sidebarBand">—</div></div>
+        <nav class="sidebar-nav">
+          <div class="nav-section-title">SETUP</div>
+          <div class="nav-item" onclick="showSection('s-cover')" id="nav-s-cover"><div class="nav-icon">ℹ</div><div class="nav-label">Company Details</div></div>
+          <div class="nav-section-title" style="margin-top:12px">RESULTS</div>
+          <div class="nav-item" onclick="showSection('s-cmi')" id="nav-s-cmi"><div class="nav-icon">📊</div><div class="nav-label">My Score vs Peers</div></div>
+          <div class="nav-item" onclick="showSection('s-techmap')" id="nav-s-techmap"><div class="nav-icon">🗺</div><div class="nav-label">Tech Stack Map</div></div>
+          <div class="nav-item" onclick="showSection('s-inv')" id="nav-s-inv"><div class="nav-icon">💡</div><div class="nav-label">Portfolio AI Library</div></div>
+          <div class="nav-section-title" style="margin-top:12px">ASSESSMENT</div>
+          <div id="review-results-btn" onclick="expandAllRubrics()" style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;border:1px solid #e2e8f0;margin:4px 8px;cursor:pointer;font-size:13px;font-weight:600;color:#4338ca;background:#eef2ff">
+            <span>🔍</span><span>Review Assessment Results</span>
+          </div>
+          <div id="nav-steps-list" style="display:none;overflow:hidden">
+            ${STEP_IDS.filter(sid=>!QUESTIONS[sid]?.isTechStack).map(sid=>`
+              <div class="nav-item" onclick="showSection('${sid}')" id="nav-${sid}">
+                <div class="nav-badge nb-empty" id="badge-${sid}">${STEP_LABELS[sid].split('·')[0].trim()}</div>
+                <div class="nav-label">${STEP_LABELS[sid].split('·')[1]?.trim()||STEP_LABELS[sid]}</div>
+                <div class="nav-score" id="score-${sid}">—</div>
+              </div>`).join('')}
+          </div>
+        </nav>
+        <div style="margin-top:auto;padding:16px">
+          <button onclick="showBainCapDashboard()" style="width:100%;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;padding:8px;font-size:12px;font-weight:700;color:#475569;cursor:pointer">← Back to Portfolio</button>
+        </div>
+      </div>
+      <main class="main-content">
+        <div class="section active" id="s-cover"></div>
+        <div class="section" id="s-org"></div>
+        ${STEP_IDS.filter(s=>s!=='s-tech'&&s!=='s-org').map(s=>`<div class="section" id="${s}"></div>`).join('')}
+        <div class="section" id="s-cmi"></div>
+        <div class="section" id="s-techmap"></div>
+        <div class="section" id="s-inv"></div>
+      </main>`;
+
+    applyRoleUI();
+    populateCompanyDetails();
+    renderAllSteps();
+    updateSidebar();
+    try { STATE.portfolio = await api('GET', '/api/portfolio'); } catch {}
+    showSection('s-cmi');
+    renderCMI();
+  } catch(e) {
+    alert('Error loading company: ' + e.message);
+  }
 }
 
 // ─── Admin dashboard ──────────────────────────────────────────────────────────
