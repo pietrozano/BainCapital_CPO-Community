@@ -336,12 +336,12 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
       <span id="survey-q-counter" class="survey-q-counter"></span>
     </div>
     <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0 0">
-      <div style="display:flex;align-items:center;gap:12px">
-        <img src="logo-bcg.png" alt="BCG" style="height:24px;opacity:.75">
-        <img src="logo-inverto.png" alt="Inverto" style="height:22px;opacity:.7">
+      <div style="display:flex;align-items:center;gap:16px">
+        <img src="logo-bcg.png" alt="BCG" style="height:18px;opacity:.8">
+        <img src="logo-inverto.png" alt="Inverto" style="height:30px;opacity:.9">
       </div>
       <div>
-        <img src="logo-baincapital.png" alt="Bain Capital" style="height:22px;opacity:.7">
+        <img src="logo-baincapital.png" alt="Bain Capital" style="height:28px;opacity:.9">
       </div>
     </div>
   </div>
@@ -365,12 +365,12 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
   <header class="header">
     <div class="header-left">
       <div class="header-logo" style="display:flex;align-items:center;gap:10px">
-        <img src="logo-bcg.png" alt="BCG" style="height:22px;filter:brightness(0) invert(1);opacity:.9">
+        <img src="logo-bcg.png" alt="BCG" style="height:16px;filter:brightness(0) invert(1);opacity:.9">
         <span style="color:rgba(255,255,255,.3);font-size:14px">×</span>
-        <img src="logo-inverto.png" alt="Inverto" style="height:18px;filter:brightness(0) invert(1);opacity:.8">
+        <img src="logo-inverto.png" alt="Inverto" style="height:26px;filter:brightness(0) invert(1);opacity:.9">
       </div>
       <div class="header-sep"></div>
-      <div class="header-title" style="display:flex;align-items:center;gap:8px">Procurement AI Maturity Assessment · <img src="logo-baincapital.png" alt="Bain Capital" style="height:16px;filter:brightness(0) invert(1);opacity:.8;vertical-align:middle"></div>
+      <div class="header-title" style="display:flex;align-items:center;gap:8px">Procurement AI Maturity Assessment · <img src="logo-baincapital.png" alt="Bain Capital" style="height:22px;filter:brightness(0) invert(1);opacity:.9;vertical-align:middle"></div>
     </div>
     <div class="header-right">
       <div class="co-chip" id="header-co-name">—</div>
@@ -1345,6 +1345,9 @@ function renderSurveyQuestion() {
   }
 
   if (item.isUseCaseBlock) {
+    // Widen the survey body for this card
+    const surveyBody = document.querySelector('.survey-body');
+    if (surveyBody) surveyBody.style.maxWidth = '960px';
     card.innerHTML = `
       <div style="padding:4px 0">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
@@ -1352,9 +1355,9 @@ function renderSurveyQuestion() {
           <span style="font-size:13px;font-weight:700;color:#0F172A">AI Use Cases</span>
         </div>
         <div style="font-size:15px;font-weight:800;color:#0F172A;margin-bottom:4px">${item.stepTitle}</div>
-        <div style="font-size:13px;color:#64748b;margin-bottom:20px">Map the AI use cases relevant to this process step — both those already live and those you see as opportunities.</div>
+        <div style="font-size:13px;color:#64748b;margin-bottom:16px">Map the AI use cases relevant to this process step — both those already live and those you see as opportunities.</div>
         ${renderUseCaseBlock(item.stepId, 'existing', '', '')}
-        <div style="margin-top:16px"></div>
+        <div style="margin-top:12px"></div>
         ${renderUseCaseBlock(item.stepId, 'potential', '', '')}
       </div>
     `;
@@ -1362,6 +1365,9 @@ function renderSurveyQuestion() {
     restoreUCValues(item.stepId, 'potential');
     return;
   }
+  // Restore normal width for all other cards
+  const surveyBody = document.querySelector('.survey-body');
+  if (surveyBody) surveyBody.style.maxWidth = '';
 
   if (item.isTechStack) {
     const saved = STATE.techStack[item.fieldId] || '';
@@ -2333,46 +2339,93 @@ function renderUseCaseBlock(stepId, type, dimLabel, title) {
   const ucCount = Math.max(1, (STATE.useCases[stepId]?.[type]||[]).filter(u=>u?.name).length + 1);
   const maxUC = Math.max(ucCount, (STATE.useCases[stepId]?.[type]||[]).length + 1);
 
+  const inp = (id, ph, val='') =>
+    `<input class="input-f" style="font-size:12px;padding:5px 8px;height:30px;" id="${id}" placeholder="${ph}" onchange="saveUC('${stepId}','${type}',arguments[0],'${id.split('-').pop()}',this.value)" value="${val}">`;
+  const ta = (id, ph, val='') =>
+    `<textarea class="text-field" style="min-height:40px;font-size:12px;padding:5px 8px;resize:vertical;" id="${id}" placeholder="${ph}" onchange="saveUC('${stepId}','${type}',arguments[0],'${id.split('-').pop()}',this.value)">${val}</textarea>`;
+  const lbl = (txt) =>
+    `<div style="font-size:9px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px;">${txt}</div>`;
+  const cell = (content, span='') =>
+    `<div style="${span}">${content}</div>`;
+
   function renderOneUC(n) {
-    const fields = isExisting ? [
-      { key:'name',        label:'AI use case name',                                          type:'input',    ph:'e.g. AI-powered spend classification' },
-      { key:'description', label:'AI use case brief description',                             type:'textarea', ph:'What does it do and what problem does it solve?' },
-      { key:'technology',  label:'AI Solution technology details',                            type:'input',    ph:'e.g. Claude, ChatGPT, AI Agent, proprietary model…' },
-      { key:'integration', label:'AI Solution integration with current ERP / Procurement tools (if integrated)', type:'input', ph:'e.g. Integrated with SAP Ariba, standalone, API…' },
-      { key:'adoption',    label:'Adoption Rate',                                             type:'input',    ph:'e.g. 80% of buyers, 5 categories, pilot only…' },
-      { key:'roi',         label:'Business Impact / ROI',                                     type:'textarea', ph:'e.g. 15% cycle time reduction, €200k savings/year…' },
-      { key:'enabler',     label:'Enabler required to implement the solution',                type:'textarea', ph:'e.g. Clean spend data, IT integration, change management…' },
-    ] : [
-      { key:'name',        label:'AI use case name',          type:'input',    ph:'e.g. Autonomous RFx drafting' },
-      { key:'description', label:'AI use case brief description', type:'textarea', ph:'What would it do and what problem would it solve?' },
-      { key:'roi',         label:'Business Impact / ROI',     type:'textarea', ph:'e.g. Expected 20% reduction in sourcing cycle time…' },
-      { key:'enabler',     label:'Implementation enablers',   type:'textarea', ph:'e.g. Structured bid data, S2P platform integration…' },
-    ];
-    return `<div class="uc-row" id="uc-row-${stepId}-${type}-${n}" style="display:flex;gap:0;margin-bottom:12px;border:1.5px solid ${accentBdr};border-radius:8px;overflow:hidden;">
-      <div style="background:${accentColor};color:white;font-weight:700;font-size:13px;writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);padding:16px 10px;min-width:36px;display:flex;align-items:center;justify-content:center;letter-spacing:1px;">UC${n}</div>
-      <div style="flex:1;background:${accentBg};padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
-        ${fields.map(f => `<div>
-          <div style="font-size:10px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;font-style:italic;">${f.label}:</div>
-          ${f.type === 'textarea'
-            ? `<textarea class="text-field" style="min-height:52px;font-size:13px;" id="uc-${stepId}-${type}-${n}-${f.key}" placeholder="${f.ph}" onchange="saveUC('${stepId}','${type}',${n},'${f.key}',this.value)"></textarea>`
-            : `<input class="input-f" style="font-size:13px;" id="uc-${stepId}-${type}-${n}-${f.key}" placeholder="${f.ph}" onchange="saveUC('${stepId}','${type}',${n},'${f.key}',this.value)">`
-          }
-        </div>`).join('')}
-        ${n > 1 ? `<div style="text-align:right"><button onclick="removeUC('${stepId}','${type}',${n})" style="background:none;border:none;color:#ef4444;font-size:11px;cursor:pointer;">✕ Remove this use case</button></div>` : ''}
-      </div>
-    </div>`;
+    const uid = `uc-${stepId}-${type}-${n}`;
+    if (isExisting) {
+      return `<div class="uc-row" id="uc-row-${stepId}-${type}-${n}" style="margin-bottom:10px;border:1.5px solid ${accentBdr};border-radius:8px;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:10px;background:${accentColor};padding:6px 12px;">
+          <span style="color:white;font-weight:800;font-size:12px;letter-spacing:.5px;">UC${n}</span>
+          ${n > 1 ? `<button onclick="removeUC('${stepId}','${type}',${n})" style="margin-left:auto;background:rgba(255,255,255,0.2);border:none;color:white;font-size:11px;cursor:pointer;border-radius:4px;padding:2px 8px;">✕ Remove</button>` : ''}
+        </div>
+        <div style="background:${accentBg};padding:10px 12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="grid-column:1/-1">
+            ${lbl('Use Case Name')}
+            <input class="input-f" style="font-size:12px;padding:5px 8px;height:30px;width:100%;box-sizing:border-box;" id="${uid}-name" placeholder="e.g. AI-powered spend classification" onchange="saveUC('${stepId}','${type}',${n},'name',this.value)">
+          </div>
+          <div style="grid-column:1/-1">
+            ${lbl('Brief Description')}
+            <textarea class="text-field" style="min-height:40px;font-size:12px;padding:5px 8px;resize:vertical;width:100%;box-sizing:border-box;" id="${uid}-description" placeholder="What does it do and what problem does it solve?" onchange="saveUC('${stepId}','${type}',${n},'description',this.value)"></textarea>
+          </div>
+          <div>
+            ${lbl('Technology')}
+            <input class="input-f" style="font-size:12px;padding:5px 8px;height:30px;width:100%;box-sizing:border-box;" id="${uid}-technology" placeholder="e.g. Claude, ChatGPT, proprietary…" onchange="saveUC('${stepId}','${type}',${n},'technology',this.value)">
+          </div>
+          <div>
+            ${lbl('ERP / Tool Integration')}
+            <input class="input-f" style="font-size:12px;padding:5px 8px;height:30px;width:100%;box-sizing:border-box;" id="${uid}-integration" placeholder="e.g. SAP Ariba, standalone, API…" onchange="saveUC('${stepId}','${type}',${n},'integration',this.value)">
+          </div>
+          <div>
+            ${lbl('Adoption Rate')}
+            <input class="input-f" style="font-size:12px;padding:5px 8px;height:30px;width:100%;box-sizing:border-box;" id="${uid}-adoption" placeholder="e.g. 80% of buyers, pilot only…" onchange="saveUC('${stepId}','${type}',${n},'adoption',this.value)">
+          </div>
+          <div>
+            ${lbl('Business Impact / ROI')}
+            <input class="input-f" style="font-size:12px;padding:5px 8px;height:30px;width:100%;box-sizing:border-box;" id="${uid}-roi" placeholder="e.g. €200k savings/year, -15% cycle time" onchange="saveUC('${stepId}','${type}',${n},'roi',this.value)">
+          </div>
+          <div style="grid-column:1/-1">
+            ${lbl('Enablers Required')}
+            <textarea class="text-field" style="min-height:36px;font-size:12px;padding:5px 8px;resize:vertical;width:100%;box-sizing:border-box;" id="${uid}-enabler" placeholder="e.g. Clean spend data, IT integration, change management…" onchange="saveUC('${stepId}','${type}',${n},'enabler',this.value)"></textarea>
+          </div>
+        </div>
+      </div>`;
+    } else {
+      return `<div class="uc-row" id="uc-row-${stepId}-${type}-${n}" style="margin-bottom:10px;border:1.5px solid ${accentBdr};border-radius:8px;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:10px;background:${accentColor};padding:6px 12px;">
+          <span style="color:white;font-weight:800;font-size:12px;letter-spacing:.5px;">OPP${n}</span>
+          ${n > 1 ? `<button onclick="removeUC('${stepId}','${type}',${n})" style="margin-left:auto;background:rgba(255,255,255,0.2);border:none;color:white;font-size:11px;cursor:pointer;border-radius:4px;padding:2px 8px;">✕ Remove</button>` : ''}
+        </div>
+        <div style="background:${accentBg};padding:10px 12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="grid-column:1/-1">
+            ${lbl('Use Case Name')}
+            <input class="input-f" style="font-size:12px;padding:5px 8px;height:30px;width:100%;box-sizing:border-box;" id="${uid}-name" placeholder="e.g. Autonomous RFx drafting" onchange="saveUC('${stepId}','${type}',${n},'name',this.value)">
+          </div>
+          <div style="grid-column:1/-1">
+            ${lbl('Brief Description')}
+            <textarea class="text-field" style="min-height:40px;font-size:12px;padding:5px 8px;resize:vertical;width:100%;box-sizing:border-box;" id="${uid}-description" placeholder="What would it do and what problem would it solve?" onchange="saveUC('${stepId}','${type}',${n},'description',this.value)"></textarea>
+          </div>
+          <div>
+            ${lbl('Expected ROI / Impact')}
+            <input class="input-f" style="font-size:12px;padding:5px 8px;height:30px;width:100%;box-sizing:border-box;" id="${uid}-roi" placeholder="e.g. -20% sourcing cycle time" onchange="saveUC('${stepId}','${type}',${n},'roi',this.value)">
+          </div>
+          <div>
+            ${lbl('Implementation Enablers')}
+            <input class="input-f" style="font-size:12px;padding:5px 8px;height:30px;width:100%;box-sizing:border-box;" id="${uid}-enabler" placeholder="e.g. Structured bid data, S2P platform…" onchange="saveUC('${stepId}','${type}',${n},'enabler',this.value)">
+          </div>
+        </div>
+      </div>`;
+    }
   }
 
   const rows = Array.from({length: maxUC}, (_,i) => renderOneUC(i+1)).join('');
 
-  return `<div class="card" id="uc-block-${stepId}-${type}">
-    <div class="card-hdr" style="border-left:4px solid ${accentColor};">
-      <div class="card-title" style="color:${accentColor};">
-        ${isExisting ? '◆  AI use cases currently in place at this process step' : '◇  Potential AI use cases to develop at this process step'}
+  return `<div class="card" id="uc-block-${stepId}-${type}" style="padding:14px 16px;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid ${accentBdr};">
+      <span style="width:10px;height:10px;border-radius:2px;background:${accentColor};display:inline-block;flex-shrink:0;"></span>
+      <div style="font-size:13px;font-weight:700;color:${accentColor};">
+        ${isExisting ? 'AI use cases currently in place at this process step' : 'Potential AI use cases to develop at this process step'}
       </div>
     </div>
     <div id="uc-rows-${stepId}-${type}">${rows}</div>
-    <button onclick="addUC('${stepId}','${type}')" style="margin-top:4px;background:${accentBg};border:1.5px dashed ${accentBdr};border-radius:6px;padding:8px 16px;font-size:12px;font-weight:600;color:${accentColor};cursor:pointer;width:100%;">+ Add another use case</button>
+    <button onclick="addUC('${stepId}','${type}')" style="margin-top:4px;background:${accentBg};border:1.5px dashed ${accentBdr};border-radius:6px;padding:6px 16px;font-size:12px;font-weight:600;color:${accentColor};cursor:pointer;width:100%;">+ Add another use case</button>
   </div>`;
 }
 
