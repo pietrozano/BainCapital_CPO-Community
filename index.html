@@ -335,6 +335,15 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
       <span id="survey-step-label" class="survey-step-label">Loading...</span>
       <span id="survey-q-counter" class="survey-q-counter"></span>
     </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0 0">
+      <div style="display:flex;align-items:center;gap:12px">
+        <img src="logo-bcg.png" alt="BCG" style="height:24px;opacity:.75">
+        <img src="logo-inverto.png" alt="Inverto" style="height:22px;opacity:.7">
+      </div>
+      <div>
+        <img src="logo-baincapital.png" alt="Bain Capital" style="height:22px;opacity:.7">
+      </div>
+    </div>
   </div>
   <div class="survey-body" style="flex:1">
     <div class="survey-card" id="survey-card"></div>
@@ -355,9 +364,13 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
   <!-- Header -->
   <header class="header">
     <div class="header-left">
-      <div class="header-logo">BCG <span>×</span> Inverto</div>
+      <div class="header-logo" style="display:flex;align-items:center;gap:10px">
+        <img src="logo-bcg.png" alt="BCG" style="height:22px;filter:brightness(0) invert(1);opacity:.9">
+        <span style="color:rgba(255,255,255,.3);font-size:14px">×</span>
+        <img src="logo-inverto.png" alt="Inverto" style="height:18px;filter:brightness(0) invert(1);opacity:.8">
+      </div>
       <div class="header-sep"></div>
-      <div class="header-title">Procurement AI Maturity Assessment · Bain Capital</div>
+      <div class="header-title" style="display:flex;align-items:center;gap:8px">Procurement AI Maturity Assessment · <img src="logo-baincapital.png" alt="Bain Capital" style="height:16px;filter:brightness(0) invert(1);opacity:.8;vertical-align:middle"></div>
     </div>
     <div class="header-right">
       <div class="co-chip" id="header-co-name">—</div>
@@ -460,6 +473,10 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
         <div class="nav-badge nb-special">📊</div>
         <div class="nav-label">My Score vs Peers</div>
       </div>
+      <div class="nav-item" onclick="showSection('s-techmap')" id="nav-s-techmap">
+        <span class="nav-badge nb-special" style="font-size:9px">🗺</span>
+        <span class="nav-label">Tech Stack Map</span>
+      </div>
       <div class="nav-item" onclick="showSection('s-inv')" id="nav-s-inv">
         <div class="nav-badge nb-special">💡</div>
         <div class="nav-label">Portfolio AI Library</div>
@@ -483,7 +500,7 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
         <div class="pills">
           <span class="pill">9 Process Steps</span>
           <span class="pill">4 Dimensions</span>
-          <span class="pill">D1 Org 35% · D2 Tech 30% · D3 AI in Place 20% · D4 AI Opportunity 15%</span>
+          <span class="pill">Foundation 30% · In Place 45% · Frontier 25%</span>
           <span class="pill">~45 min to complete</span>
         </div>
       </div>
@@ -631,7 +648,7 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
       <!-- Step breakdown table -->
       <div class="step-table">
         <table>
-          <thead><tr><th>Process Step</th><th>D1 Org</th><th>D2 Tech</th><th>D3 AI In Place</th><th>D4 AI Opp.</th><th>Step Score</th><th>Band</th></tr></thead>
+          <thead><tr><th>Process Step</th><th>Foundation</th><th>In Place</th><th>Frontier</th><th>Step Score</th><th>Band</th></tr></thead>
           <tbody id="cmi-step-table"></tbody>
         </table>
       </div>
@@ -643,6 +660,17 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
     </div>
 
     <!-- ── AI INVENTORY ── -->
+    <!-- Tech Stack Map section -->
+    <div class="section" id="s-techmap">
+      <div class="sec-header">
+        <div class="sec-tag">Portfolio</div>
+        <div class="sec-title">Tech Stack Map</div>
+        <div class="sec-desc" id="techmap-desc">Your procurement technology landscape.</div>
+      </div>
+      <div id="techmap-container">
+        <div style="text-align:center;padding:48px;color:#94a3b8">Loading tech stack data…</div>
+      </div>
+    </div>
     <div class="section" id="s-inv">
       <div class="sec-header">
         <div class="sec-tag">Results</div>
@@ -692,23 +720,25 @@ const QUESTIONS = {
     title: 'Tech Stack Inventory',
     tag: 'Step 00',
     desc: 'Map your current procurement technology landscape.',
+    intro: "Before we dive into the assessment, we'd like to map your procurement technology landscape. This section has no scoring — it simply helps us understand which platforms and tools your team currently uses. There are no right or wrong answers here.",
     isTechStack: true,
     fields: [
-      { id: 'erp',        label: 'ERP System',               placeholder: 'e.g. SAP S/4HANA, Oracle, Microsoft D365' },
-      { id: 's2p',        label: 'Source-to-Pay Platform',    placeholder: 'e.g. Coupa, SAP Ariba, Jaggaer, Ivalua' },
-      { id: 'esourcing',  label: 'eSourcing / eAuctions',     placeholder: 'e.g. Keelvar, embedded in S2P, none' },
-      { id: 'clm',        label: 'Contract Management (CLM)', placeholder: 'e.g. Icertis, Ironclad, DocuSign CLM, none' },
-      { id: 'srm',        label: 'Supplier Management (SRM)', placeholder: 'e.g. Jaggaer SRM, embedded, none' },
-      { id: 'ap',         label: 'AP Automation / e-Invoicing', placeholder: 'e.g. Basware, Tungsten, SAP, none' },
-      { id: 'analytics',  label: 'Spend Analytics / BI',      placeholder: 'e.g. Power BI, Tableau, embedded' },
-      { id: 'ai_tools',   label: 'AI-Specific Tools',         placeholder: 'e.g. Microsoft Copilot, Coupa AI, custom LLM' },
-      { id: 'integration',label: 'Integration Level',         placeholder: 'Fully API-integrated / Partial / Manual exports' }
+      { id: 'erp',        label: 'Which ERP system are you currently running?',                      placeholder: 'e.g. SAP S/4HANA, Oracle, Microsoft D365' },
+      { id: 's2p',        label: 'Which Source-to-Pay (S2P) platform do you use?',                  placeholder: 'e.g. Coupa, SAP Ariba, Jaggaer, Ivalua — or "none"' },
+      { id: 'esourcing',  label: 'Do you use a dedicated eSourcing or eAuction tool?',              placeholder: 'e.g. Keelvar, embedded in S2P, none' },
+      { id: 'clm',        label: 'What Contract Lifecycle Management (CLM) solution is in place?',  placeholder: 'e.g. Icertis, Ironclad, DocuSign CLM, none' },
+      { id: 'srm',        label: 'Which Supplier Relationship Management (SRM) tool do you use?',   placeholder: 'e.g. Jaggaer SRM, embedded, none' },
+      { id: 'ap',         label: 'What AP Automation or e-Invoicing platform do you have?',         placeholder: 'e.g. Basware, Tungsten, SAP, none' },
+      { id: 'analytics',  label: 'Which Spend Analytics or BI tools does your team rely on?',       placeholder: 'e.g. Power BI, Tableau, embedded analytics' },
+      { id: 'ai_tools',   label: 'Are any AI-specific tools already deployed in procurement?',      placeholder: 'e.g. Microsoft Copilot, Coupa AI, custom LLM, none' },
+      { id: 'integration',label: 'How well integrated are these systems with each other?',          placeholder: 'Fully API-integrated / Partial / Largely manual exports' }
     ]
   },
   's-01': {
     title: 'Strategy & Governance',
     tag: 'Step 01',
     desc: 'AI strategy, roadmap, budget, and governance for procurement.',
+    intro: "We'll start with strategy and governance — the foundation of any successful AI transformation. This section explores whether AI has a defined place in your procurement agenda, who owns it, and how decisions are made and tracked. Please answer in your own words; there is no expectation of perfection.",
     questions: [
       { id: 'q-01-01', short: 'AI strategy & roadmap',
         text: 'Describe your AI strategy for procurement. Do you have a formal AI roadmap, dedicated budget, and an executive sponsor? How is AI progress tracked and reported?',
@@ -728,6 +758,7 @@ const QUESTIONS = {
     title: 'Category Management',
     tag: 'Step 02',
     desc: 'AI readiness of data and AI use in category management.',
+    intro: "Category management is often the first area where AI delivers visible value — through richer market intelligence, faster strategy development, and smarter negotiation support. In this section we explore the quality of your spend data and how AI is being used — or could be used — across your category management activities.",
     questions: [
       { id: 'q-02-01', short: 'Spend data quality',
         text: 'How clean, classified, and accessible is your category spend data? What percentage is correctly classified? Is taxonomy consistent? Are suppliers deduplicated? How is data fed into analytics tools?',
@@ -747,6 +778,7 @@ const QUESTIONS = {
     title: 'Supplier Management',
     tag: 'Step 03',
     desc: 'AI readiness of supplier data and AI-driven supplier monitoring.',
+    intro: "Supplier management is becoming one of the highest-impact areas for AI — from continuous risk monitoring to intelligent supplier development. This section looks at the quality of your supplier data and how AI is helping — or could help — you manage your supply base more proactively.",
     questions: [
       { id: 'q-03-01', short: 'Supplier data quality',
         text: 'How clean and structured is your supplier master data? Is it deduplicated? What external risk data feeds (financial, ESG, geopolitical) are connected?',
@@ -766,6 +798,7 @@ const QUESTIONS = {
     title: 'Strategic Sourcing (RFx)',
     tag: 'Step 04',
     desc: 'AI readiness of sourcing data and AI in the RFx process.',
+    intro: "Strategic sourcing is evolving fast — from AI-assisted RFx drafting to fully autonomous sourcing agents. This section explores how AI is being applied in your sourcing process today, what the data infrastructure looks like, and where the biggest opportunities lie.",
     questions: [
       { id: 'q-04-01', short: 'Sourcing data structure',
         text: 'How are historical sourcing events, bid data, and award decisions stored? Is this data structured and accessible for AI analysis and learning?',
@@ -785,6 +818,7 @@ const QUESTIONS = {
     title: 'Contract Management',
     tag: 'Step 05',
     desc: 'AI readiness of contract data and AI in CLM.',
+    intro: "Contracts are a goldmine of commercial intelligence — yet in most companies they remain locked in PDFs and shared drives. This section explores how digitised and structured your contract portfolio is, and how AI is being used to extract value, manage obligations, and prevent compliance failures.",
     questions: [
       { id: 'q-05-01', short: 'Contract digitisation',
         text: 'What share of your active contracts are digitised, structured, and stored in a central repository? Is metadata (value, expiry, key clauses, obligations) structured and searchable?',
@@ -804,6 +838,7 @@ const QUESTIONS = {
     title: 'PR & Requisition',
     tag: 'Step 06',
     desc: 'AI in the purchase requisition and guided buying process.',
+    intro: "The requisition process is the front door of procurement — and one of the highest-volume touchpoints with internal customers. This section looks at how structured your request data is, and whether AI is being used to guide buyers, enforce compliance, and reduce friction in the purchasing experience.",
     questions: [
       { id: 'q-06-01', short: 'Requisition data quality',
         text: 'Is your requisition process fully digital with structured data capture? Are categories, cost centres, and preferred suppliers consistently and reliably recorded?',
@@ -820,6 +855,7 @@ const QUESTIONS = {
     title: 'PO Management',
     tag: 'Step 07',
     desc: 'AI in PO creation, exception management, and lifecycle tracking.',
+    intro: "Purchase order management sits at the intersection of procurement and operations — and is often where significant manual effort is hidden. This section explores how digital and integrated your PO process is, and where AI can eliminate exceptions, predict delivery risks, and reduce human intervention.",
     questions: [
       { id: 'q-07-01', short: 'PO data integration',
         text: 'Is PO data fully digital and integrated with your ERP and supplier systems? What is the level of real-time status tracking and supplier acknowledgement?',
@@ -836,6 +872,7 @@ const QUESTIONS = {
     title: 'Invoice & AP',
     tag: 'Step 08',
     desc: 'AI in invoice processing and accounts payable automation.',
+    intro: "Accounts payable is one of the most data-intensive and AI-ready areas of procurement operations. Touchless invoice processing is now an achievable benchmark — not a distant aspiration. This section examines your current level of e-invoicing adoption and where AI can drive the next step-change in efficiency.",
     questions: [
       { id: 'q-08-01', short: 'E-invoice adoption',
         text: 'What share of invoices are received digitally (e-invoice, EDI, structured format)? What is your current touchless processing rate and what is the target?',
@@ -855,6 +892,7 @@ const QUESTIONS = {
     title: 'Reporting & Analytics',
     tag: 'Step 09',
     desc: 'AI-powered procurement analytics and self-serve insights.',
+    intro: "Analytics is the nervous system of a mature procurement function — and AI is transforming what's possible, from natural language querying to predictive spend forecasting. This section explores how integrated your data is today and how AI is enabling — or could enable — faster, smarter decisions.",
     questions: [
       { id: 'q-09-01', short: 'Integrated analytics layer',
         text: 'Is procurement data — spend, supplier, contract, PO, invoice — integrated in a single near-real-time analytics layer? Can users access it without IT support?',
@@ -874,6 +912,7 @@ const QUESTIONS = {
     title: 'AI Governance & Enablement',
     tag: 'Step 10',
     desc: 'AI governance framework, talent development, and enablement.',
+    intro: "You've reached the final section. AI governance and talent enablement are often the invisible difference between companies that pilot AI endlessly and those that scale it into operations. This section covers how your organisation governs AI decisions, develops AI capability in the procurement team, and manages adoption.",
     questions: [
       { id: 'q-ai-01', short: 'AI governance framework',
         text: 'Describe your AI governance framework for procurement. Who authorises AI deployments? Are there audit trails, data privacy controls, and oversight for autonomous AI decisions?',
@@ -946,6 +985,9 @@ let STATE = {
 const canEdit   = () => STATE.role === 'company' || STATE.role === 'bcg' || STATE.role === 'admin';
 const canViewAll= () => STATE.role === 'bcg' || STATE.role === 'baincap' || STATE.role === 'admin';
 const isCompany = () => STATE.role === 'company';
+const isBCG     = () => STATE.role === 'bcg';
+const isAdmin   = () => STATE.role === 'admin';
+const isBainCap = () => STATE.role === 'baincap';
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
@@ -957,6 +999,7 @@ document.addEventListener('DOMContentLoaded', () => {
       STATE.role     = s.role;
       STATE.identity = s.identity;
       applyRestoredState(s.data || {});
+      if (s.surveyIndex !== undefined) SURVEY_INDEX = s.surveyIndex;
       showApp();
       return;
     } catch {}
@@ -1045,7 +1088,11 @@ function showApp() {
   populateCompanyDetails();
   renderAllSteps();
   updateSidebar();
-  showSection(STATE.currentSection || (role === 'bcg' ? 's-cmi' : 's-cover'));
+  // After analysis: company lands on results; BCG lands on CMI by default
+  const defaultSection = STATE.analyzed
+    ? 's-cmi'
+    : (role === 'bcg' ? 's-cmi' : 's-cover');
+  showSection(STATE.currentSection || defaultSection);
 }
 
 function applyRoleUI() {
@@ -1064,6 +1111,10 @@ function applyRoleUI() {
   if (!canEdit()) {
     document.querySelectorAll('.btn-green,.btn-submit').forEach(b => b.style.display = 'none');
   }
+  // Show tech stack map only for BCG/BainCap/admin
+  // Tech Stack Map visible to all roles
+  const techMapNav = document.getElementById('nav-s-techmap');
+  if (techMapNav) techMapNav.style.display = 'flex';
   // BCG role badge
   if (role === 'bcg') {
     const badge = document.createElement('div');
@@ -1089,6 +1140,7 @@ async function api(method, url, body) {
 function saveSession() {
   localStorage.setItem('pam_session', JSON.stringify({
     token: STATE.token, role: STATE.role, identity: STATE.identity,
+    surveyIndex: SURVEY_INDEX,
     data: {
       scores: STATE.scores, rawScores: STATE.rawScores,
       useCases: STATE.useCases, notes: STATE.notes,
@@ -1106,10 +1158,18 @@ let SURVEY_INDEX = 0;
 
 function buildSurveyQuestions() {
   SURVEY_QUESTIONS = [];
+  // Welcome card first
+  SURVEY_QUESTIONS.push({ isWelcome: true });
   for (const stepId of STEP_IDS) {
     const step = QUESTIONS[stepId];
     if (!step) continue;
+    // Section intro card
+    if (step.intro) {
+      SURVEY_QUESTIONS.push({ isIntro: true, stepId, stepTitle: step.title, tag: step.tag, intro: step.intro, desc: step.desc });
+    }
     if (step.isTechStack) {
+      // Dedicated document upload question first
+      SURVEY_QUESTIONS.push({ isTechUpload: true, stepId, stepTitle: step.title, tag: step.tag });
       for (const field of step.fields) {
         SURVEY_QUESTIONS.push({ stepId, fieldId: field.id, field, isTechStack: true, stepTitle: step.title, tag: step.tag });
       }
@@ -1123,7 +1183,8 @@ function buildSurveyQuestions() {
 
 function showSurvey() {
   buildSurveyQuestions();
-  SURVEY_INDEX = 0;
+  // Resume from saved position (but stay at 0 if no saved index)
+  SURVEY_INDEX = Math.min(SURVEY_INDEX, SURVEY_QUESTIONS.length - 1);
   document.getElementById('login-screen').style.display  = 'none';
   document.getElementById('app-screen').style.display    = 'none';
   document.getElementById('survey-screen').style.display = 'flex';
@@ -1138,7 +1199,7 @@ function renderSurveyQuestion() {
   const pct = Math.round((SURVEY_INDEX / total) * 100);
 
   document.getElementById('survey-progress-fill').style.width = pct + '%';
-  document.getElementById('survey-step-label').textContent = item.tag + ' · ' + item.stepTitle;
+  document.getElementById('survey-step-label').textContent = item.isWelcome ? 'Welcome' : (item.tag + ' · ' + item.stepTitle);
   document.getElementById('survey-q-counter').textContent = (SURVEY_INDEX + 1) + ' / ' + total;
 
   const isLast = SURVEY_INDEX === total - 1;
@@ -1148,12 +1209,102 @@ function renderSurveyQuestion() {
 
   const card = document.getElementById('survey-card');
 
+  if (item.isWelcome) {
+    const totalQ = SURVEY_QUESTIONS.filter(q => q.isTechStack || (!q.isIntro && !q.isWelcome)).length;
+    const mins = Math.round(totalQ * 2.5);
+    card.innerHTML = `
+      <div style="text-align:center;padding:16px 8px 8px">
+        <div style="font-size:40px;margin-bottom:20px">👋</div>
+        <div style="font-size:22px;font-weight:800;color:#0F172A;margin-bottom:12px;line-height:1.3">Welcome to the Procurement AI Maturity Assessment</div>
+        <div style="font-size:14px;color:#64748b;line-height:1.8;max-width:520px;margin:0 auto 28px">
+          This assessment has been designed by <strong>BCG × Inverto</strong> in partnership with <strong>Bain Capital</strong> to evaluate where each portfolio company stands on its AI journey across the full procurement lifecycle.<br><br>
+          You will be guided through <strong>10 process areas</strong> — from Strategy & Governance to AI Enablement. For each area, we'll ask you a set of open-ended questions. Answer in your own words: our AI will evaluate your responses and generate a maturity score. There is no right or wrong answer — honesty gives you the most useful result.<br><br>
+          <strong>How it works:</strong> one question at a time · voice dictation available · attach supporting files if you wish · your BCG team reviews all answers before finalising scores.
+        </div>
+        <div style="display:flex;justify-content:center;gap:24px;flex-wrap:wrap;margin-bottom:28px">
+          <div style="background:#f1f5f9;border-radius:12px;padding:14px 24px;text-align:center">
+            <div style="font-size:24px;font-weight:800;color:#0F172A">${totalQ}</div>
+            <div style="font-size:12px;color:#64748b;margin-top:2px">Questions</div>
+          </div>
+          <div style="background:#f1f5f9;border-radius:12px;padding:14px 24px;text-align:center">
+            <div style="font-size:24px;font-weight:800;color:#0F172A">~${mins} min</div>
+            <div style="font-size:12px;color:#64748b;margin-top:2px">Estimated time</div>
+          </div>
+          <div style="background:#f1f5f9;border-radius:12px;padding:14px 24px;text-align:center">
+            <div style="font-size:24px;font-weight:800;color:#0F172A">10</div>
+            <div style="font-size:12px;color:#64748b;margin-top:2px">Process areas</div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:#94a3b8;font-style:italic">Your answers are confidential and shared only with your BCG project team and Bain Capital.</div>
+      </div>
+    `;
+    return;
+  }
+
+  if (item.isTechUpload) {
+    const extracted = STATE._techStackExtracted;
+    card.innerHTML = `
+      <div style="padding:8px 0">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+          <span style="background:#f1f5f9;color:#475569;font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;text-transform:uppercase">${item.tag}</span>
+        </div>
+        <div style="font-size:22px;font-weight:800;color:#0F172A;margin-bottom:8px">Do you have a document describing your tech stack?</div>
+        <div style="font-size:15px;color:#334155;line-height:1.7;margin-bottom:24px">If you have a presentation, system landscape document, or IT overview — upload it here. Our AI will read it and <strong>pre-fill the next 9 fields automatically</strong> for you to review and correct.<br><br>If not, just click <strong>Next</strong> and fill in each field manually.</div>
+        ${extracted ? `
+        <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:12px">
+          <span style="font-size:24px">✅</span>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:#15803d">Document analysed — fields pre-filled</div>
+            <div style="font-size:13px;color:#166534;margin-top:2px">Review each answer as you go through the next questions.</div>
+          </div>
+        </div>` : `
+        <div style="border:2px dashed #cbd5e1;border-radius:14px;padding:28px;text-align:center;background:#f8fafc">
+          <div style="font-size:32px;margin-bottom:12px">📄</div>
+          <div style="font-size:14px;font-weight:700;color:#334155;margin-bottom:6px">Upload your tech stack document</div>
+          <div style="font-size:12px;color:#94a3b8;margin-bottom:18px">PDF, PowerPoint, Word, or TXT · Max 10 MB</div>
+          <label style="display:inline-flex;align-items:center;gap:8px;background:#0F172A;color:white;border:none;border-radius:10px;padding:11px 24px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">
+            📎 Choose file
+            <input type="file" style="display:none" accept=".pdf,.ppt,.pptx,.doc,.docx,.txt"
+                   onchange="uploadAndExtractTechStack(event)">
+          </label>
+          <div id="techstack-extract-status" style="margin-top:14px;min-height:20px"></div>
+        </div>`}
+        <div style="margin-top:16px;font-size:12px;color:#94a3b8;text-align:center">This step is optional — click Next to skip and fill manually.</div>
+      </div>`;
+    return;
+  }
+
+  if (item.isIntro) {
+    card.innerHTML = `
+      <div style="padding:8px 0">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+          <span style="background:#f1f5f9;color:#475569;font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;text-transform:uppercase">${item.tag}</span>
+        </div>
+        <div style="font-size:22px;font-weight:800;color:#0F172A;margin-bottom:8px">${item.stepTitle}</div>
+        <div style="font-size:13px;color:#64748b;font-weight:600;margin-bottom:16px;text-transform:uppercase;letter-spacing:.5px">${item.desc}</div>
+        <div style="font-size:15px;color:#334155;line-height:1.8;background:#f8fafc;border-left:3px solid var(--green);padding:16px 20px;border-radius:0 10px 10px 0">${item.intro}</div>
+      </div>
+    `;
+    return;
+  }
+
   if (item.isTechStack) {
     const saved = STATE.techStack[item.fieldId] || '';
+    const isFirstTechField = item.fieldId === 'erp';
+    const extractedBanner = STATE._techStackExtracted
+      ? `<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px">
+           <span style="font-size:16px">✅</span>
+           <div>
+             <div style="font-size:13px;font-weight:700;color:#15803d">Tech stack extracted from your document</div>
+             <div style="font-size:12px;color:#166534;margin-top:2px">Fields have been pre-filled — review and adjust each answer before continuing.</div>
+           </div>
+         </div>` : '';
+
     card.innerHTML = `
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
         <span style="background:var(--green-light);color:var(--green);font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;text-transform:uppercase">Tech Stack</span>
       </div>
+      ${extractedBanner}
       <div class="survey-q-text">${item.field.label}</div>
       <div class="survey-tech-field">
         <input class="survey-tech-input" id="survey-tech-input" type="text"
@@ -1192,22 +1343,98 @@ function renderSurveyQuestion() {
       ${filesHtml ? `<div class="survey-files-list">${filesHtml}</div>` : ''}
     `;
   }
+
+  // Inject company logo watermark on card
+  const coId = STATE.identity?.id || '';
+  if (coId && coId !== 'company16') {
+    const existing = card.querySelector('.co-logo-watermark');
+    if (!existing) {
+      const logoDiv = document.createElement('div');
+      logoDiv.className = 'co-logo-watermark';
+      logoDiv.style.cssText = 'position:absolute;bottom:14px;right:18px;opacity:.25;pointer-events:none';
+      logoDiv.innerHTML = `<img src="logo-${coId}.png" alt="" style="height:26px;object-fit:contain;max-width:100px">`;
+      card.style.position = 'relative';
+      card.appendChild(logoDiv);
+    }
+  }
 }
 
 function saveAnswer(stepId, qId, text) {
   if (!STATE.answers[stepId]) STATE.answers[stepId] = {};
   if (!STATE.answers[stepId][qId]) STATE.answers[stepId][qId] = { text: '', files: [] };
   STATE.answers[stepId][qId].text = text;
+  saveSession();
 }
 
 function saveTechField(fieldId, value) {
   STATE.techStack[fieldId] = value;
+  saveSession();
 }
 
 function removeFile(stepId, qId, name) {
   if (STATE.answers[stepId]?.[qId]?.files) {
     STATE.answers[stepId][qId].files = STATE.answers[stepId][qId].files.filter(f => f.name !== name);
     renderSurveyQuestion();
+  }
+}
+
+async function uploadAndExtractTechStack(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  const statusEl = document.getElementById('techstack-extract-status');
+  const areaEl   = document.getElementById('techstack-upload-area');
+  if (statusEl) {
+    statusEl.style.display = 'block';
+    statusEl.innerHTML = `<div style="display:flex;align-items:center;gap:10px;color:#0369A1;font-size:13px;font-weight:600">
+      <div style="width:16px;height:16px;border:2px solid #0369A1;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite"></div>
+      Uploading ${file.name}…
+    </div>`;
+  }
+
+  try {
+    // Step 1: upload the file
+    const fd = new FormData();
+    fd.append('file', file);
+    const upRes  = await fetch('/api/upload-file', { method: 'POST', headers: { 'X-Token': STATE.token }, body: fd });
+    const upData = await upRes.json();
+    if (!upRes.ok) throw new Error(upData.error || 'Upload failed');
+
+    if (statusEl) statusEl.innerHTML = `<div style="display:flex;align-items:center;gap:10px;color:#7c3aed;font-size:13px;font-weight:600">
+      <div style="width:16px;height:16px;border:2px solid #7c3aed;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite"></div>
+      Reading document with AI… this may take 20–30 seconds
+    </div>`;
+
+    // Step 2: extract tech stack from the uploaded file
+    const exRes  = await fetch('/api/extract-techstack', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Token': STATE.token },
+      body: JSON.stringify({ filename: upData.filename, originalName: upData.original })
+    });
+    const exData = await exRes.json();
+    if (!exRes.ok) throw new Error(exData.error || 'Extraction failed');
+
+    // Step 3: populate STATE.techStack with extracted values
+    const fields = ['erp','s2p','esourcing','clm','srm','ap','analytics','ai_tools','integration'];
+    fields.forEach(f => {
+      if (exData[f] && exData[f].toLowerCase() !== 'unknown' && exData[f].toLowerCase() !== 'not found') {
+        STATE.techStack[f] = exData[f];
+      }
+    });
+    STATE._techStackExtracted = true;
+    saveSession();
+
+    // Update current input field immediately
+    const inp = document.getElementById('survey-tech-input');
+    if (inp && STATE.techStack['erp']) inp.value = STATE.techStack['erp'];
+
+    if (statusEl) statusEl.innerHTML = `<div style="display:flex;align-items:center;gap:8px;color:#15803d;font-size:13px;font-weight:700">
+      ✅ Extraction complete — fields pre-filled. Review each answer as you go.
+    </div>`;
+    if (areaEl) areaEl.style.opacity = '0.5';
+
+  } catch(e) {
+    if (statusEl) statusEl.innerHTML = `<div style="color:#dc2626;font-size:13px">❌ ${e.message} — please fill in manually.</div>`;
   }
 }
 
@@ -1274,10 +1501,10 @@ function toggleVoice(stepId, qId) {
 }
 
 function surveyPrev() {
-  if (SURVEY_INDEX > 0) { SURVEY_INDEX--; renderSurveyQuestion(); window.scrollTo(0,0); }
+  if (SURVEY_INDEX > 0) { SURVEY_INDEX--; saveSession(); renderSurveyQuestion(); window.scrollTo(0,0); }
 }
 function surveyNext() {
-  if (SURVEY_INDEX < SURVEY_QUESTIONS.length - 1) { SURVEY_INDEX++; renderSurveyQuestion(); window.scrollTo(0,0); }
+  if (SURVEY_INDEX < SURVEY_QUESTIONS.length - 1) { SURVEY_INDEX++; saveSession(); renderSurveyQuestion(); window.scrollTo(0,0); }
 }
 
 async function surveySubmit() {
@@ -1339,6 +1566,13 @@ function showSection(id) {
   updateProgress();
   if (id === 's-cmi') renderCMI();
   if (id === 's-inv') renderInventory();
+  if (id === 's-techmap') {
+    const desc = document.getElementById('techmap-desc');
+    if (desc) desc.textContent = isCompany()
+      ? 'Your procurement technology landscape as submitted.'
+      : 'Procurement technology landscape across the Bain Capital portfolio.';
+    loadTechMap();
+  }
   saveSession();
 }
 
@@ -1405,49 +1639,231 @@ function updateSidebar() {
 
 // ─── Render all step sections ─────────────────────────────────────────────────
 function renderAllSteps() {
+  const bcgView = isBCG() || isAdmin();
+  const allSections = ['s-cover','s-00','s-01','s-02','s-03','s-04','s-05','s-06','s-07','s-08','s-09','s-ai','s-cmi','s-inv'];
+
   STEP_IDS.forEach(stepId => {
     const def = QUESTIONS[stepId];
     if (!def) return;
     const sec = document.getElementById(stepId);
     if (!sec) return;
 
+    const stepScore = STATE.scores[stepId];
+    const stepBand  = stepScore ? getBand(Object.values(stepScore).reduce((a,b)=>a+b,0)/Object.values(stepScore).length) : null;
+
     let html = `<div class="sec-header">
       <div class="sec-tag">${def.tag}</div>
       <div class="sec-title">${def.title}</div>
       <div class="sec-desc">${def.desc}</div>
+      ${stepBand ? `<div style="display:inline-flex;align-items:center;gap:8px;margin-top:10px;background:${stepBand.bg};border:1px solid ${stepBand.color}33;border-radius:8px;padding:6px 14px"><span style="font-size:13px;font-weight:700;color:${stepBand.color}">${stepBand.label}</span><span style="font-size:12px;color:#64748b">AI maturity for this step</span></div>` : ''}
     </div>`;
 
+    // Tech stack display — visual architecture map
+    if (def.isTechStack) {
+      const ts = STATE.techStack || {};
+      const hasAny = Object.values(ts).some(v => v && v.trim());
+      const noTool = v => !v || v.trim() === '' || v.toLowerCase() === 'none' || v === '—';
+      const chip = (val, color) => {
+        if (noTool(val)) return `<span style="font-size:13px;color:#94a3b8;font-style:italic">Not specified</span>`;
+        return `<span style="display:inline-block;background:${color}18;color:${color};border:1px solid ${color}44;border-radius:6px;padding:4px 12px;font-size:13px;font-weight:600">${val}</span>`;
+      };
+      const intColor = v => {
+        if (!v) return '#94a3b8';
+        const l = v.toLowerCase();
+        if (l.includes('fully') || l.includes('api')) return '#22c55e';
+        if (l.includes('partial')) return '#f97316';
+        return '#94a3b8';
+      };
+      const intVal = ts.integration || '';
+      const intC = intColor(intVal);
+
+      html += `<div class="card" style="padding:28px 28px 24px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+          <div>
+            <div style="font-size:16px;font-weight:800;color:#0F172A">Procurement Tech Stack</div>
+            <div style="font-size:12px;color:#64748b;margin-top:3px">Technology architecture map · ${hasAny ? 'Submitted by CPO' : 'Not yet completed'}</div>
+          </div>
+          ${intVal ? `<div style="display:flex;align-items:center;gap:7px;background:${intC}18;border:1px solid ${intC}44;border-radius:8px;padding:7px 14px">
+            <div style="width:8px;height:8px;border-radius:50%;background:${intC}"></div>
+            <span style="font-size:12px;font-weight:700;color:${intC}">${intVal}</span>
+          </div>` : ''}
+        </div>
+
+        <!-- Layer 1: Foundation -->
+        <div style="margin-bottom:6px">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;margin-bottom:8px;display:flex;align-items:center;gap:8px">
+            <div style="flex:1;height:1px;background:#e2e8f0"></div>
+            <span>Foundation Layer</span>
+            <div style="flex:1;height:1px;background:#e2e8f0"></div>
+          </div>
+          <div style="display:flex;justify-content:center">
+            <div style="background:linear-gradient(135deg,#1e3a5f,#0F172A);border-radius:14px;padding:18px 28px;text-align:center;min-width:260px;max-width:380px;width:100%">
+              <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🏗 ERP System</div>
+              <div style="font-size:15px;font-weight:700;color:white">${noTool(ts.erp) ? '<span style="opacity:.4;font-style:italic">Not specified</span>' : ts.erp}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connector -->
+        <div style="display:flex;justify-content:center;margin:4px 0">
+          <div style="width:2px;height:20px;background:linear-gradient(to bottom,#334155,#e2e8f0)"></div>
+        </div>
+
+        <!-- Layer 2: Transactional -->
+        <div style="margin-bottom:6px">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;margin-bottom:8px;display:flex;align-items:center;gap:8px">
+            <div style="flex:1;height:1px;background:#e2e8f0"></div>
+            <span>Transactional Layer</span>
+            <div style="flex:1;height:1px;background:#e2e8f0"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px">
+            ${[
+              { id:'s2p',      icon:'🔄', label:'Source-to-Pay',  color:'#0369A1' },
+              { id:'esourcing',icon:'📋', label:'eSourcing',       color:'#0369A1' },
+              { id:'clm',      icon:'📄', label:'Contract (CLM)',  color:'#7c3aed' },
+              { id:'srm',      icon:'🤝', label:'Supplier (SRM)',  color:'#0284c7' },
+              { id:'ap',       icon:'💳', label:'AP / e-Invoice',  color:'#0891b2' },
+            ].map(f => `<div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:14px 14px 12px;border-top:3px solid ${f.color}">
+              <div style="font-size:11px;font-weight:700;color:${f.color};margin-bottom:5px">${f.icon} ${f.label}</div>
+              <div style="font-size:13px;font-weight:600;color:#334155;word-break:break-word">${noTool(ts[f.id]) ? '<span style="color:#cbd5e1;font-style:italic;font-weight:400">None</span>' : ts[f.id]}</div>
+            </div>`).join('')}
+          </div>
+        </div>
+
+        <!-- Connector -->
+        <div style="display:flex;justify-content:center;margin:4px 0">
+          <div style="width:2px;height:20px;background:linear-gradient(to bottom,#334155,#e2e8f0)"></div>
+        </div>
+
+        <!-- Layer 3: Intelligence -->
+        <div style="margin-bottom:6px">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;margin-bottom:8px;display:flex;align-items:center;gap:8px">
+            <div style="flex:1;height:1px;background:#e2e8f0"></div>
+            <span>Intelligence Layer</span>
+            <div style="flex:1;height:1px;background:#e2e8f0"></div>
+          </div>
+          <div style="display:flex;justify-content:center">
+            <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:14px 20px 12px;min-width:260px;max-width:380px;width:100%;border-top:3px solid #7c3aed">
+              <div style="font-size:11px;font-weight:700;color:#7c3aed;margin-bottom:5px">📊 Spend Analytics / BI</div>
+              <div style="font-size:13px;font-weight:600;color:#334155">${noTool(ts.analytics) ? '<span style="color:#cbd5e1;font-style:italic;font-weight:400">None</span>' : ts.analytics}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connector -->
+        <div style="display:flex;justify-content:center;margin:4px 0">
+          <div style="width:2px;height:20px;background:linear-gradient(to bottom,#7c3aed,#00A859)"></div>
+        </div>
+
+        <!-- Layer 4: AI Layer -->
+        <div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#00A859;margin-bottom:8px;display:flex;align-items:center;gap:8px">
+            <div style="flex:1;height:1px;background:#dcfce7"></div>
+            <span>AI Layer</span>
+            <div style="flex:1;height:1px;background:#dcfce7"></div>
+          </div>
+          <div style="display:flex;justify-content:center">
+            <div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #86efac;border-radius:14px;padding:18px 28px;text-align:center;min-width:260px;max-width:380px;width:100%">
+              <div style="font-size:11px;font-weight:700;color:#15803d;margin-bottom:6px">✨ AI-Specific Tools</div>
+              <div style="font-size:14px;font-weight:700;color:#14532d">${noTool(ts.ai_tools) ? '<span style="color:#86efac;font-style:italic;font-weight:400">None deployed</span>' : ts.ai_tools}</div>
+            </div>
+          </div>
+        </div>
+
+      </div>`;
+    }
+
+    // Questions: answers + AI scores
     if (def.questions?.length) {
-      html += `<div class="card"><div class="card-hdr"><span class="dim-badge d1">Questions</span><div class="card-title">AI Maturity Assessment</div></div>`;
+      html += `<div class="card"><div class="card-hdr"><span class="dim-badge d1">Assessment</span><div class="card-title">AI Maturity — ${def.title}</div></div>`;
       def.questions.forEach((q, i) => {
-        // Show answer if available (company submitted), with AI score
-        const ans = STATE.answers[stepId]?.[q.id];
-        const aiScore = STATE.aiScores[stepId]?.[q.id];
-        const aiReason = STATE.aiReasoning[stepId]?.[q.id];
-        if (ans?.text) {
-          html += `<div class="q-block">
-            <div class="q-text"><span class="q-num">${i + 1}.</span> ${q.text}</div>
-            <div style="background:#f8fafc;border-radius:8px;padding:12px 14px;font-size:13px;color:#334155;margin-bottom:8px;border:1px solid #e2e8f0"><strong>Answer:</strong> ${ans.text}</div>
-            ${aiScore ? `<div style="display:inline-flex;align-items:center;gap:8px;margin-bottom:4px"><span class="sc-pill" style="background:#dcfce7;color:#15803d">Score: ${aiScore}/4</span>${aiReason ? `<span style="font-size:12px;color:#64748b">${aiReason}</span>` : ''}</div>` : ''}
-          </div>`;
+        const ans      = STATE.answers[stepId]?.[q.id];
+        const aiScore  = STATE.aiScores?.[stepId]?.[q.id];
+        const aiReason = STATE.aiReasoning?.[stepId]?.[q.id];
+        const files    = ans?.files || [];
+        const band     = aiScore ? getBand(aiScore) : null;
+
+        html += `<div class="q-block" style="padding:20px 0;border-bottom:1px solid #f1f5f9">
+          <div class="q-text" style="margin-bottom:12px"><span class="q-num">${i + 1}.</span> ${q.text}</div>`;
+
+        if (isCompany()) {
+          // CPO: editable textarea so they can refine their answer
+          html += `<textarea class="survey-textarea" id="edit-ans-${stepId}-${q.id}"
+            style="margin-bottom:10px;min-height:90px"
+            placeholder="Describe your current situation in your own words..."
+            oninput="saveAnswer('${stepId}','${q.id}',this.value)">${ans?.text || ''}</textarea>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+              <span style="font-size:11px;color:#94a3b8">You can refine your answer — it will be re-scored by AI when you resubmit.</span>
+            </div>`;
+        } else if (ans?.text) {
+          html += `<div style="background:#f8fafc;border-radius:10px;padding:14px 16px;font-size:13px;color:#334155;line-height:1.7;border:1px solid #e2e8f0;margin-bottom:10px">${ans.text}</div>`;
         } else {
-          html += renderQuestion(q, i + 1);
+          html += `<div style="font-size:13px;color:#94a3b8;font-style:italic;margin-bottom:10px">No answer provided.</div>`;
         }
+
+        if (files.length) {
+          html += `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">${files.map(f=>`<span style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;padding:4px 10px;font-size:12px;color:#475569">📎 ${f.name}</span>`).join('')}</div>`;
+        }
+
+        // AI score display
+        if (aiScore && band) {
+          html += `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <div style="display:inline-flex;align-items:center;gap:6px;background:${band.bg};border:1px solid ${band.color}44;border-radius:8px;padding:6px 14px">
+              <span style="font-size:15px;font-weight:800;color:${band.color}">${aiScore}</span>
+              <span style="font-size:11px;font-weight:700;color:${band.color};text-transform:uppercase">${band.label}</span>
+            </div>
+            ${aiReason ? `<span style="font-size:12px;color:#64748b;flex:1;min-width:200px">${aiReason}</span>` : ''}
+          </div>`;
+        }
+
+        // BCG override
+        if (bcgView && ans?.text) {
+          const ovr = STATE.aiScores?.[stepId]?.[q.id];
+          html += `<div style="margin-top:12px;padding:12px 14px;background:#fefce8;border:1px solid #fde047;border-radius:8px">
+            <div style="font-size:11px;font-weight:700;color:#854d0e;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">BCG Override</div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <select id="ovr-${stepId}-${q.id}" style="border:1px solid #e2e8f0;border-radius:6px;padding:6px 10px;font-size:13px;font-weight:600;font-family:inherit;background:white;cursor:pointer">
+                <option value="">— Keep AI score (${ovr || '?'}) —</option>
+                <option value="1" ${ovr==1?'selected':''}>1 — None</option>
+                <option value="2" ${ovr==2?'selected':''}>2 — Piloting</option>
+                <option value="3" ${ovr==3?'selected':''}>3 — Deployed</option>
+                <option value="4" ${ovr==4?'selected':''}>4 — Scaled</option>
+              </select>
+              <button onclick="applyOverride('${stepId}','${q.id}')" style="background:var(--dark);color:white;border:none;border-radius:6px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">Apply</button>
+            </div>
+          </div>`;
+        }
+
+        html += `</div>`;
       });
       html += `</div>`;
     }
 
-    // Pain points
-    if (stepId !== 's-ai') {
-      html += `<div class="card"><div class="card-hdr"><div class="card-title">Step context</div></div>
-        <div class="field-group">
-          <label class="field-label">Main pain points / unmet needs at this process step</label>
-          <textarea class="text-field" id="pain-${stepId}" onchange="savePain('${stepId}',this.value)" placeholder="What are the biggest challenges the CPO faces at this step?"></textarea>
-        </div></div>`;
+    // Resubmit button for company users who edited answers
+    if (isCompany() && def.questions?.length) {
+      html += `<div style="margin:4px 0 16px;padding:14px 18px;background:#f0fdf4;border:1px solid #86efac;border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <span style="font-size:13px;color:#15803d;font-weight:500">Edited your answers? Re-run AI scoring to update your maturity score.</span>
+        <button onclick="reanalyzeStep('${stepId}')" id="reanalyze-btn-${stepId}"
+          style="background:#16a34a;color:white;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">
+          ✦ Re-score this step
+        </button>
+      </div>`;
+    }
+
+    // Use case capture (all steps except tech stack)
+    if (!def.isTechStack && canEdit()) {
+      html += `<div class="card">
+        <div class="card-hdr">
+          <span class="dim-badge d3">Use Cases</span>
+          <div class="card-title">AI Use Cases — ${def.title}</div>
+        </div>
+        <p style="font-size:13px;color:#64748b;margin-bottom:18px;line-height:1.6">Which AI use cases are already in place at this step? Which would you like to implement?</p>
+        ${renderUseCaseBlock(stepId, 'existing', '', '')}
+        ${renderUseCaseBlock(stepId, 'potential', '', '')}
+      </div>`;
     }
 
     // Navigation
-    const allSections = ['s-cover','s-00','s-01','s-02','s-03','s-04','s-05','s-06','s-07','s-08','s-09','s-ai','s-cmi','s-inv'];
     const idx  = allSections.indexOf(stepId);
     const prev = allSections[idx - 1] || 's-cover';
     const next = allSections[idx + 1] || 's-cmi';
@@ -1460,6 +1876,333 @@ function renderAllSteps() {
     restoreStepValues(stepId);
     if (!canEdit()) lockAllInputs();
   });
+}
+
+async function reanalyzeStep(stepId) {
+  const btn = document.getElementById(`reanalyze-btn-${stepId}`);
+  if (btn) { btn.textContent = '⏳ Scoring…'; btn.disabled = true; }
+
+  const def = QUESTIONS[stepId];
+  if (!def?.questions) return;
+
+  // Build rubrics for this step only
+  const rubrics = { [stepId]: {} };
+  def.questions.forEach(q => { rubrics[stepId][q.id] = { text: q.text, scores: q.scores }; });
+
+  try {
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Token': STATE.token },
+      body: JSON.stringify({
+        answers:  { [stepId]: STATE.answers[stepId] || {} },
+        rubrics,
+        techStack: STATE.techStack
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed');
+
+    // Merge updated scores back into STATE
+    if (data.aiScores?.[stepId])    Object.assign(STATE.aiScores[stepId]    = STATE.aiScores[stepId]    || {}, data.aiScores[stepId]);
+    if (data.aiReasoning?.[stepId]) Object.assign(STATE.aiReasoning[stepId] = STATE.aiReasoning[stepId] || {}, data.aiReasoning[stepId]);
+    if (data.scores?.[stepId])      STATE.scores[stepId] = data.scores[stepId];
+    if (data.cmi)                   STATE.cmi = data.cmi;
+    STATE.analyzed = true;
+    saveSession();
+    updateSidebar();
+    renderAllSteps();   // re-render to show new scores
+  } catch(e) {
+    alert('Re-scoring failed: ' + e.message);
+    if (btn) { btn.textContent = '✦ Re-score this step'; btn.disabled = false; }
+  }
+}
+
+async function applyOverride(stepId, qId) {
+  const sel = document.getElementById(`ovr-${stepId}-${qId}`);
+  const val = parseInt(sel?.value);
+  if (!val) return;
+  try {
+    const res = await fetch('/api/override', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Token': STATE.token },
+      body: JSON.stringify({ companyId: STATE.identity?.id, stepId, qId, score: val })
+    });
+    const data = await res.json();
+    if (data.aiScores) {
+      STATE.aiScores   = data.aiScores;
+      STATE.aiReasoning = data.aiReasoning || STATE.aiReasoning;
+      STATE.scores     = data.scores || STATE.scores;
+      STATE.cmi        = data.cmi || STATE.cmi;
+      updateSidebar();
+      renderAllSteps();
+      alert(`Score updated to ${val} — ${['None','Piloting','Deployed','Scaled'][val-1]}`);
+    }
+  } catch(e) { alert('Override failed: ' + e.message); }
+}
+
+// ─── Tech Stack Map ───────────────────────────────────────────────────────────
+const TECH_FIELDS = [
+  { id: 'erp',         icon: '🏗',  label: 'ERP',          layer: 'Foundation' },
+  { id: 's2p',         icon: '🔄',  label: 'S2P',          layer: 'Transactional' },
+  { id: 'esourcing',   icon: '📋',  label: 'eSourcing',     layer: 'Transactional' },
+  { id: 'clm',         icon: '📄',  label: 'CLM',           layer: 'Transactional' },
+  { id: 'srm',         icon: '🤝',  label: 'SRM',           layer: 'Transactional' },
+  { id: 'ap',          icon: '💳',  label: 'AP / e-Invoice', layer: 'Transactional' },
+  { id: 'analytics',   icon: '📊',  label: 'Analytics / BI', layer: 'Intelligence' },
+  { id: 'ai_tools',    icon: '✨',  label: 'AI Tools',       layer: 'AI' },
+  { id: 'integration', icon: '🔗',  label: 'Integration',    layer: 'Integration' }
+];
+
+const LAYER_COLORS = {
+  'Foundation':    { bg: '#1e3a5f', text: 'white',   badge: '#0369A1' },
+  'Transactional': { bg: '#f8fafc', text: '#334155',  badge: '#0369A1' },
+  'Intelligence':  { bg: '#f5f3ff', text: '#5b21b6',  badge: '#7c3aed' },
+  'AI':            { bg: '#f0fdf4', text: '#14532d',  badge: '#16a34a' },
+  'Integration':   { bg: '#fefce8', text: '#713f12',  badge: '#ca8a04' }
+};
+
+let TECHMAP_DATA = null;
+let TECHMAP_VIEW = 'matrix'; // 'matrix' | 'cards'
+
+async function loadTechMap() {
+  // Company role: show their own tech stack directly from STATE (no API call needed)
+  if (isCompany()) {
+    renderCompanyTechStack();
+    return;
+  }
+  if (TECHMAP_DATA) { renderTechMap(); return; }
+  try {
+    const res  = await fetch('/api/techstack-map', { headers: { 'X-Token': STATE.token } });
+    TECHMAP_DATA = await res.json();
+    renderTechMap();
+  } catch(e) {
+    document.getElementById('techmap-container').innerHTML =
+      `<div style="text-align:center;padding:48px;color:#ef4444">Failed to load: ${e.message}</div>`;
+  }
+}
+
+function renderCompanyTechStack() {
+  const container = document.getElementById('techmap-container');
+  if (!container) return;
+  const noTool = v => !v || !v.trim() || v.toLowerCase() === 'none' || v === '—';
+  const ts = STATE.techStack || {};
+  const hasAny = Object.values(ts).some(v => v && v.trim());
+  const intVal = ts.integration || '';
+  const intC = intVal.toLowerCase().includes('fully') || intVal.toLowerCase().includes('api') ? '#22c55e'
+             : intVal.toLowerCase().includes('partial') ? '#f97316' : '#94a3b8';
+
+  if (!hasAny) {
+    container.innerHTML = `<div style="text-align:center;padding:48px;color:#94a3b8">
+      <div style="font-size:32px;margin-bottom:12px">🗺</div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:8px">Tech stack not yet completed</div>
+      <div style="font-size:13px">Complete Step 00 · Tech Stack Inventory in the survey to populate this view.</div>
+    </div>`;
+    return;
+  }
+
+  const co = STATE.identity;
+  container.innerHTML = `<div style="max-width:480px;margin:0 auto">
+    <div style="background:white;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06)">
+      <div style="background:linear-gradient(135deg,#1e3a5f,#0F172A);padding:20px 22px 16px;display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-size:16px;font-weight:800;color:white">${co?.name || 'My Company'}</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:2px">${co?.sector || ''} · ${co?.cpo || ''}</div>
+        </div>
+        ${intVal ? `<div style="display:flex;align-items:center;gap:5px;background:${intC}22;border:1px solid ${intC}44;border-radius:6px;padding:5px 10px"><div style="width:7px;height:7px;border-radius:50%;background:${intC}"></div><span style="font-size:11px;font-weight:700;color:${intC}">${intVal.split(/[,\s]/)[0]}</span></div>` : ''}
+      </div>
+      <div style="padding:16px 18px;display:flex;flex-direction:column;gap:10px">
+        ${['Foundation','Transactional','Intelligence','AI'].map(layer => {
+          const fields = TECH_FIELDS.filter(f => f.layer === layer);
+          const lc = LAYER_COLORS[layer];
+          const items = fields.map(f => {
+            const val = ts[f.id] || '';
+            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f1f5f9">
+              <span style="font-size:12px;font-weight:600;color:#64748b">${f.icon} ${f.label}</span>
+              <span style="font-size:13px;font-weight:700;color:${noTool(val)?'#cbd5e1':'#334155'};font-style:${noTool(val)?'italic':'normal'}">${noTool(val)?'None':val}</span>
+            </div>`;
+          }).join('');
+          return `<div style="border-radius:10px;background:${layer==='Foundation'?'#f1f5f9':layer==='AI'?'#f0fdf4':layer==='Intelligence'?'#f5f3ff':'#f8fafc'};padding:12px 14px">
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#94a3b8;margin-bottom:6px">${fields[0]?.icon} ${layer}</div>
+            ${items}
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+    <div style="margin-top:12px;text-align:center;font-size:12px;color:#94a3b8">This is your tech stack as submitted. Contact your BCG team to make corrections.</div>
+  </div>`;
+}
+
+function renderTechMap() {
+  const container = document.getElementById('techmap-container');
+  if (!container) return;
+
+  const submitted = (TECHMAP_DATA || []).filter(c => c.analyzed || c.techStack);
+  const all       = TECHMAP_DATA || [];
+
+  const noTool = v => !v || !v.trim() || v.toLowerCase() === 'none' || v === '—';
+
+  // View toggle
+  let html = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+      <div style="font-size:13px;color:#64748b">${submitted.length} of ${all.length} companies have submitted tech stack data.</div>
+      <div style="display:flex;gap:8px">
+        <button onclick="setTechmapView('matrix')" id="btn-view-matrix"
+          style="padding:7px 16px;border-radius:8px;border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;background:${TECHMAP_VIEW==='matrix'?'#0F172A':'#f1f5f9'};color:${TECHMAP_VIEW==='matrix'?'white':'#475569'}">
+          ⊞ Matrix View
+        </button>
+        <button onclick="setTechmapView('cards')" id="btn-view-cards"
+          style="padding:7px 16px;border-radius:8px;border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;background:${TECHMAP_VIEW==='cards'?'#0F172A':'#f1f5f9'};color:${TECHMAP_VIEW==='cards'?'white':'#475569'}">
+          ☰ Company Cards
+        </button>
+      </div>
+    </div>`;
+
+  if (TECHMAP_VIEW === 'matrix') {
+    html += renderTechMatrix(all, noTool);
+  } else {
+    html += renderTechCards(all, noTool);
+  }
+
+  container.innerHTML = html;
+}
+
+function setTechmapView(view) {
+  TECHMAP_VIEW = view;
+  renderTechMap();
+}
+
+function renderTechMatrix(companies, noTool) {
+  // Highlight common tools
+  const toolCounts = {};
+  TECH_FIELDS.forEach(f => {
+    if (f.id === 'integration') return;
+    const vals = companies.map(c => (c.techStack?.[f.id] || '').toLowerCase().trim()).filter(v => v && v !== 'none' && v !== '—');
+    // Count occurrences of each tool name
+    const counts = {};
+    vals.forEach(v => {
+      // Normalize: take first word (e.g. "SAP S/4HANA" → "sap", "Coupa" → "coupa")
+      const key = v.split(/[\s,\/]/)[0].toLowerCase();
+      counts[key] = (counts[key] || 0) + 1;
+    });
+    toolCounts[f.id] = counts;
+  });
+
+  let html = `<div style="overflow-x:auto;border-radius:14px;border:1px solid #e2e8f0;box-shadow:0 2px 12px rgba(0,0,0,.06)">
+    <table style="width:100%;border-collapse:collapse;font-size:12px;min-width:900px">
+      <thead>
+        <tr style="background:#0F172A">
+          <th style="padding:14px 16px;text-align:left;color:rgba(255,255,255,.5);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;white-space:nowrap;position:sticky;left:0;background:#0F172A;z-index:2;min-width:130px">Tool / Company</th>`;
+
+  companies.forEach(c => {
+    const hasData = c.techStack;
+    html += `<th style="padding:12px 10px;text-align:center;color:white;font-size:11px;font-weight:700;border-left:1px solid rgba(255,255,255,.06);min-width:110px">
+      <div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px;margin:0 auto">${c.name}</div>
+      <div style="font-size:9px;color:rgba(255,255,255,.4);font-weight:400;margin-top:2px">${c.sector}</div>
+      ${!hasData ? '<div style="font-size:9px;color:#f97316;margin-top:2px">No data</div>' : ''}
+    </th>`;
+  });
+
+  html += `</tr></thead><tbody>`;
+
+  // Group rows by layer
+  const layers = ['Foundation','Transactional','Intelligence','AI','Integration'];
+  layers.forEach(layer => {
+    const fields = TECH_FIELDS.filter(f => f.layer === layer);
+    const lc = LAYER_COLORS[layer];
+
+    fields.forEach((f, fi) => {
+      const isFirst = fi === 0;
+      html += `<tr style="background:${fi%2===0?'#fff':'#f8fafc'};border-top:${isFirst?'2px solid #e2e8f0':'1px solid #f1f5f9'}">
+        <td style="padding:11px 14px;font-weight:700;font-size:11px;position:sticky;left:0;background:${fi%2===0?'#fff':'#f8fafc'};border-right:1px solid #e2e8f0;z-index:1">
+          ${isFirst ? `<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#94a3b8;margin-bottom:4px">${layer}</div>` : ''}
+          <span style="font-size:14px;margin-right:6px">${f.icon}</span>
+          <span style="color:#334155">${f.label}</span>
+        </td>`;
+
+      companies.forEach(c => {
+        const val = c.techStack?.[f.id] || '';
+        const empty = noTool(val);
+        // Detect if multiple companies share the same core tool
+        const key = val.split(/[\s,\/]/)[0].toLowerCase();
+        const count = toolCounts[f.id]?.[key] || 0;
+        const isCommon = count >= 2 && !empty;
+
+        let cellStyle, cellContent;
+        if (!c.techStack) {
+          cellStyle = 'background:#f8fafc';
+          cellContent = '<span style="color:#cbd5e1;font-size:11px">—</span>';
+        } else if (empty) {
+          cellStyle = '';
+          cellContent = '<span style="color:#e2e8f0;font-size:13px">✕</span>';
+        } else {
+          const bg = f.layer === 'AI' ? '#dcfce7' : f.layer === 'Foundation' ? '#dbeafe' : '#f0f9ff';
+          const col = f.layer === 'AI' ? '#15803d' : f.layer === 'Foundation' ? '#1e40af' : '#0369A1';
+          cellStyle = `background:${bg}`;
+          cellContent = `<span style="color:${col};font-weight:600;font-size:11px;word-break:break-word">${val}${isCommon ? ' <span style="font-size:9px;color:#94a3b8;font-weight:400">×'+count+'</span>' : ''}</span>`;
+        }
+
+        html += `<td style="padding:10px 10px;text-align:center;border-left:1px solid #f1f5f9;${cellStyle}">${cellContent}</td>`;
+      });
+
+      html += `</tr>`;
+    });
+  });
+
+  html += `</tbody></table></div>
+    <div style="margin-top:12px;display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:#64748b">
+      <div style="display:flex;align-items:center;gap:6px"><div style="width:14px;height:14px;border-radius:3px;background:#dcfce7;border:1px solid #86efac"></div> AI tool deployed</div>
+      <div style="display:flex;align-items:center;gap:6px"><div style="width:14px;height:14px;border-radius:3px;background:#dbeafe;border:1px solid #93c5fd"></div> ERP / Foundation</div>
+      <div style="display:flex;align-items:center;gap:6px"><div style="width:14px;height:14px;border-radius:3px;background:#f0f9ff;border:1px solid #7dd3fc"></div> Transactional / Intelligence tool</div>
+      <div style="display:flex;align-items:center;gap:6px"><span style="color:#e2e8f0;font-size:16px">✕</span> Not in use</div>
+      <div style="display:flex;align-items:center;gap:6px"><span style="font-size:11px;color:#94a3b8">×2</span> Shared tool across companies</div>
+    </div>`;
+
+  return html;
+}
+
+function renderTechCards(companies, noTool) {
+  let html = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:20px">`;
+
+  companies.forEach(c => {
+    const ts = c.techStack || {};
+    const hasData = c.techStack;
+    const intVal  = ts.integration || '';
+    const intC    = intVal.toLowerCase().includes('fully') || intVal.toLowerCase().includes('api') ? '#22c55e'
+                  : intVal.toLowerCase().includes('partial') ? '#f97316' : '#94a3b8';
+
+    html += `<div style="background:white;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.05)">
+      <!-- Card header -->
+      <div style="background:linear-gradient(135deg,#1e3a5f,#0F172A);padding:16px 18px 14px;display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-size:14px;font-weight:800;color:white">${c.name}</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px">${c.sector} · ${c.cpo}</div>
+        </div>
+        ${!hasData ? '<span style="font-size:10px;background:rgba(249,115,22,.2);color:#f97316;border:1px solid rgba(249,115,22,.3);padding:3px 8px;border-radius:6px;font-weight:700">No data</span>'
+                   : intVal ? `<div style="display:flex;align-items:center;gap:5px;background:${intC}22;border:1px solid ${intC}44;border-radius:6px;padding:4px 8px"><div style="width:6px;height:6px;border-radius:50%;background:${intC}"></div><span style="font-size:10px;font-weight:700;color:${intC}">${intVal.split(/[,\s]/)[0]}</span></div>` : ''}
+      </div>
+      <!-- Stack layers -->
+      <div style="padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+        ${['Foundation','Transactional','Intelligence','AI'].map(layer => {
+          const fields = TECH_FIELDS.filter(f => f.layer === layer);
+          const lc = LAYER_COLORS[layer];
+          const items = fields.map(f => {
+            const val = ts[f.id] || '';
+            return noTool(val)
+              ? `<span style="font-size:11px;color:#cbd5e1;font-style:italic">—</span>`
+              : `<span style="display:inline-block;background:${lc.badge}18;color:${lc.badge};border:1px solid ${lc.badge}33;border-radius:5px;padding:3px 8px;font-size:11px;font-weight:600;margin:2px 2px">${val}</span>`;
+          }).join('');
+
+          return `<div style="border-radius:8px;background:${layer==='Foundation'?'#f1f5f9':layer==='AI'?'#f0fdf4':layer==='Intelligence'?'#f5f3ff':'#f8fafc'};padding:10px 12px">
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#94a3b8;margin-bottom:6px">${fields[0]?.icon} ${layer}</div>
+            <div style="display:flex;flex-wrap:wrap;gap:3px">${items}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  });
+
+  html += `</div>`;
+  return html;
 }
 
 // ─── Question renderer ────────────────────────────────────────────────────────
@@ -1508,32 +2251,92 @@ function renderScaleRow(qid, stepId, dim, scores) {
 }
 
 function renderUseCaseBlock(stepId, type, dimLabel, title) {
-  const colorClass = type === 'existing' ? 'd3' : 'd4';
-  return `<div class="card">
-    <div class="card-hdr"><span class="dim-badge ${colorClass}">${dimLabel}</span><div class="card-title">${title}</div></div>
-    <div class="uc-grid">
-      ${[1,2].map(n => `<div class="uc-card">
-        <div class="uc-title">Use Case ${n}</div>
-        <div class="field-group">
-          <label class="field-label">Name</label>
-          <input class="input-f" id="uc-${stepId}-${type}-${n}-name" placeholder="e.g. AI spend classification" onchange="saveUC('${stepId}','${type}',${n},'name',this.value)">
-        </div>
-        <div class="field-group">
-          <label class="field-label">Description / Expected benefit</label>
-          <textarea class="text-field" style="min-height:64px" id="uc-${stepId}-${type}-${n}-desc" placeholder="Brief description…" onchange="saveUC('${stepId}','${type}',${n},'description',this.value)"></textarea>
-        </div>
-        ${type === 'potential' ? `<div class="field-group">
-          <label class="field-label">Horizon</label>
-          <select class="input-f" id="uc-${stepId}-${type}-${n}-horizon" onchange="saveUC('${stepId}','${type}',${n},'horizon',this.value)">
-            <option value="">Select…</option>
-            <option>Quick Win (0–6 months)</option>
-            <option>Medium Term (6–18 months)</option>
-            <option>Strategic (18+ months)</option>
-          </select>
-        </div>` : ''}
-      </div>`).join('')}
+  const isExisting = type === 'existing';
+  const accentColor = isExisting ? '#6d28d9' : '#b45309';
+  const accentBg    = isExisting ? '#f5f3ff' : '#fffbeb';
+  const accentBdr   = isExisting ? '#c4b5fd' : '#fcd34d';
+  const ucCount = Math.max(1, (STATE.useCases[stepId]?.[type]||[]).filter(u=>u?.name).length + 1);
+  const maxUC = Math.max(ucCount, (STATE.useCases[stepId]?.[type]||[]).length + 1);
+
+  function renderOneUC(n) {
+    const fields = isExisting ? [
+      { key:'name',        label:'AI use case name',                                          type:'input',    ph:'e.g. AI-powered spend classification' },
+      { key:'description', label:'AI use case brief description',                             type:'textarea', ph:'What does it do and what problem does it solve?' },
+      { key:'technology',  label:'AI Solution technology details',                            type:'input',    ph:'e.g. Claude, ChatGPT, AI Agent, proprietary model…' },
+      { key:'integration', label:'AI Solution integration with current ERP / Procurement tools (if integrated)', type:'input', ph:'e.g. Integrated with SAP Ariba, standalone, API…' },
+      { key:'adoption',    label:'Adoption Rate',                                             type:'input',    ph:'e.g. 80% of buyers, 5 categories, pilot only…' },
+      { key:'roi',         label:'Business Impact / ROI',                                     type:'textarea', ph:'e.g. 15% cycle time reduction, €200k savings/year…' },
+      { key:'enabler',     label:'Enabler required to implement the solution',                type:'textarea', ph:'e.g. Clean spend data, IT integration, change management…' },
+    ] : [
+      { key:'name',        label:'AI use case name',          type:'input',    ph:'e.g. Autonomous RFx drafting' },
+      { key:'description', label:'AI use case brief description', type:'textarea', ph:'What would it do and what problem would it solve?' },
+      { key:'roi',         label:'Business Impact / ROI',     type:'textarea', ph:'e.g. Expected 20% reduction in sourcing cycle time…' },
+      { key:'enabler',     label:'Implementation enablers',   type:'textarea', ph:'e.g. Structured bid data, S2P platform integration…' },
+    ];
+    return `<div class="uc-row" id="uc-row-${stepId}-${type}-${n}" style="display:flex;gap:0;margin-bottom:12px;border:1.5px solid ${accentBdr};border-radius:8px;overflow:hidden;">
+      <div style="background:${accentColor};color:white;font-weight:700;font-size:13px;writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);padding:16px 10px;min-width:36px;display:flex;align-items:center;justify-content:center;letter-spacing:1px;">UC${n}</div>
+      <div style="flex:1;background:${accentBg};padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
+        ${fields.map(f => `<div>
+          <div style="font-size:10px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;font-style:italic;">${f.label}:</div>
+          ${f.type === 'textarea'
+            ? `<textarea class="text-field" style="min-height:52px;font-size:13px;" id="uc-${stepId}-${type}-${n}-${f.key}" placeholder="${f.ph}" onchange="saveUC('${stepId}','${type}',${n},'${f.key}',this.value)"></textarea>`
+            : `<input class="input-f" style="font-size:13px;" id="uc-${stepId}-${type}-${n}-${f.key}" placeholder="${f.ph}" onchange="saveUC('${stepId}','${type}',${n},'${f.key}',this.value)">`
+          }
+        </div>`).join('')}
+        ${n > 1 ? `<div style="text-align:right"><button onclick="removeUC('${stepId}','${type}',${n})" style="background:none;border:none;color:#ef4444;font-size:11px;cursor:pointer;">✕ Remove this use case</button></div>` : ''}
+      </div>
+    </div>`;
+  }
+
+  const rows = Array.from({length: maxUC}, (_,i) => renderOneUC(i+1)).join('');
+
+  return `<div class="card" id="uc-block-${stepId}-${type}">
+    <div class="card-hdr" style="border-left:4px solid ${accentColor};">
+      <div class="card-title" style="color:${accentColor};">
+        ${isExisting ? '◆  AI use cases currently in place at this process step' : '◇  Potential AI use cases to develop at this process step'}
+      </div>
     </div>
+    <div id="uc-rows-${stepId}-${type}">${rows}</div>
+    <button onclick="addUC('${stepId}','${type}')" style="margin-top:4px;background:${accentBg};border:1.5px dashed ${accentBdr};border-radius:6px;padding:8px 16px;font-size:12px;font-weight:600;color:${accentColor};cursor:pointer;width:100%;">+ Add another use case</button>
   </div>`;
+}
+
+function addUC(stepId, type) {
+  if (!STATE.useCases[stepId]) STATE.useCases[stepId] = {};
+  if (!STATE.useCases[stepId][type]) STATE.useCases[stepId][type] = [];
+  STATE.useCases[stepId][type].push({});
+  // Re-render just this block
+  const block = document.getElementById(`uc-block-${stepId}-${type}`);
+  if (block) {
+    const parent = block.parentNode;
+    block.outerHTML = renderUseCaseBlock(stepId, type, '', '');
+    restoreUCValues(stepId, type);
+  }
+}
+
+function removeUC(stepId, type, n) {
+  if (!STATE.useCases[stepId]?.[type]) return;
+  STATE.useCases[stepId][type].splice(n-1, 1);
+  const block = document.getElementById(`uc-block-${stepId}-${type}`);
+  if (block) {
+    block.outerHTML = renderUseCaseBlock(stepId, type, '', '');
+    restoreUCValues(stepId, type);
+  }
+  saveSession();
+}
+
+function restoreUCValues(stepId, type) {
+  const isExisting = type === 'existing';
+  const fields = isExisting
+    ? ['name','description','technology','integration','adoption','roi','enabler']
+    : ['name','description','roi','enabler'];
+  (STATE.useCases[stepId]?.[type]||[]).forEach((uc, i) => {
+    if (!uc) return;
+    fields.forEach(f => {
+      const el = document.getElementById(`uc-${stepId}-${type}-${i+1}-${f}`);
+      if (el && uc[f]) el.value = uc[f];
+    });
+  });
 }
 
 // ─── Score handlers ───────────────────────────────────────────────────────────
@@ -1569,7 +2372,7 @@ function recalcDimFromRaw(stepId, dim) {
 }
 
 function recalcCMI() {
-  const stepAvgs = STEP_IDS.filter(sid => \!QUESTIONS[sid]?.isTechStack).map(sid => {
+  const stepAvgs = STEP_IDS.filter(sid => !QUESTIONS[sid]?.isTechStack).map(sid => {
     const s   = STATE.scores[sid] || {};
     const wts = DIM_WEIGHTS;
     let w = 0, tw = 0;
@@ -1587,7 +2390,7 @@ function recalcCMI() {
 function recalcAllDimAvgs() {
   const out = {};
   ['D1','D2','D3'].forEach(d => {
-    const scoredSteps = STEP_IDS.filter(sid => \!QUESTIONS[sid]?.isTechStack);
+    const scoredSteps = STEP_IDS.filter(sid => !QUESTIONS[sid]?.isTechStack);
     const vals = scoredSteps.map(sid => STATE.scores[sid]?.[d]).filter(Boolean);
     out[d] = vals.length ? parseFloat((vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(2)) : null;
   });
@@ -1605,6 +2408,13 @@ function saveUC(stepId, type, n, field, val) {
   while (STATE.useCases[stepId][type].length < n) STATE.useCases[stepId][type].push({});
   STATE.useCases[stepId][type][n - 1][field] = val;
   saveSession();
+  // If user just filled the last UC's name, show a new empty row
+  const arr = STATE.useCases[stepId][type];
+  if (field === 'name' && val && n === arr.length) {
+    arr.push({});
+    const block = document.getElementById(`uc-block-${stepId}-${type}`);
+    if (block) { block.outerHTML = renderUseCaseBlock(stepId, type, '', ''); restoreUCValues(stepId, type); }
+  }
 }
 
 // ─── Restore saved values ─────────────────────────────────────────────────────
@@ -1628,16 +2438,7 @@ function restoreStepValues(stepId) {
       if (v) { const r = document.getElementById(stepId + '-' + dim + '-' + Math.round(v)); if (r) r.checked = true; }
     });
   }
-  ['existing','potential'].forEach(type => {
-    [1,2].forEach(n => {
-      const uc = STATE.useCases[stepId]?.[type]?.[n-1];
-      if (!uc) return;
-      ['name','description','horizon'].forEach(f => {
-        const el = document.getElementById(`uc-${stepId}-${type}-${n}-${f}`);
-        if (el && uc[f]) el.value = uc[f];
-      });
-    });
-  });
+  ['existing','potential'].forEach(type => restoreUCValues(stepId, type));
   const pain = STATE.general?.['pain-' + stepId];
   const painEl = document.getElementById('pain-' + stepId);
   if (painEl && pain) painEl.value = pain;
@@ -1665,7 +2466,7 @@ function updateNavScore(stepId) {
 }
 
 function updateProgress() {
-  const done = STEP_IDS.filter(sid => \!QUESTIONS[sid]?.isTechStack && ['D1','D2'].some(d => STATE.scores[sid]?.[d])).length;
+  const done = STEP_IDS.filter(sid => !QUESTIONS[sid]?.isTechStack && ['D1','D2'].some(d => STATE.scores[sid]?.[d])).length;
   document.getElementById('progressBar').style.width = Math.round((done / STEP_IDS.length) * 100) + '%';
 }
 
@@ -1721,7 +2522,7 @@ function renderCMI() {
   // Step table
   const tbody = document.getElementById('cmi-step-table');
   if (tbody) {
-    tbody.innerHTML = STEP_IDS.filter(sid => \!QUESTIONS[sid]?.isTechStack).map(sid => {
+    tbody.innerHTML = STEP_IDS.filter(sid => !QUESTIONS[sid]?.isTechStack).map(sid => {
       const s    = STATE.scores[sid] || {};
       const vals = ['D1','D2','D3'].map(d => s[d]).filter(Boolean);
       const avg  = vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null;
@@ -1734,7 +2535,7 @@ function renderCMI() {
         <td style="font-weight:600;font-size:11px">${STEP_LABELS[sid]}</td>
         <td>${pill(s.D1)}</td><td>${pill(s.D2)}</td><td>${pill(s.D3)}</td>
         <td><strong style="color:${b?.color||'#94a3b8'}">${avg?.toFixed(2)||'—'}</strong></td>
-        <td>${b ? `<span class="band-pill" style="background:${b.bg};color:${b.color}">${b.label}</span>` : '—'}</td>
+        <td>${b ? `<span class="band-pill" style="background:${b.bg};color:${b.color}">${b.label}</span>` : '<span style="color:#cbd5e1">—</span>'}</td>
       </tr>`;
     }).join('');
   }
@@ -1747,7 +2548,7 @@ function renderBarChart(peerS) {
   const W = canvas.width, H = canvas.height;
   ctx.clearRect(0, 0, W, H);
 
-  const N = STEP_IDS.filter(sid => \!QUESTIONS[sid]?.isTechStack).length;
+  const N = STEP_IDS.filter(sid => !QUESTIONS[sid]?.isTechStack).length;
   const cx = W / 2, cy = H / 2 + 10;
   const R = Math.min(W, H) * 0.36;
   const MAX = 4;

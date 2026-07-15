@@ -472,6 +472,75 @@ app.post('/api/admin/reset/:id', auth, requireAdmin, (req, res) => {
   res.json({ ok: true });
 });
 
+// ─── POST /api/extract-techstack ─────────────────────────────────────────────
+// Reads an uploaded document and extracts procurement tech stack info using Claude
+app.post('/api/extract-techstack', auth, async (req, res) => {
+  const { filename, originalName } = req.body;
+  if (!filename) return res.status(400).json({ error: 'No filename provided' });
+
+  const filePath = path.join(__dirname, 'data', 'uploads', filename);
+  if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'File not found' });
+
+  try {
+    const fileBuffer = fs.readFileSync(filePath);
+    const ext = path.extname(originalName || filename).toLowerCase();
+
+    const extractPrompt = `This document describes a company's procurement technology landscape. Extract the fields below. If a field is not mentioned, respond with "Not found". Be concise — tool names only, no explanations.
+
+Respond ONLY with valid JSON:
+{
+  "erp": "<ERP system name and version>",
+  "s2p": "<Source-to-Pay platform>",
+  "esourcing": "<eSourcing or eAuction tool, or 'None'>",
+  "clm": "<Contract Lifecycle Management tool, or 'None'>",
+  "srm": "<Supplier Relationship Management tool, or 'None'>",
+  "ap": "<AP Automation or e-Invoicing platform, or 'None'>",
+  "analytics": "<Spend Analytics or BI tool>",
+  "ai_tools": "<Any AI-specific tools deployed, or 'None'>",
+  "integration": "<Fully API-integrated / Partial / Manual exports>"
+}`;
+
+    let messages;
+    if (ext === '.pdf') {
+      messages = [{ role: 'user', content: [
+        { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: fileBuffer.toString('base64') } },
+        { type: 'text', text: extractPrompt }
+      ]}];
+    } else {
+      const textContent = fileBuffer.toString('utf8').substring(0, 15000);
+      messages = [{ role: 'user', content: `${extractPrompt}\n\nDocument text:\n"""\n${textContent}\n"""` }];
+    }
+
+    const msg = await anthropic.messages.create({ model: 'claude-opus-4-5', max_tokens: 400, messages });
+    const raw = msg.content[0].text.trim();
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('No JSON in AI response');
+    res.json(JSON.parse(jsonMatch[0]));
+  } catch (err) {
+    console.error('Extract techstack error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── GET /api/techstack-map ───────────────────────────────────────────────────
+// Returns all companies' tech stack data for BCG/BainCap/admin view
+app.get('/api/techstack-map', auth, (req, res) => {
+  if (req.identity.role === 'company') {
+    return res.status(403).json({ error: 'Not available for company role' });
+  }
+  const data = readData();
+  const result = COMPANIES.map(c => ({
+    id:       c.id,
+    name:     c.name,
+    sector:   c.sector,
+    cpo:      c.cpo,
+    techStack: data[c.id]?.techStack || null,
+    submitted: !!(data[c.id]?._submitted),
+    analyzed:  !!(data[c.id]?._analyzedAt)
+  }));
+  res.json(result);
+});
+
 // ─── Start ────────────────────────────────────────────────────────────────────
 app.listen(PORT, () => {
   console.log(`\n✅  BCG × Inverto · Procurement AI Assessment — 2026`);
