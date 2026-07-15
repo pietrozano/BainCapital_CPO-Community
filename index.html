@@ -90,7 +90,8 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
 .nb-done{background:var(--green);color:white}
 .nb-special{background:var(--dark);color:white;font-size:12px;border-radius:var(--radius-sm)}
 .nav-label{font-size:12px;color:var(--g600);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
-.nav-score{font-size:11px;font-weight:700;color:var(--g400);font-variant-numeric:tabular-nums}
+.nav-score{font-size:11px;font-weight:700;color:var(--g400);font-variant-numeric:tabular-nums;display:none}
+.nav-scores-visible .nav-score{display:block}
 .ns1{color:var(--s1)}.ns2{color:var(--s2)}.ns3{color:var(--s3)}.ns4{color:var(--s4)}.ns5{color:var(--s5)}
 
 /* ── MAIN ── */
@@ -421,9 +422,9 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
       </div>
     </div>
 
-    <div class="nav-section">
+    <div class="nav-section" id="nav-assessment-section">
       <div class="nav-section-title">Assessment</div>
-      <div onclick="expandAllRubrics()" style="display:flex;align-items:center;gap:7px;padding:7px 14px 8px;cursor:pointer;border-radius:8px;margin:0 6px 4px;border:1.5px dashed #e2e8f0;transition:background 150ms,border-color 150ms" onmouseover="this.style.background='#f8fafc';this.style.borderColor='#94a3b8'" onmouseout="this.style.background='';this.style.borderColor='#e2e8f0'">
+      <div id="review-results-btn" onclick="expandAllRubrics()" style="display:flex;align-items:center;gap:7px;padding:7px 14px 8px;cursor:pointer;border-radius:8px;margin:0 6px 4px;border:1.5px dashed #e2e8f0;transition:background 150ms,border-color 150ms" onmouseover="this.style.background='#f8fafc';this.style.borderColor='#94a3b8'" onmouseout="this.style.background='';this.style.borderColor='#e2e8f0'">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <span style="font-size:11px;font-weight:700;color:#6366f1;letter-spacing:.1px">Review Assessment Results</span>
       </div>
@@ -2564,18 +2565,27 @@ function toggleRubric(id) {
   el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
 
+let _reviewModeOn = false;
 function expandAllRubrics() {
-  // Navigate to first scored step, then open all rubric panels across all steps
-  const steps = ['s-01','s-02','s-03','s-04','s-05','s-06','s-07','s-08','s-09','s-ai'];
-  // Open all rubric panels currently in the DOM
-  document.querySelectorAll('[id^="rubric-"]').forEach(el => { el.style.display = 'block'; });
-  // Show first step that has scores, falling back to s-01
-  const firstScored = steps.find(sid => Object.keys(STATE.scores[sid] || {}).length > 0) || 's-01';
-  showSection(firstScored);
-  // After navigation re-renders, expand all rubrics again (they get rebuilt by renderAllSteps)
-  setTimeout(() => {
-    document.querySelectorAll('[id^="rubric-"]').forEach(el => { el.style.display = 'block'; });
-  }, 150);
+  _reviewModeOn = !_reviewModeOn;
+  // Toggle score visibility on nav
+  const navSection = document.getElementById('nav-assessment-section');
+  if (navSection) navSection.classList.toggle('nav-scores-visible', _reviewModeOn);
+  // Update button style
+  const btn = document.getElementById('review-results-btn');
+  if (btn) {
+    btn.style.background = _reviewModeOn ? '#eef2ff' : '';
+    btn.style.borderColor = _reviewModeOn ? '#6366f1' : '#e2e8f0';
+  }
+  if (_reviewModeOn) {
+    // Navigate to first scored step
+    const steps = ['s-01','s-02','s-03','s-04','s-05','s-06','s-07','s-08','s-09','s-ai'];
+    const firstScored = steps.find(sid => Object.keys(STATE.scores[sid] || {}).length > 0) || 's-01';
+    showSection(firstScored);
+    setTimeout(() => {
+      document.querySelectorAll('[id^="rubric-"]').forEach(el => { el.style.display = 'block'; });
+    }, 150);
+  }
 }
 function saveNote(qid, val) { STATE.notes[qid] = val; saveSession(); }
 function savePain(stepId, val) { STATE.general['pain-' + stepId] = val; saveSession(); }
