@@ -1234,12 +1234,12 @@ function buildSurveyQuestions() {
       for (const q of (step.questions || [])) {
         SURVEY_QUESTIONS.push({ stepId, qId: q.id, question: q, isTechStack: false, stepTitle: step.title, tag: step.tag });
       }
-      // Use case collection card at end of each process step (not org/capability)
-      if (stepId !== 's-org') {
-        SURVEY_QUESTIONS.push({ isUseCaseBlock: true, stepId, stepTitle: step.title, tag: step.tag });
-      }
+      // (UC blocks moved to end of survey)
     }
   }
+  // Two dedicated UC slides at the very end
+  SURVEY_QUESTIONS.push({ isUseCaseBlock: true, ucMode: 'existing',  stepId: '_all', stepTitle: 'AI Use Cases — Currently in Place',       tag: 'UC' });
+  SURVEY_QUESTIONS.push({ isUseCaseBlock: true, ucMode: 'potential', stepId: '_all', stepTitle: 'AI Use Cases — Opportunities to Develop', tag: 'UC' });
 }
 
 function showSurvey() {
@@ -1260,7 +1260,7 @@ function renderSurveyQuestion() {
   const pct = Math.round((SURVEY_INDEX / total) * 100);
 
   document.getElementById('survey-progress-fill').style.width = pct + '%';
-  document.getElementById('survey-step-label').textContent = item.isWelcome ? 'Welcome' : item.isUseCaseBlock ? (item.tag + ' · ' + item.stepTitle + ' — AI Use Cases') : (item.tag + ' · ' + item.stepTitle);
+  document.getElementById('survey-step-label').textContent = item.isWelcome ? 'Welcome' : item.isUseCaseBlock ? item.stepTitle : (item.tag + ' · ' + item.stepTitle);
   document.getElementById('survey-q-counter').textContent = (SURVEY_INDEX + 1) + ' / ' + total;
 
   const isLast = SURVEY_INDEX === total - 1;
@@ -1351,43 +1351,23 @@ function renderSurveyQuestion() {
 
   if (item.isUseCaseBlock) {
     const surveyBody = document.querySelector('.survey-body');
-    if (surveyBody) surveyBody.style.maxWidth = '980px';
+    if (surveyBody) surveyBody.style.maxWidth = '860px';
+    const ucType = item.ucMode || 'existing';
+    const isEx = ucType === 'existing';
+    const accent = isEx ? { t:'#4c1d95', m:'#7c3aed', l:'#ede9fe', b:'#ddd6fe' } : { t:'#78350f', m:'#d97706', l:'#fffbeb', b:'#fde68a' };
     card.innerHTML = `
       <div style="padding:4px 0">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-          <span style="background:var(--green-light);color:var(--green);font-size:10px;font-weight:800;padding:3px 10px;border-radius:99px;text-transform:uppercase;letter-spacing:.6px">${item.tag}</span>
-          <span style="font-size:10px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.5px">AI Use Cases</span>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <span style="background:${accent.l};color:${accent.m};font-size:10px;font-weight:800;padding:3px 10px;border-radius:99px;text-transform:uppercase;letter-spacing:.6px">${isEx ? 'In Place' : 'Opportunities'}</span>
         </div>
-        <div style="display:flex;align-items:flex-start;gap:16px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--g200);">
-          <div style="flex:1">
-            <div style="font-size:20px;font-weight:800;color:var(--dark);line-height:1.2;margin-bottom:6px;">${item.stepTitle}</div>
-            <div style="font-size:13px;color:var(--g500);line-height:1.6;">Map AI use cases relevant to this process step — those already live <strong style="color:#5b21b6">↓</strong> and those you see as future opportunities <strong style="color:#92400e">↓</strong></div>
-          </div>
-          <div style="display:flex;gap:8px;flex-shrink:0;">
-            <div style="background:#ede9fe;border-radius:8px;padding:8px 12px;text-align:center;min-width:60px;">
-              <div style="font-size:18px;font-weight:800;color:#5b21b6" id="uc-count-ex-${item.stepId}">—</div>
-              <div style="font-size:9px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:.4px;margin-top:2px">In use</div>
-            </div>
-            <div style="background:#fffbeb;border-radius:8px;padding:8px 12px;text-align:center;min-width:60px;">
-              <div style="font-size:18px;font-weight:800;color:#92400e" id="uc-count-po-${item.stepId}">—</div>
-              <div style="font-size:9px;font-weight:700;color:#d97706;text-transform:uppercase;letter-spacing:.4px;margin-top:2px">Opps</div>
-            </div>
-          </div>
+        <div style="margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--g200);">
+          <div style="font-size:20px;font-weight:800;color:var(--dark);line-height:1.2;margin-bottom:5px;">${item.stepTitle}</div>
+          <div style="font-size:13px;color:var(--g500);line-height:1.6;">${isEx ? 'Document AI solutions already live in your procurement organisation. For each, select the process step it belongs to.' : 'Capture AI opportunities the CPO sees for the future. For each, select the process step where it would apply.'}</div>
         </div>
-        ${renderUseCaseBlock(item.stepId, 'existing', '', '')}
-        <div style="margin-top:12px"></div>
-        ${renderUseCaseBlock(item.stepId, 'potential', '', '')}
+        ${renderUseCaseBlock('_all', ucType, '', '')}
       </div>
     `;
-    restoreUCValues(item.stepId, 'existing');
-    restoreUCValues(item.stepId, 'potential');
-    // Update counters
-    const exCount = (STATE.useCases[item.stepId]?.existing||[]).filter(u=>u?.name).length;
-    const poCount = (STATE.useCases[item.stepId]?.potential||[]).filter(u=>u?.name).length;
-    const exEl = document.getElementById('uc-count-ex-'+item.stepId);
-    const poEl = document.getElementById('uc-count-po-'+item.stepId);
-    if (exEl) exEl.textContent = exCount || '—';
-    if (poEl) poEl.textContent = poCount || '—';
+    restoreUCValues('_all', ucType);
     return;
   }
   // Restore normal width for all other cards
@@ -2363,6 +2343,19 @@ function renderUseCaseBlock(stepId, type, dimLabel, title) {
   const ucCount    = Math.max(1, (STATE.useCases[stepId]?.[type]||[]).filter(u=>u?.name).length + 1);
   const maxUC      = Math.max(ucCount, (STATE.useCases[stepId]?.[type]||[]).length + 1);
 
+  // Process step options for the dropdown
+  const stepOptions = STEP_IDS.filter(sid => !QUESTIONS[sid]?.isTechStack && sid !== 's-org' && sid !== '_all')
+    .map(sid => `<option value="${sid}">${STEP_LABELS[sid]}</option>`).join('');
+  const stepSelect = (id, n) => `<div style="grid-column:1/-1">
+    <div style="font-size:9px;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;">Process Step</div>
+    <select id="${id}" onchange="saveUC('${stepId}','${type}',${n},'step',this.value)"
+      style="width:100%;box-sizing:border-box;font-size:12px;font-family:inherit;border:1.5px solid var(--g200);border-radius:5px;background:white;color:var(--dark);padding:0 8px;height:28px;cursor:pointer;transition:border-color 150ms,box-shadow 150ms;"
+      onfocus="this.style.borderColor='${accent.m}';this.style.boxShadow='0 0 0 3px ${accent.m}22'" onblur="this.style.borderColor='';this.style.boxShadow=''">
+      <option value="">— Select process step —</option>
+      ${stepOptions}
+    </select>
+  </div>`;
+
   // Compact field builder — label inline above, no textarea
   const F = (id, label, ph, n) => {
     const base = `id="${id}" placeholder="${ph}" onchange="saveUC('${stepId}','${type}',${n},'${id.split('-').pop()}',this.value)"`;
@@ -2380,6 +2373,7 @@ function renderUseCaseBlock(stepId, type, dimLabel, title) {
       ? `<button onclick="removeUC('${stepId}','${type}',${n})" style="margin-left:auto;background:none;border:1px solid rgba(255,255,255,.35);color:rgba(255,255,255,.85);font-size:10px;font-weight:600;cursor:pointer;border-radius:4px;padding:1px 8px;transition:background 150ms;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='none'">✕</button>` : '';
 
     const fields = isExisting ? `
+      ${stepSelect(`${uid}-step`, n)}
       <div style="grid-column:1/-1">${F(`${uid}-name`,        'Use Case Name',          'e.g. AI-powered spend classification', n)}</div>
       ${F(`${uid}-technology`,  'AI Technology',              'e.g. Claude, ChatGPT…', n)}
       ${F(`${uid}-integration`, 'ERP / Tool',                 'e.g. SAP Ariba, API…', n)}
@@ -2387,6 +2381,7 @@ function renderUseCaseBlock(stepId, type, dimLabel, title) {
       ${F(`${uid}-roi`,         'Business Impact / ROI',      'e.g. €200k/yr, −15% cycle time…', n)}
       <div style="grid-column:1/-1">${F(`${uid}-enabler`, 'Enablers Required',         'e.g. Clean spend data, IT integration…', n)}</div>
     ` : `
+      ${stepSelect(`${uid}-step`, n)}
       <div style="grid-column:1/-1">${F(`${uid}-name`,    'Opportunity Name',           'e.g. Autonomous RFx drafting', n)}</div>
       ${F(`${uid}-roi`,     'Expected Impact / ROI',       'e.g. −20% cycle time, €150k/yr', n)}
       ${F(`${uid}-enabler`, 'Implementation Enablers',     'e.g. Structured bid data, S2P platform…', n)}
@@ -2455,8 +2450,8 @@ function removeUC(stepId, type, n) {
 function restoreUCValues(stepId, type) {
   const isExisting = type === 'existing';
   const fields = isExisting
-    ? ['name','description','technology','integration','adoption','roi','enabler']
-    : ['name','description','roi','enabler'];
+    ? ['step','name','technology','integration','adoption','roi','enabler']
+    : ['step','name','roi','enabler'];
   (STATE.useCases[stepId]?.[type]||[]).forEach((uc, i) => {
     if (!uc) return;
     fields.forEach(f => {
@@ -2872,8 +2867,10 @@ function renderInvKanban(mode, portUCs) {
     let cards = [];
 
     if (mode === 'my') {
+      // UCs are all in STATE.useCases['_all'], routed by u.step
       ['existing','potential'].forEach(type => {
-        (STATE.useCases[sid]?.[type]||[]).filter(u=>u?.name).forEach(u => {
+        const allUCs = [...(STATE.useCases['_all']?.[type]||[]), ...(STATE.useCases[sid]?.[type]||[])];
+        allUCs.filter(u => u?.name && (u.step === sid || (!u.step && false))).forEach(u => {
           cards.push(buildUCCard(u, type, sid, null));
           hasAny = true;
         });
@@ -2955,7 +2952,7 @@ function closeUCModal() {
 function renderInvStats(portUCs) {
   const el = document.getElementById('inv-stats');
   if (!el) return;
-  const myTotal  = STEP_IDS.flatMap(sid => [...(STATE.useCases[sid]?.existing||[]),...(STATE.useCases[sid]?.potential||[])]).filter(u=>u?.name).length;
+  const myTotal  = [...(STATE.useCases['_all']?.existing||[]),...(STATE.useCases['_all']?.potential||[])].filter(u=>u?.name).length;
   const inPlace  = portUCs.filter(u=>u.type==='existing'&&!u.isOwn).length;
   const opps     = portUCs.filter(u=>u.type==='potential'&&!u.isOwn).length;
   const subs     = STATE.portfolio?.portfolioStats?.submitted || 0;
@@ -3139,10 +3136,10 @@ renderInventory = function() {
 };
 
 function renderInvStats() {
-  const myUCs = STEP_IDS.flatMap(sid => [
-    ...(STATE.useCases[sid]?.existing||[]),
-    ...(STATE.useCases[sid]?.potential||[])
-  ]).filter(u=>u.name);
+  const myUCs = [
+    ...(STATE.useCases['_all']?.existing||[]),
+    ...(STATE.useCases['_all']?.potential||[])
+  ].filter(u=>u.name);
   const portUCs = STATE.portfolio?.allUseCases || [];
   const portInPlace = portUCs.filter(u=>u.type==='existing'&&!u.isOwn);
   const portOpp = portUCs.filter(u=>u.type==='potential'&&!u.isOwn);
