@@ -1974,18 +1974,7 @@ function renderAllSteps() {
       </div>`;
     }
 
-    // Use case capture (all steps except tech stack)
-    if (!def.isTechStack && canEdit()) {
-      html += `<div class="card">
-        <div class="card-hdr">
-          <span class="dim-badge d3">Use Cases</span>
-          <div class="card-title">AI Use Cases — ${def.title}</div>
-        </div>
-        <p style="font-size:13px;color:#64748b;margin-bottom:18px;line-height:1.6">Which AI use cases are already in place at this step? Which would you like to implement?</p>
-        ${renderUseCaseBlock(stepId, 'existing', '', '')}
-        ${renderUseCaseBlock(stepId, 'potential', '', '')}
-      </div>`;
-    }
+    // Use case blocks removed from step view — collected in dedicated UC section
 
     // Navigation
     const idx  = allSections.indexOf(stepId);
