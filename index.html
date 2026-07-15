@@ -1891,16 +1891,49 @@ function renderAllSteps() {
           html += `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">${files.map(f=>`<span style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;padding:4px 10px;font-size:12px;color:#475569">📎 ${f.name}</span>`).join('')}</div>`;
         }
 
-        // AI score display
+        // AI score display — always show rubric trigger; pill clickable to open scoring guide
+        const rubricId = `rubric-${stepId}-${q.id}`;
+        const rubricData = encodeURIComponent(JSON.stringify({ scores: q.scores, qText: q.text.substring(0,80) }));
         if (aiScore && band) {
-          html += `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-            <div style="display:inline-flex;align-items:center;gap:6px;background:${band.bg};border:1px solid ${band.color}44;border-radius:8px;padding:6px 14px">
+          html += `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px">
+            <div onclick="toggleRubric('${rubricId}')" title="Click to see scoring rubric"
+              style="display:inline-flex;align-items:center;gap:6px;background:${band.bg};border:1px solid ${band.color}44;border-radius:8px;padding:6px 14px;cursor:pointer;transition:box-shadow 150ms"
+              onmouseover="this.style.boxShadow='0 2px 8px ${band.color}33'" onmouseout="this.style.boxShadow=''">
               <span style="font-size:15px;font-weight:800;color:${band.color}">${aiScore}</span>
               <span style="font-size:11px;font-weight:700;color:${band.color};text-transform:uppercase">${band.label}</span>
+              <span style="font-size:10px;color:${band.color};opacity:.6;margin-left:2px">▾ rubric</span>
             </div>
             ${aiReason ? `<span style="font-size:12px;color:#64748b;flex:1;min-width:200px">${aiReason}</span>` : ''}
           </div>`;
+        } else {
+          html += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <div onclick="toggleRubric('${rubricId}')" title="Click to see scoring rubric"
+              style="display:inline-flex;align-items:center;gap:6px;background:#f8fafc;border:1.5px dashed #cbd5e1;border-radius:8px;padding:5px 12px;cursor:pointer;transition:border-color 150ms"
+              onmouseover="this.style.borderColor='#94a3b8'" onmouseout="this.style.borderColor='#cbd5e1'">
+              <span style="font-size:11px;font-weight:600;color:#94a3b8">Not scored · </span>
+              <span style="font-size:10px;color:#94a3b8">▾ view rubric</span>
+            </div>
+          </div>`;
         }
+        // Rubric panel (collapsed by default)
+        html += `<div id="${rubricId}" style="display:none;margin:8px 0 4px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden">
+          <div style="padding:8px 14px;background:#f1f5f9;border-bottom:1px solid #e2e8f0;font-size:10px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:.5px">Scoring Rubric</div>
+          <div style="padding:10px 14px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            ${q.scores.map((desc, si) => {
+              const lvl = si + 1;
+              const b = getBand(lvl) || { color: '#64748b', bg: '#f1f5f9', label: lvl };
+              const isActive = aiScore === lvl;
+              return `<div style="border-radius:7px;padding:8px 10px;border:1.5px solid ${isActive ? b.color : '#e2e8f0'};background:${isActive ? b.bg : 'white'}">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+                  <span style="font-size:13px;font-weight:800;color:${b.color}">${lvl}</span>
+                  <span style="font-size:10px;font-weight:700;color:${b.color};text-transform:uppercase">${b.label}</span>
+                  ${isActive ? `<span style="margin-left:auto;font-size:9px;background:${b.color};color:white;border-radius:4px;padding:1px 5px;font-weight:700">YOUR SCORE</span>` : ''}
+                </div>
+                <div style="font-size:11px;color:#475569;line-height:1.5">${desc}</div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>`;
 
         // BCG override
         if (bcgView && ans?.text) {
@@ -2521,6 +2554,11 @@ function recalcAllDimAvgs() {
 
 // ─── Notes / pain points / use cases ─────────────────────────────────────────
 function toggleNote(qid) { document.getElementById('note-' + qid)?.classList.toggle('open'); }
+function toggleRubric(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
 function saveNote(qid, val) { STATE.notes[qid] = val; saveSession(); }
 function savePain(stepId, val) { STATE.general['pain-' + stepId] = val; saveSession(); }
 function saveGeneralAnswer(qid, val) { STATE.general[qid] = val; saveSession(); }
