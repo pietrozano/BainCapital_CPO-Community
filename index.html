@@ -3316,22 +3316,16 @@ function bcRenderOverview() {
       </div>
     </div>
 
-    <!-- CMI Bar Chart -->
-    <div style="background:white;border-radius:12px;border:1px solid #e2e8f0;padding:20px 24px;margin-bottom:16px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-        <div style="font-size:14px;font-weight:800;color:#0F172A">CMI Ranking</div>
-        <button onclick="bcExportCSV()" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:7px;padding:6px 14px;font-size:12px;font-weight:700;color:#475569;cursor:pointer">⬇ Export CSV</button>
-      </div>
-      <canvas id="bc-bar-chart" width="900" height="${Math.max(120, submitted.length * 32)}" style="width:100%;height:auto;display:block"></canvas>
-    </div>
-
     <!-- Search + Table -->
     <div style="background:white;border-radius:12px;border:1px solid #e2e8f0;overflow:hidden">
       <div style="padding:16px 20px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between">
         <div style="font-size:15px;font-weight:800;color:#0F172A">Company Leaderboard</div>
-        <input id="bc-search" type="text" placeholder="Filter by company or sector…"
-          oninput="bcFilter(this.value)"
-          style="border:1px solid #e2e8f0;border-radius:7px;padding:6px 12px;font-size:13px;outline:none;width:240px;color:#334155">
+        <div style="display:flex;gap:8px;align-items:center">
+          <button onclick="bcExportCSV()" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:7px;padding:6px 14px;font-size:12px;font-weight:700;color:#475569;cursor:pointer">⬇ Export CSV</button>
+          <input id="bc-search" type="text" placeholder="Filter by company or sector…"
+            oninput="bcFilter(this.value)"
+            style="border:1px solid #e2e8f0;border-radius:7px;padding:6px 12px;font-size:13px;outline:none;width:240px;color:#334155">
+        </div>
       </div>
       <table style="width:100%;border-collapse:collapse">
         <thead style="background:#f8fafc">
