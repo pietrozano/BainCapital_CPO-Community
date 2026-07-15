@@ -428,59 +428,61 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <span style="font-size:11px;font-weight:700;color:#6366f1;letter-spacing:.1px">Review Assessment Results</span>
       </div>
-      <div class="nav-item" onclick="showSection('s-00')" id="nav-s-00">
-        <div class="nav-badge nb-empty" id="badge-s-00">00</div>
-        <div class="nav-label">General Maturity</div>
-      </div>
-      <div class="nav-item" onclick="showSection('s-01')" id="nav-s-01">
-        <div class="nav-badge nb-empty" id="badge-s-01">01</div>
-        <div class="nav-label">Strategy &amp; Governance</div>
-        <div class="nav-score" id="score-s-01">—</div>
-      </div>
-      <div class="nav-item" onclick="showSection('s-02')" id="nav-s-02">
-        <div class="nav-badge nb-empty" id="badge-s-02">02</div>
-        <div class="nav-label">Category Management</div>
-        <div class="nav-score" id="score-s-02">—</div>
-      </div>
-      <div class="nav-item" onclick="showSection('s-03')" id="nav-s-03">
-        <div class="nav-badge nb-empty" id="badge-s-03">03</div>
-        <div class="nav-label">Supplier Management</div>
-        <div class="nav-score" id="score-s-03">—</div>
-      </div>
-      <div class="nav-item" onclick="showSection('s-04')" id="nav-s-04">
-        <div class="nav-badge nb-empty" id="badge-s-04">04</div>
-        <div class="nav-label">Strategic Sourcing (RFx)</div>
-        <div class="nav-score" id="score-s-04">—</div>
-      </div>
-      <div class="nav-item" onclick="showSection('s-05')" id="nav-s-05">
-        <div class="nav-badge nb-empty" id="badge-s-05">05</div>
-        <div class="nav-label">Contract Management</div>
-        <div class="nav-score" id="score-s-05">—</div>
-      </div>
-      <div class="nav-item" onclick="showSection('s-06')" id="nav-s-06">
-        <div class="nav-badge nb-empty" id="badge-s-06">06</div>
-        <div class="nav-label">PR &amp; Requisition</div>
-        <div class="nav-score" id="score-s-06">—</div>
-      </div>
-      <div class="nav-item" onclick="showSection('s-07')" id="nav-s-07">
-        <div class="nav-badge nb-empty" id="badge-s-07">07</div>
-        <div class="nav-label">PO Management</div>
-        <div class="nav-score" id="score-s-07">—</div>
-      </div>
-      <div class="nav-item" onclick="showSection('s-08')" id="nav-s-08">
-        <div class="nav-badge nb-empty" id="badge-s-08">08</div>
-        <div class="nav-label">Invoice &amp; AP</div>
-        <div class="nav-score" id="score-s-08">—</div>
-      </div>
-      <div class="nav-item" onclick="showSection('s-09')" id="nav-s-09">
-        <div class="nav-badge nb-empty" id="badge-s-09">09</div>
-        <div class="nav-label">Reporting &amp; Analytics</div>
-        <div class="nav-score" id="score-s-09">—</div>
-      </div>
-      <div class="nav-item" onclick="showSection('s-ai')" id="nav-s-ai">
-        <div class="nav-badge nb-empty" id="badge-s-ai">AI</div>
-        <div class="nav-label">AI &amp; Tech Deep Dive</div>
-        <div class="nav-score" id="score-s-ai">—</div>
+      <div id="nav-steps-list" style="display:none;overflow:hidden">
+        <div class="nav-item" onclick="showSection('s-00')" id="nav-s-00">
+          <div class="nav-badge nb-empty" id="badge-s-00">00</div>
+          <div class="nav-label">General Maturity</div>
+        </div>
+        <div class="nav-item" onclick="showSection('s-01')" id="nav-s-01">
+          <div class="nav-badge nb-empty" id="badge-s-01">01</div>
+          <div class="nav-label">Strategy &amp; Governance</div>
+          <div class="nav-score" id="score-s-01">—</div>
+        </div>
+        <div class="nav-item" onclick="showSection('s-02')" id="nav-s-02">
+          <div class="nav-badge nb-empty" id="badge-s-02">02</div>
+          <div class="nav-label">Category Management</div>
+          <div class="nav-score" id="score-s-02">—</div>
+        </div>
+        <div class="nav-item" onclick="showSection('s-03')" id="nav-s-03">
+          <div class="nav-badge nb-empty" id="badge-s-03">03</div>
+          <div class="nav-label">Supplier Management</div>
+          <div class="nav-score" id="score-s-03">—</div>
+        </div>
+        <div class="nav-item" onclick="showSection('s-04')" id="nav-s-04">
+          <div class="nav-badge nb-empty" id="badge-s-04">04</div>
+          <div class="nav-label">Strategic Sourcing (RFx)</div>
+          <div class="nav-score" id="score-s-04">—</div>
+        </div>
+        <div class="nav-item" onclick="showSection('s-05')" id="nav-s-05">
+          <div class="nav-badge nb-empty" id="badge-s-05">05</div>
+          <div class="nav-label">Contract Management</div>
+          <div class="nav-score" id="score-s-05">—</div>
+        </div>
+        <div class="nav-item" onclick="showSection('s-06')" id="nav-s-06">
+          <div class="nav-badge nb-empty" id="badge-s-06">06</div>
+          <div class="nav-label">PR &amp; Requisition</div>
+          <div class="nav-score" id="score-s-06">—</div>
+        </div>
+        <div class="nav-item" onclick="showSection('s-07')" id="nav-s-07">
+          <div class="nav-badge nb-empty" id="badge-s-07">07</div>
+          <div class="nav-label">PO Management</div>
+          <div class="nav-score" id="score-s-07">—</div>
+        </div>
+        <div class="nav-item" onclick="showSection('s-08')" id="nav-s-08">
+          <div class="nav-badge nb-empty" id="badge-s-08">08</div>
+          <div class="nav-label">Invoice &amp; AP</div>
+          <div class="nav-score" id="score-s-08">—</div>
+        </div>
+        <div class="nav-item" onclick="showSection('s-09')" id="nav-s-09">
+          <div class="nav-badge nb-empty" id="badge-s-09">09</div>
+          <div class="nav-label">Reporting &amp; Analytics</div>
+          <div class="nav-score" id="score-s-09">—</div>
+        </div>
+        <div class="nav-item" onclick="showSection('s-ai')" id="nav-s-ai">
+          <div class="nav-badge nb-empty" id="badge-s-ai">AI</div>
+          <div class="nav-label">AI &amp; Tech Deep Dive</div>
+          <div class="nav-score" id="score-s-ai">—</div>
+        </div>
       </div>
     </div>
   </nav>
@@ -2560,6 +2562,8 @@ function expandAllRubrics() {
   // Toggle score visibility on nav
   const navSection = document.getElementById('nav-assessment-section');
   if (navSection) navSection.classList.toggle('nav-scores-visible', _reviewModeOn);
+  const stepsList = document.getElementById('nav-steps-list');
+  if (stepsList) stepsList.style.display = _reviewModeOn ? 'block' : 'none';
   // Update button style
   const btn = document.getElementById('review-results-btn');
   if (btn) {
