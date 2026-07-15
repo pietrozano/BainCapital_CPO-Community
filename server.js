@@ -71,7 +71,8 @@ const COMPANIES = [
   { id: 'italmatch', name: 'Italmatch',       cpo: 'Antonio Autuori',    sector: 'Chemicals',          code: 'ITM-BD3B71BB29'      },
   { id: 'tingstad',  name: 'Tingstad',        cpo: 'Johan Larsson',      sector: 'Distribution',       code: 'TIN-BF4A9D35B4'      },
   { id: 'centrient', name: 'Centrient',       cpo: 'Ian Watkins',        sector: 'Pharma',             code: 'CEN-70EEE3F0E8'      },
-  { id: 'company16', name: 'Portfolio Co. 16',cpo: '—',                  sector: '—',                  code: 'PC16-8AF0A3137E'     }
+  { id: 'company16', name: 'Portfolio Co. 16',cpo: '—',                  sector: '—',                  code: 'PC16-8AF0A3137E'     },
+  { id: 'company17', name: 'Test Company (Dummy)', cpo: 'Demo CPO',        sector: 'Demo',               code: 'TEST-DUMMY-2026'     }
 ];
 
 const app       = express();

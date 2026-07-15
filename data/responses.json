@@ -432,5 +432,425 @@
         }
       }
     }
+  },
+  "company17": {
+    "scores": {
+      "s-org": {
+        "D1": 3.2,
+        "D2": 2.5,
+        "D3": 1.8
+      },
+      "s-01": {
+        "D1": 3.5,
+        "D2": 3.0,
+        "D3": 2.5
+      },
+      "s-02": {
+        "D1": 2.8,
+        "D2": 3.5,
+        "D3": 3.2
+      },
+      "s-03": {
+        "D1": 3.0,
+        "D2": 2.8,
+        "D3": 2.0
+      },
+      "s-04": {
+        "D1": 2.5,
+        "D2": 3.2,
+        "D3": 3.5
+      },
+      "s-05": {
+        "D1": 3.8,
+        "D2": 2.5,
+        "D3": 1.5
+      },
+      "s-06": {
+        "D1": 4.0,
+        "D2": 3.5,
+        "D3": 2.0
+      },
+      "s-07": {
+        "D1": 4.2,
+        "D2": 3.0,
+        "D3": 1.8
+      },
+      "s-08": {
+        "D1": 3.5,
+        "D2": 4.0,
+        "D3": 2.5
+      },
+      "s-09": {
+        "D1": 2.5,
+        "D2": 3.5,
+        "D3": 3.8
+      },
+      "s-ai": {
+        "D1": 2.0,
+        "D2": 3.0,
+        "D3": 4.2
+      }
+    },
+    "rawScores": {
+      "q-01-d1-01": 3,
+      "q-01-d1-02": 4,
+      "q-01-d2-01": 3,
+      "q-01-d3-01": 2,
+      "q-01-d3-02": 3,
+      "q-02-d1-01": 3,
+      "q-02-d2-01": 4,
+      "q-02-d2-02": 3,
+      "q-02-d3-01": 3,
+      "q-02-d3-02": 3,
+      "q-03-d1-01": 3,
+      "q-03-d2-01": 3,
+      "q-03-d3-01": 2,
+      "q-04-d1-01": 2,
+      "q-04-d2-01": 3,
+      "q-04-d2-02": 4,
+      "q-04-d3-01": 3,
+      "q-04-d3-02": 4,
+      "q-05-d1-01": 4,
+      "q-05-d2-01": 2,
+      "q-05-d3-01": 2,
+      "q-06-d1-01": 4,
+      "q-06-d2-01": 4,
+      "q-06-d3-01": 2,
+      "q-07-d1-01": 4,
+      "q-07-d2-01": 3,
+      "q-07-d3-01": 2,
+      "q-08-d1-01": 3,
+      "q-08-d2-01": 4,
+      "q-08-d3-01": 2,
+      "q-08-d3-02": 3,
+      "q-09-d1-01": 2,
+      "q-09-d2-01": 4,
+      "q-09-d3-01": 4,
+      "q-ai-d1-01": 2,
+      "q-ai-d2-01": 3,
+      "q-ai-d3-01": 4,
+      "q-ai-d3-02": 4
+    },
+    "useCases": {
+      "_all": {
+        "existing": [
+          {
+            "step": "s-02",
+            "name": "AI-powered spend classification",
+            "technology": "Claude API (Anthropic)",
+            "integration": "SAP S/4HANA + Ariba",
+            "adoption": "85% of indirect spend, 12 categories",
+            "roi": "\u20ac420k/yr savings, \u221235% reclassification effort",
+            "enabler": "Clean GL data, taxonomy governance"
+          },
+          {
+            "step": "s-04",
+            "name": "Automated RFx template generation",
+            "technology": "GPT-4o (Azure OpenAI)",
+            "integration": "Jaggaer RFx module",
+            "adoption": "Strategic sourcing team (8 buyers)",
+            "roi": "\u221240% RFx drafting time, from 3 days to <1 day",
+            "enabler": "Structured category playbooks, buyer training"
+          },
+          {
+            "step": "s-08",
+            "name": "Invoice anomaly detection & auto-match",
+            "technology": "Custom ML model (XGBoost)",
+            "integration": "SAP FI / Concur",
+            "adoption": "100% of PO invoices (\u20ac280M)",
+            "roi": "\u221260% manual interventions, \u20ac180k/yr FTE saving",
+            "enabler": "PO data quality, IT integration with AP team"
+          },
+          {
+            "step": "s-09",
+            "name": "Procurement analytics chatbot (internal)",
+            "technology": "Claude claude-3-haiku (Anthropic)",
+            "integration": "Power BI embedded + SharePoint",
+            "adoption": "CPO + 4 category managers",
+            "roi": "Faster board reporting, \u22122 days/month",
+            "enabler": "Centralised data warehouse, SSO setup"
+          },
+          {
+            "step": "s-03",
+            "name": "Supplier risk radar (NLP news monitoring)",
+            "technology": "Azure Cognitive Services + GPT-4",
+            "integration": "Ariba Supplier Portal (manual alert sync)",
+            "adoption": "Top 150 strategic suppliers monitored",
+            "roi": "2 disruptions avoided, estimated \u20ac1.2M risk mitigated",
+            "enabler": "Supplier master data cleanliness, legal sign-off"
+          }
+        ],
+        "potential": [
+          {
+            "step": "s-04",
+            "name": "Autonomous should-cost modelling",
+            "roi": "\u221225% negotiation prep time, better price anchoring",
+            "enabler": "BOM data, commodity price feeds, category expertise"
+          },
+          {
+            "step": "s-05",
+            "name": "AI contract obligation extraction & alerting",
+            "roi": "Avoid \u20ac500k+/yr in missed SLA penalties",
+            "enabler": "Digitised contract repository, legal review workflow"
+          },
+          {
+            "step": "s-02",
+            "name": "Dynamic category strategy co-pilot",
+            "roi": "Accelerate strategy refresh cycles by 50%",
+            "enabler": "Market intelligence API, structured category data"
+          },
+          {
+            "step": "s-09",
+            "name": "Predictive savings pipeline forecasting",
+            "roi": "Improve forecast accuracy from \u00b130% to \u00b110%",
+            "enabler": "Historical pipeline data, integration with finance system"
+          }
+        ]
+      }
+    },
+    "techStack": {
+      "erp": "SAP S/4HANA 2023 \u2014 single instance across all 3 entities since 2022 migration",
+      "s2p": "SAP Ariba (indirect, \u20ac280M) + Jaggaer (strategic sourcing & SRM, \u20ac320M direct) \u2014 dual platform, partial integration",
+      "esourcing": "Jaggaer eSourcing module \u2014 used for all events >\u20ac100k; Keelvar evaluated but not adopted",
+      "clm": "Icertis CLM implemented 2023 \u2014 DocuSign integrated for eSignature, covers ~73% of active contracts",
+      "srm": "Jaggaer SRM \u2014 supplier onboarding, qualification, scorecards, and performance management for strategic & preferred suppliers",
+      "ap": "SAP FI native + Basware for e-invoicing network \u2014 78% digital invoice receipt rate",
+      "analytics": "Power BI (embedded dashboards) + Snowflake (data warehouse, T+1 refresh from SAP/Ariba/Jaggaer/Icertis)",
+      "other_tools": "ServiceNow (IT procurement workflow), Concur (T&E), Coupa (evaluated 2023, not selected), EcoVadis (ESG ratings for top 50 suppliers)",
+      "ai_tools": "Claude API (category intelligence + analytics chatbot pilot), GPT-4o via Azure OpenAI (RFx generator), XGBoost custom model (invoice anomaly detection, self-hosted), Microsoft Copilot (procurement chatbot pilot, 50 users)",
+      "integration": "Ariba \u2194 SAP: fully API-integrated. Jaggaer \u2194 SAP: nightly sync (not real-time). Icertis \u2194 SAP: contract-to-PO matching integrated. Snowflake: all sources connected via Fivetran, T+1 refresh."
+    },
+    "general": {
+      "org-spend": "\u20ac650M",
+      "org-ftes": "42 FTEs in procurement function",
+      "org-structure": "Category-led with 4 clusters: Direct, Indirect, Capex, IT"
+    },
+    "aiReasoning": {
+      "s-01": {
+        "q-01-d1-01": "Procurement strategy is documented at category level but not yet formally linked to AI transformation roadmap. Board-level visibility exists but KPIs are not AI-specific.",
+        "q-01-d2-01": "Core ERP is modern (S/4HANA), good data foundation, but S2P tools are split across two platforms causing integration friction."
+      },
+      "s-02": {
+        "q-02-d1-01": "Category management process is well-defined across the main clusters; spend analytics is strong thanks to the Snowflake warehouse.",
+        "q-02-d2-01": "AI spend classification is live and performing well at 85% coverage \u2014 a genuine competitive advantage vs portfolio peers."
+      },
+      "s-04": {
+        "q-04-d2-02": "GPT-4o RFx generation is the most mature AI deployment: fully embedded in buyer workflow, strong adoption, measurable time savings.",
+        "q-04-d3-02": "Should-cost AI is identified as high priority but not yet started \u2014 represents the biggest near-term AI value unlock."
+      },
+      "s-08": {
+        "q-08-d2-01": "Invoice anomaly detection is the highest-ROI live use case. Full coverage of PO invoices with measurable reduction in manual effort."
+      },
+      "s-ai": {
+        "q-ai-d3-01": "AI governance is nascent \u2014 no formal AI ethics policy, no model risk framework, no AI centre of excellence. High priority gap given the live deployments.",
+        "q-ai-d3-02": "Data privacy and AI vendor management are handled ad hoc. Needs formalisation before scaling further AI use cases."
+      }
+    },
+    "aiScores": {
+      "s-01": {
+        "q-01-d1-01": 3,
+        "q-01-d2-01": 3
+      },
+      "s-02": {
+        "q-02-d1-01": 3,
+        "q-02-d2-01": 4
+      },
+      "s-04": {
+        "q-04-d2-02": 4,
+        "q-04-d3-02": 3
+      },
+      "s-08": {
+        "q-08-d2-01": 4
+      },
+      "s-ai": {
+        "q-ai-d3-01": 4,
+        "q-ai-d3-02": 4
+      }
+    },
+    "cmi": 2.94,
+    "analyzed": true,
+    "companyName": "Test Company (Dummy)",
+    "_company": "company17",
+    "_savedAt": "2026-07-15T09:00:00.000Z",
+    "answers": {
+      "s-org": {
+        "q-a-01": {
+          "text": "Procurement reports to the CFO on a quarterly basis. The CPO presents a procurement performance dashboard at each ExCo meeting. However, board-level accountability for specific procurement KPIs is not yet formalised \u2014 we have budget ownership and cost targets but no board-level scorecard specifically for procurement value delivery."
+        },
+        "q-a-02": {
+          "text": "We have a written procurement mandate endorsed by the CFO that defines our scope across direct, indirect, capex and IT spend. It sets a clear ambition to capture 4\u20136% cost savings annually and to build a digitally-enabled, AI-ready function. The mandate is reviewed annually and communicated to all business unit heads."
+        },
+        "q-a-03": {
+          "text": "We have separated strategic category management (front office) from operational buying and AP (back office) over the past 2 years. Category managers own strategy and supplier relationships; a shared services team handles PO processing and invoice management. Process standardisation across our 3 main entities is ~80% complete \u2014 some regional variation remains in indirect categories."
+        },
+        "q-a-04": {
+          "text": "Core capabilities in sourcing, negotiation and supplier management are strong. Analytics capability is growing \u2014 we have 3 analysts dedicated to spend analytics. Main gaps remain in AI literacy across the broader team and in advanced supplier risk capabilities. We run annual skills assessments against a defined capability framework."
+        },
+        "q-a-05": {
+          "text": "5 of our 42 procurement FTEs have meaningful AI skills \u2014 primarily the analytics team and 2 category managers who have driven our AI use case pilots. The broader team has completed basic GenAI literacy training but lacks hands-on AI tooling experience. We have identified AI upskilling as a top priority for 2026."
+        },
+        "q-a-06": {
+          "text": "Change management is handled on a project-by-project basis. Our AI spend classification rollout had a dedicated change programme \u2014 training, comms, hypercare \u2014 which drove 85% adoption in 6 months. We don't yet have a standing change management function within procurement; this is resourced per initiative."
+        },
+        "q-a-07": {
+          "text": "We run a Procurement Academy with quarterly training modules covering negotiation, sourcing excellence, and digital tools. AI and analytics content was added in 2025. Training is linked to performance objectives for senior buyers and category managers. We are building a role-based AI skills framework to formalise AI as a career competency."
+        }
+      },
+      "s-01": {
+        "q-01-01": {
+          "text": "We have a 2-year AI roadmap for procurement approved by the CFO with a dedicated annual budget of \u20ac350k. The CPO is the executive sponsor. Progress is tracked via a quarterly AI steering group with representation from IT, Finance and Procurement. The roadmap covers 8 use cases across 5 process steps, of which 4 are live."
+        },
+        "q-01-02": {
+          "text": "AI governance sits within our broader IT and data governance framework. Procurement AI deployments require CPO and IT sign-off. We have basic data privacy controls for each live AI tool \u2014 data processing agreements with vendors, no personal data in procurement AI systems. Audit trails are maintained in our S2P platform but not yet in a centralised AI audit log."
+        },
+        "q-01-03": {
+          "text": "We track ROI for each live AI use case against a pre-deployment baseline. The spend classification tool saves ~\u20ac420k/yr in reclassification effort (finance-validated). The RFx generator reduces cycle time by 40% (tracked in Jaggaer). The invoice anomaly model is saving ~\u20ac180k/yr in FTE cost. We report AI ROI quarterly to the CFO alongside the broader savings pipeline."
+        },
+        "q-01-04": {
+          "text": "We manage an AI use case pipeline in a shared tracking document reviewed monthly by the AI steering group. Currently 4 use cases live, 2 in pilot (supplier risk radar, analytics chatbot), 3 in backlog. Use cases are prioritised by ROI potential and implementation feasibility. We have not yet formally retired any use case but have deprioritised 2 that proved technically infeasible."
+        }
+      },
+      "s-02": {
+        "q-02-01": {
+          "text": "All 8 strategic categories have formal category strategies documented and refreshed annually. Category plans are signed off by the CPO and category sponsor in the business. We hold a category strategy review in Q1 each year where market developments and business priorities are incorporated. Sub-category plans exist for the top 3 spend categories."
+        },
+        "q-02-02": {
+          "text": "85% of our indirect spend is correctly classified using our AI spend classification tool (live since Q3 2024). Direct spend is handled differently \u2014 classified at PO level in SAP. Taxonomy is governed by our analytics team and reviewed quarterly. Supplier deduplication was completed as part of the MDM project in 2023 \u2014 we now maintain a clean supplier master with ~1,200 active suppliers."
+        },
+        "q-02-03": {
+          "text": "Our AI spend classification is the most mature AI use case in category management \u2014 it runs continuously on our Snowflake warehouse and auto-classifies 85% of indirect spend without human review. We also use Claude API for category intelligence briefings \u2014 category managers can query market data, generate supplier landscape summaries, and get negotiation angle suggestions in natural language."
+        },
+        "q-02-04": {
+          "text": "We are in early pilot for AI-assisted category strategy generation. Claude generates a first-draft category strategy based on spend data, market context, and historical sourcing event data. 2 category managers are trialling this for IT and MRO categories. Initial feedback is positive \u2014 strategies that took 3 days to write now take half a day. Full rollout planned for Q3 2026."
+        },
+        "q-02-05": {
+          "text": "AI spend classification: \u20ac420k/yr savings in reclassification effort, validated by Finance. Category intelligence briefings (Claude): estimated 1.5 hours saved per category strategy refresh per category manager \u2014 approximately 60 hours/yr across the team. Category strategy AI pilot: not yet formally measured, but user feedback shows 65% reduction in strategy drafting time."
+        }
+      },
+      "s-03": {
+        "q-03-01": {
+          "text": "Supplier onboarding is fully digitised in Jaggaer SRM. The process covers registration, qualification questionnaire, compliance screening (sanctions, ESG basics), and SAP master data creation. Target cycle time is 10 business days for standard suppliers. We hit this 78% of the time \u2014 main delays are supplier responsiveness and manual IT system activation."
+        },
+        "q-03-02": {
+          "text": "We use a 4-tier segmentation: Strategic (15 suppliers), Preferred (85 suppliers), Approved (400 suppliers), Transactional (700+). Strategic suppliers receive quarterly business reviews, joint KPI tracking, and executive engagement. Preferred suppliers are reviewed semi-annually. The segmentation model was rebuilt in 2024 based on spend, risk score, and strategic relevance \u2014 it is refreshed annually."
+        },
+        "q-03-03": {
+          "text": "We monitor financial risk for Strategic and Preferred suppliers using Dun & Bradstreet feeds (credit risk, financial health scores). ESG monitoring is in place for 50 strategic suppliers via EcoVadis ratings. Geopolitical and supply chain risk is monitored manually \u2014 we use a news monitoring tool but it requires manual triage. We have no automated tier-2 visibility for any category."
+        },
+        "q-03-04": {
+          "text": "Supplier master data is clean and deduplicated following our 2023 MDM project. D&B financial data is integrated for ~600 suppliers. EcoVadis ESG scores are loaded quarterly for top suppliers. We do not yet have real-time integration \u2014 data feeds run on a monthly refresh cycle. The SAP master is the golden source; Jaggaer syncs nightly."
+        },
+        "q-03-05": {
+          "text": "Our supplier risk radar (AI news monitoring) is in pilot for 150 strategic suppliers. The tool uses Azure Cognitive Services to scan news feeds and flag risk signals \u2014 financial distress, litigation, geopolitical events, ESG controversies. Alerts are triaged by the SRM team 3x per week. 2 disruptions were caught early in the pilot (one sub-tier financial issue, one sanctions risk) \u2014 estimated \u20ac1.2M risk avoided."
+        },
+        "q-03-06": {
+          "text": "We are not yet using AI for supplier innovation scouting or autonomous qualification. This is in our AI backlog \u2014 we have evaluated 2 vendors (Scoutbee, Trademo) but have not yet committed to a pilot. The business case is being built for our direct categories where new supplier scouting is most valuable."
+        },
+        "q-03-07": {
+          "text": "We use our Jaggaer supplier portal for performance tracking \u2014 quarterly scorecards covering delivery, quality, and commercial KPIs are shared automatically with Strategic suppliers. The portal is not AI-enhanced \u2014 it's rule-based. We are evaluating adding AI-generated performance narratives and early warning flags to the portal in 2026."
+        }
+      },
+      "s-04": {
+        "q-04-01": {
+          "text": "We have a structured negotiation methodology (based on Scotwork) applied across all significant sourcing events (>\u20ac500k). Buyers complete a preparation template covering BATNA, reserve price, concession plan, and key tactics before every negotiation. Post-negotiation reviews are mandatory for strategic categories \u2014 learnings are captured in our negotiation playbook."
+        },
+        "q-04-02": {
+          "text": "Historical RFx data is stored in Jaggaer \u2014 all events, bids, award decisions, and bid breakdowns from 2021 onwards are structured and searchable. We have ~3,000 historical sourcing events in the system. This data is now being used to train our AI RFx template generator and as context for should-cost modelling. Pre-2021 data is in email archives \u2014 not structured for AI use."
+        },
+        "q-04-03": {
+          "text": "Our GPT-4o RFx template generator is fully live for our strategic sourcing team. It generates first-draft RFx documents from a category brief, historical event data, and market context. 8 buyers use it for every significant event \u2014 time from scope to RFx launch reduced from 3 days to under 1 day. Award recommendations are still human-driven. Bid analysis automation is in the pipeline."
+        },
+        "q-04-04": {
+          "text": "We are not yet running autonomous sourcing agents. We are piloting semi-autonomous sourcing for tail spend categories (spend <\u20ac50k) using Jaggaer's built-in automation \u2014 buyers approve the scope and the system runs a simplified RFx and auto-awards to the lowest compliant bid. 12 categories in scope. Results so far: 35% faster cycle time, consistent savings of 8\u201312%."
+        },
+        "q-04-05": {
+          "text": "RFx AI template generator: 40% reduction in RFx drafting time across 8 buyers \u2014 estimated 480 hours/yr saved. Tail spend semi-autonomous sourcing: 35% cycle time reduction, 8\u201312% average savings vs. prior contract. Total AI-driven sourcing value estimated at \u20ac1.8M in 2025, including 2 large negotiations where AI prep directly influenced outcomes."
+        }
+      },
+      "s-05": {
+        "q-05-01": {
+          "text": "We have a standard contract template library managed jointly by procurement and legal. It covers 12 major contract types (supply agreements, NDA, services, T&M, framework agreements). Templates are stored in SharePoint and version-controlled. Non-standard deviations require legal sign-off. The library was last comprehensively reviewed in 2024 and is updated when new regulatory requirements emerge."
+        },
+        "q-05-02": {
+          "text": "~73% of active contracts are digitised in Icertis (our CLM system, implemented in 2023). Key metadata (parties, value, start/end date, notice periods, key commercial terms) is captured as structured fields. Remaining 27% are legacy contracts in PDF \u2014 a digitisation project is underway targeting completion by Q2 2026. Icertis is integrated with SAP for contract-to-PO matching."
+        },
+        "q-05-03": {
+          "text": "We use Icertis AI features for obligation extraction and renewal alerting \u2014 these are built into our Icertis licence. Obligations for strategic contracts are automatically extracted and loaded into a tracking dashboard. Renewal alerts fire 90, 60, and 30 days before expiry. AI-assisted drafting is available but adoption is low \u2014 buyers revert to templates rather than using AI drafting."
+        },
+        "q-05-04": {
+          "text": "We are piloting AI contract intelligence for commercial benchmarking \u2014 using Claude to compare payment terms, liability caps, and price escalation clauses across our portfolio vs. market norms. Early findings have identified 8 contracts with above-market payment terms and 3 with unusual liability exposure. This is currently being validated before we use it to drive renegotiations."
+        },
+        "q-05-05": {
+          "text": "Icertis alerts us when purchasing happens from non-preferred suppliers in categories with active framework agreements. Last year this flagged \u20ac2.3M of off-contract spend in IT and Facilities \u2014 which was subsequently redirected. We don't yet have real-time AI compliance monitoring across all categories \u2014 coverage is limited to the categories where Icertis catalogue integration is in place."
+        }
+      },
+      "s-06": {
+        "q-06-01": {
+          "text": "Requisitioning is fully digital in SAP Ariba for indirect spend. All mandatory fields (category, cost centre, preferred supplier, business justification) are enforced at submission. Data quality for indirect spend is high \u2014 94% of requisitions are correctly categorised at point of request. Direct spend requisitions flow through SAP S/4HANA production planning \u2014 a different, more manual process."
+        },
+        "q-06-02": {
+          "text": "E-catalogues are live for our top 15 indirect categories covering ~\u20ac120M of addressable spend (about 42% of total indirect). Catalogue adoption sits at 67% for in-scope categories. Procurement reviews catalogue coverage quarterly and adds 2\u20133 new catalogues per year. We are pushing to reach 75% catalogue coverage by end of 2026."
+        },
+        "q-06-03": {
+          "text": "We use Ariba Guided Buying for preferred supplier recommendations and category-based routing. The AI features in Ariba automatically suggest preferred suppliers based on category and prior purchasing history. We see ~78% compliance with preferred supplier suggestions in guided buying. AI-powered approval routing is live \u2014 exceptions are automatically routed based on risk and value thresholds."
+        },
+        "q-06-04": {
+          "text": "We piloted a Microsoft Copilot-powered procurement chatbot in Q4 2025 \u2014 a virtual assistant that employees can use to check procurement policies, find preferred suppliers, and initiate a requisition via natural language. The pilot ran with 50 users in the IT department. Satisfaction scores were high but adoption was moderate \u2014 35% of target users engaged regularly. Full rollout decision pending."
+        }
+      },
+      "s-07": {
+        "q-07-01": {
+          "text": "POs are generated in SAP S/4HANA and transmitted electronically to ~85% of our suppliers via EDI or Ariba Network. Supplier acknowledgements are received digitally for ~70% of POs. Real-time delivery status is tracked for direct material POs through SAP integrated with our WMS. Indirect PO status tracking relies on supplier self-reporting in the Ariba portal."
+        },
+        "q-07-02": {
+          "text": "We use SAP's built-in AI features for PO exception detection \u2014 late delivery predictions, 3-way match discrepancies, and duplicate PO alerts. The system flags ~200 exceptions per month for human review; of these, ~60% are resolved automatically by routing rules. We do not yet have a dedicated AI model for delivery risk prediction beyond SAP's standard functionality."
+        },
+        "q-07-03": {
+          "text": "We are not actively piloting autonomous PO agents. SAP's automated PO creation from approved requisitions (for catalogue items) handles ~35% of our PO volume without buyer intervention. For non-catalogue and strategic POs, buyer review is still required. We are monitoring agentic PO solutions in the market but have not committed to a pilot in 2026."
+        }
+      },
+      "s-08": {
+        "q-08-01": {
+          "text": "We receive 78% of invoices digitally \u2014 EDI for our top 50 suppliers, PDF e-invoice for mid-tier, and Ariba Network integration for the remainder. Paper invoices account for ~8% of volume, mostly from small local suppliers. Our current touchless processing rate is 71% \u2014 the target is 85% by end of 2026. The main barrier is supplier enablement for the remaining 22% who are not yet on our e-invoicing programme."
+        },
+        "q-08-02": {
+          "text": "Our XGBoost anomaly detection model is the most mature AI deployment in the company. It runs on 100% of PO invoices (\u20ac280M annual throughput) and flags anomalies \u2014 duplicate invoices, pricing deviations from PO, quantity mismatches, suspicious payment patterns. The model reduces manual intervention by 60%. 3-way match is automated for 88% of PO invoices. Manual review is reserved for flagged exceptions and non-PO invoices."
+        },
+        "q-08-03": {
+          "text": "Our roadmap to 85% touchless by end-2026 involves 3 workstreams: (1) supplier enablement \u2014 moving the remaining 200 medium suppliers to Ariba Network or structured e-invoice format; (2) non-PO invoice AI \u2014 extending our model to non-PO invoice types which are currently manual; (3) payment timing optimisation \u2014 piloting dynamic discounting for top 30 suppliers. IT delivery is the main constraint."
+        },
+        "q-08-04": {
+          "text": "AI invoice processing improvements vs. 2023 baseline: cost per invoice reduced from \u20ac4.20 to \u20ac2.80 (\u221233%); average processing cycle time from 8.2 days to 4.1 days (\u221250%); early payment discount capture increased from 12% to 34% of eligible invoices; duplicate payment incidents reduced from 18 to 3 per year. Total FTE saving from AP automation: ~2.5 FTEs reallocated to value-added analysis work."
+        }
+      },
+      "s-09": {
+        "q-09-01": {
+          "text": "We have a centralised Snowflake data warehouse fed by SAP S/4HANA, Ariba, Jaggaer, and Icertis. Spend, supplier, contract, PO, and invoice data are integrated with a T+1 refresh for most sources (some near-real-time for SAP). Power BI dashboards are available to all procurement staff without IT support. Finance and business stakeholders have read access to the main spend dashboard."
+        },
+        "q-09-02": {
+          "text": "Our procurement analytics chatbot (Claude claude-3-haiku) is in pilot \u2014 CPO and 4 category managers can query our Snowflake data in natural language and receive AI-generated summaries with charts. We also have automated anomaly detection running on our spend data \u2014 flagging unusual spend patterns, new suppliers, and category mix shifts weekly. Predictive spend forecasting is in development for 2026."
+        },
+        "q-09-03": {
+          "text": "Category managers, the analytics team, and senior buyers can self-serve on Power BI without IT. The analytics chatbot extends this to natural language querying for the pilot group. IT is still required for new dashboard development or integration of new data sources. Our goal is to reach full self-service for all analytical needs for the 15 most senior procurement staff by end of 2026."
+        },
+        "q-09-04": {
+          "text": "We have a commodity price prediction model for our top 5 direct material categories \u2014 built on historical price data and publicly available commodity indices. Accuracy at 3-month horizon is \u00b18%, which is within the range useful for hedging decisions. The model feeds into our quarterly category strategy reviews. We are building a demand forecasting model for indirect categories in 2026."
+        }
+      },
+      "s-ai": {
+        "q-ai-01": {
+          "text": "AI governance for procurement sits within our IT AI governance framework. All new AI tools require a Data Privacy Impact Assessment (DPIA) and joint sign-off from the CPO and CTO. Vendor agreements include data processing clauses and model transparency requirements. We maintain a register of all live AI tools and their data flows. Audit trails are maintained per tool but not yet consolidated into a central AI audit log \u2014 this is a known gap we are addressing."
+        },
+        "q-ai-02": {
+          "text": "We have run 3 AI upskilling programmes for procurement in the past 18 months: (1) GenAI literacy for all 42 FTEs (4-hour online programme, 89% completion); (2) AI tools hands-on workshop for buyers and category managers (12 FTEs, full day); (3) AI for analytics \u2014 advanced programme for the 5-person analytics team. We are building a role-based AI skills framework with defined capability levels per role for 2026."
+        },
+        "q-ai-03": {
+          "text": "AI tool adoption is tracked per deployment. Spend classification: 100% automated \u2014 no adoption issue. RFx generator: 8 of 8 target buyers using it weekly. Invoice AI: fully embedded, no opt-out. Analytics chatbot: 4 of 5 target users active. Category strategy AI: 2 of 8 category managers piloting. Main barriers to adoption are workflow integration (tools not embedded natively in our S2P platform) and trust in AI outputs for complex decisions."
+        },
+        "q-ai-04": {
+          "text": "We have data privacy agreements with all AI vendors (Anthropic, Microsoft Azure, our XGBoost model is self-hosted). Supplier data used in AI models is anonymised or covered by existing data processing agreements. Pricing data stays within our infrastructure \u2014 we do not send commercially sensitive bid data to third-party AI services. GDPR compliance is reviewed annually for all AI tools. We do not yet have a formal AI ethics policy specific to procurement."
+        }
+      }
+    }
   }
 }
