@@ -2663,21 +2663,82 @@ function renderCMI() {
   if (tbody) {
     tbody.innerHTML = STEP_IDS.filter(sid => !QUESTIONS[sid]?.isTechStack).map(sid => {
       const s    = STATE.scores[sid] || {};
-      const vals = ['D1','D2','D3'].map(d => s[d]).filter(Boolean);
-      const avg  = vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null;
+      const wts  = DIM_WEIGHTS;
+      let w = 0, tw = 0;
+      Object.entries(wts).forEach(([d, wt]) => { if (s[d]) { w += s[d] * wt; tw += wt; } });
+      const avg  = tw > 0 ? w / tw : null;
       const b    = getBand(avg);
-      const pill = (sc, dim) => {
+      const pill = sc => {
         const bb = getBand(sc);
-        return sc ? `<span class="sc-pill" style="background:${bb?.bg||'#f1f5f9'};color:${bb?.color||'#94a3b8'}">${sc.toFixed(1)}</span>` : '—';
+        return sc ? `<span class="sc-pill" style="background:${bb?.bg||'#f1f5f9'};color:${bb?.color||'#94a3b8'}">${sc.toFixed(1)}</span>` : '<span style="color:#cbd5e1">—</span>';
       };
-      return `<tr>
-        <td style="font-weight:600;font-size:11px">${STEP_LABELS[sid]}</td>
+      const hasScores = Object.values(s).some(Boolean);
+      const expandId = `step-expand-${sid}`;
+      return `<tr style="cursor:default">
+        <td style="font-weight:600;font-size:11px">
+          <div style="display:flex;align-items:center;gap:8px">
+            ${STEP_LABELS[sid]}
+            ${hasScores ? `<button onclick="toggleStepSummary('${sid}')" style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:50%;width:18px;height:18px;font-size:11px;font-weight:700;color:#475569;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 150ms" id="btn-expand-${sid}" title="View score rationale">+</button>` : ''}
+          </div>
+        </td>
         <td>${pill(s.D1)}</td><td>${pill(s.D2)}</td><td>${pill(s.D3)}</td>
         <td><strong style="color:${b?.color||'#94a3b8'}">${avg?.toFixed(2)||'—'}</strong></td>
         <td>${b ? `<span class="band-pill" style="background:${b.bg};color:${b.color}">${b.label}</span>` : '<span style="color:#cbd5e1">—</span>'}</td>
+      </tr>
+      <tr id="${expandId}" style="display:none">
+        <td colspan="6" style="padding:0">
+          <div style="margin:0 0 8px;background:linear-gradient(135deg,#f8fafc,#f1f5f9);border:1px solid #e2e8f0;border-radius:10px;padding:16px 20px;font-size:12.5px;color:#334155;line-height:1.7">
+            ${buildStepSummary(sid)}
+          </div>
+        </td>
       </tr>`;
     }).join('');
   }
+}
+
+function buildStepSummary(sid) {
+  const s       = STATE.scores[sid] || {};
+  const qs      = QUESTIONS[sid]?.questions || [];
+  const reasons = STATE.aiReasoning?.[sid] || {};
+  const scores  = STATE.aiScores?.[sid] || {};
+  const b       = getBand(Object.values(s).filter(Boolean).reduce((a,b,_,arr)=>a+b/arr.length,0)||0);
+  const dimColor= { D1:'#0369a1', D2:'#5b21b6', D3:'#166534' };
+
+  // Dimension summary rows
+  const dimRows = ['D1','D2','D3'].filter(d => s[d]).map(d => {
+    const bb = getBand(s[d]);
+    return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+      <span style="font-size:10px;font-weight:800;color:${dimColor[d]};background:${dimColor[d]}18;border-radius:4px;padding:2px 7px;flex-shrink:0">${DIM_SHORT[d]}</span>
+      <span style="font-weight:700;color:${bb?.color||'#94a3b8'}">${s[d].toFixed(1)}</span>
+      <span style="color:#64748b;font-size:12px">${bb?.label||''}</span>
+    </div>`;
+  }).join('');
+
+  // Per-question reasoning (if available)
+  const qRows = qs.slice(0,4).map(q => {
+    const r = reasons[q.id];
+    const sc = scores[q.id];
+    const bb = sc ? getBand(sc) : null;
+    if (!r && !sc) return '';
+    return `<div style="margin-top:8px;padding:8px 12px;background:white;border-radius:8px;border:1px solid #e2e8f0">
+      <div style="font-size:10.5px;font-weight:700;color:#475569;margin-bottom:3px">${q.short}</div>
+      ${sc ? `<span style="font-size:10px;font-weight:700;color:${bb?.color};background:${bb?.bg};border-radius:4px;padding:1px 7px;margin-right:6px">${sc} · ${bb?.label}</span>` : ''}
+      ${r ? `<span style="font-size:12px;color:#64748b">${r}</span>` : ''}
+    </div>`;
+  }).filter(Boolean).join('');
+
+  if (!dimRows && !qRows) return `<span style="color:#94a3b8;font-style:italic">No scores recorded yet for this step.</span>`;
+
+  return `<div style="margin-bottom:10px">${dimRows}</div>${qRows}`;
+}
+
+function toggleStepSummary(sid) {
+  const row = document.getElementById(`step-expand-${sid}`);
+  const btn = document.getElementById(`btn-expand-${sid}`);
+  if (!row) return;
+  const open = row.style.display !== 'none';
+  row.style.display = open ? 'none' : 'table-row';
+  if (btn) { btn.textContent = open ? '+' : '−'; btn.style.background = open ? '#f1f5f9' : '#e0e7ff'; btn.style.color = open ? '#475569' : '#4338ca'; }
 }
 
 function renderBarChart(peerS) {
