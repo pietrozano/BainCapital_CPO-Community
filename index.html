@@ -504,7 +504,7 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
         <div class="pills">
           <span class="pill">9 Process Steps</span>
           <span class="pill">4 Dimensions</span>
-          <span class="pill">Foundation 30% · In Place 45% · Frontier 25%</span>
+          <span class="pill">Process Foundation 25% · AI in Production 50% · AI Frontier 25%</span>
           <span class="pill">~45 min to complete</span>
         </div>
       </div>
@@ -652,7 +652,7 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
       <!-- Step breakdown table -->
       <div class="step-table">
         <table>
-          <thead><tr><th>Process Step</th><th>Foundation</th><th>In Place</th><th>Frontier</th><th>Step Score</th><th>Band</th></tr></thead>
+          <thead><tr><th>Process Step</th><th>Process Foundation</th><th>AI in Production</th><th>AI Frontier</th><th>Step Score</th><th>Band</th></tr></thead>
           <tbody id="cmi-step-table"></tbody>
         </table>
       </div>
@@ -998,7 +998,9 @@ function getBand(score) {
 }
 
 const STEP_IDS = ['s-tech','s-org','s-01','s-02','s-03','s-04','s-05','s-06','s-07','s-08','s-09','s-ai'];
-const DIM_WEIGHTS = { D1: 0.30, D2: 0.45, D3: 0.25 };
+const DIM_WEIGHTS = { D1: 0.25, D2: 0.50, D3: 0.25 };
+const DIM_NAMES   = { D1: 'Process & Digital Foundation', D2: 'AI in Production', D3: 'AI at the Frontier' };
+const DIM_SHORT   = { D1: 'Process Foundation', D2: 'AI in Production', D3: 'AI Frontier' };
 const STEP_LABELS = {
   's-tech': '00 · Tech Stack',
   's-org': '0A · Organisation & Capability',
@@ -2589,7 +2591,7 @@ function updateNavScore(stepId) {
   const el = document.getElementById('score-' + stepId);
   if (!el) return;
   const s = STATE.scores[stepId] || {};
-  const vals = ['D1','D2','D3','D4'].map(d => s[d]).filter(Boolean);
+  const vals = ['D1','D2','D3'].map(d => s[d]).filter(Boolean);
   if (!vals.length) { el.textContent = '—'; el.className = 'nav-score'; return; }
   const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
   el.textContent = avg.toFixed(1);
@@ -2632,8 +2634,8 @@ function renderCMI() {
   }
 
   // Dim cards
-  const dimNames  = { D1:'Foundation', D2:'In Place', D3:'Frontier' };
-  const dimColors = { D1:'#1e40af', D2:'#9d174d', D3:'#166534' };
+  const dimNames  = DIM_NAMES;
+  const dimColors = { D1:'#0369a1', D2:'#5b21b6', D3:'#166534' };
   const dimCards  = document.getElementById('cmi-dim-cards');
   if (dimCards) {
     dimCards.innerHTML = ['D1','D2','D3'].map(d => {
@@ -2695,13 +2697,17 @@ function renderBarChart(peerS) {
   // Compute scores
   const myScores = radarSteps.map(sid => {
     const s = STATE.scores[sid] || {};
-    const vals = ['D1','D2','D3','D4'].map(d=>s[d]).filter(v=>typeof v==='number'&&v>0);
-    return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
+    const wts = DIM_WEIGHTS;
+    let w = 0, tw = 0;
+    Object.entries(wts).forEach(([d, wt]) => { if (s[d]) { w += s[d] * wt; tw += wt; } });
+    return tw > 0 ? w / tw : 0;
   });
   const peerScores = radarSteps.map(sid => {
     if (!peerS) return 0;
-    const vals = ['D1','D2','D3','D4'].map(d=>peerS[sid]?.[d]).filter(v=>typeof v==='number'&&v>0);
-    return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
+    const wts = DIM_WEIGHTS;
+    let w = 0, tw = 0;
+    Object.entries(wts).forEach(([d, wt]) => { const v = peerS[sid]?.[d]; if (v) { w += v * wt; tw += wt; } });
+    return tw > 0 ? w / tw : 0;
   });
 
   const angle = i => (Math.PI * 2 * i / N) - Math.PI / 2;
