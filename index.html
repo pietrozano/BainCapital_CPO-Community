@@ -2363,47 +2363,42 @@ function renderUseCaseBlock(stepId, type, dimLabel, title) {
   const ucCount    = Math.max(1, (STATE.useCases[stepId]?.[type]||[]).filter(u=>u?.name).length + 1);
   const maxUC      = Math.max(ucCount, (STATE.useCases[stepId]?.[type]||[]).length + 1);
 
-  // Shared field builder
-  const F = (id, label, ph, isTA, n) => {
+  // Compact field builder — label inline above, no textarea
+  const F = (id, label, ph, n) => {
     const base = `id="${id}" placeholder="${ph}" onchange="saveUC('${stepId}','${type}',${n},'${id.split('-').pop()}',this.value)"`;
-    const inputStyle = `width:100%;box-sizing:border-box;font-size:12.5px;font-family:inherit;border:1.5px solid var(--g200);border-radius:6px;background:white;color:var(--dark);transition:border-color 150ms,box-shadow 150ms;`;
-    const el = isTA
-      ? `<textarea ${base} style="${inputStyle}padding:7px 10px;min-height:52px;resize:vertical;" onfocus="this.style.borderColor='${accent.m}';this.style.boxShadow='0 0 0 3px ${accent.m}22'" onblur="this.style.borderColor='';this.style.boxShadow=''"></textarea>`
-      : `<input  ${base} style="${inputStyle}padding:0 10px;height:32px;" onfocus="this.style.borderColor='${accent.m}';this.style.boxShadow='0 0 0 3px ${accent.m}22'" onblur="this.style.borderColor='';this.style.boxShadow=''">`;
+    const inputStyle = `width:100%;box-sizing:border-box;font-size:12px;font-family:inherit;border:1.5px solid var(--g200);border-radius:5px;background:white;color:var(--dark);padding:0 8px;height:28px;transition:border-color 150ms,box-shadow 150ms;`;
     return `<div>
-      <div style="font-size:9.5px;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.55px;margin-bottom:4px;">${label}</div>
-      ${el}
+      <div style="font-size:9px;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;">${label}</div>
+      <input ${base} style="${inputStyle}" onfocus="this.style.borderColor='${accent.m}';this.style.boxShadow='0 0 0 3px ${accent.m}22'" onblur="this.style.borderColor='';this.style.boxShadow=''">
     </div>`;
   };
 
   function renderOneUC(n) {
     const uid   = `uc-${stepId}-${type}-${n}`;
-    const badge = `<span style="display:inline-flex;align-items:center;justify-content:center;background:${accent.m};color:white;font-size:10px;font-weight:800;letter-spacing:.6px;border-radius:5px;padding:2px 8px;min-width:36px;">${isExisting?'UC':'OPP'}${n}</span>`;
+    const badge = `<span style="display:inline-flex;align-items:center;justify-content:center;background:${accent.m};color:white;font-size:9px;font-weight:800;letter-spacing:.6px;border-radius:4px;padding:1px 7px;">${isExisting?'UC':'OPP'}${n}</span>`;
     const removeBtn = n > 1
-      ? `<button onclick="removeUC('${stepId}','${type}',${n})" style="margin-left:auto;background:none;border:1px solid rgba(255,255,255,.35);color:rgba(255,255,255,.85);font-size:11px;font-weight:600;cursor:pointer;border-radius:5px;padding:2px 10px;transition:background 150ms;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='none'">✕ Remove</button>` : '';
+      ? `<button onclick="removeUC('${stepId}','${type}',${n})" style="margin-left:auto;background:none;border:1px solid rgba(255,255,255,.35);color:rgba(255,255,255,.85);font-size:10px;font-weight:600;cursor:pointer;border-radius:4px;padding:1px 8px;transition:background 150ms;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='none'">✕</button>` : '';
 
     const fields = isExisting ? `
-      <div style="grid-column:1/-1">${F(`${uid}-name`,        'Use Case Name',               'e.g. AI-powered spend classification', false, n)}</div>
-      <div style="grid-column:1/-1">${F(`${uid}-description`, 'Brief Description',            'What does it do and what problem does it solve?', true, n)}</div>
-      ${F(`${uid}-technology`,  'AI Technology',               'e.g. Claude, ChatGPT, proprietary model…', false, n)}
-      ${F(`${uid}-integration`, 'ERP / Tool Integration',      'e.g. SAP Ariba, standalone, API…', false, n)}
-      ${F(`${uid}-adoption`,    'Adoption Rate',               'e.g. 80% of buyers, 5 categories, pilot only…', false, n)}
-      ${F(`${uid}-roi`,         'Business Impact / ROI',       'e.g. €200k savings/yr, −15% cycle time…', false, n)}
-      <div style="grid-column:1/-1">${F(`${uid}-enabler`, 'Enablers Required',              'e.g. Clean spend data, IT integration, change management…', true, n)}</div>
+      <div style="grid-column:1/-1">${F(`${uid}-name`,        'Use Case Name',          'e.g. AI-powered spend classification', n)}</div>
+      ${F(`${uid}-technology`,  'AI Technology',              'e.g. Claude, ChatGPT…', n)}
+      ${F(`${uid}-integration`, 'ERP / Tool',                 'e.g. SAP Ariba, API…', n)}
+      ${F(`${uid}-adoption`,    'Adoption Rate',              'e.g. 80% of buyers…', n)}
+      ${F(`${uid}-roi`,         'Business Impact / ROI',      'e.g. €200k/yr, −15% cycle time…', n)}
+      <div style="grid-column:1/-1">${F(`${uid}-enabler`, 'Enablers Required',         'e.g. Clean spend data, IT integration…', n)}</div>
     ` : `
-      <div style="grid-column:1/-1">${F(`${uid}-name`,        'Opportunity Name',             'e.g. Autonomous RFx drafting', false, n)}</div>
-      <div style="grid-column:1/-1">${F(`${uid}-description`, 'Brief Description',            'What would it do and what problem would it solve?', true, n)}</div>
-      ${F(`${uid}-roi`,     'Expected Impact / ROI',           'e.g. −20% sourcing cycle time, €150k/yr', false, n)}
-      ${F(`${uid}-enabler`, 'Implementation Enablers',        'e.g. Structured bid data, S2P platform…', false, n)}
+      <div style="grid-column:1/-1">${F(`${uid}-name`,    'Opportunity Name',           'e.g. Autonomous RFx drafting', n)}</div>
+      ${F(`${uid}-roi`,     'Expected Impact / ROI',       'e.g. −20% cycle time, €150k/yr', n)}
+      ${F(`${uid}-enabler`, 'Implementation Enablers',     'e.g. Structured bid data, S2P platform…', n)}
     `;
 
-    return `<div id="uc-row-${stepId}-${type}-${n}" style="margin-bottom:10px;border-radius:10px;overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid ${accent.b};">
-      <div style="display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,${accent.h},${accent.m});padding:8px 14px;">
+    return `<div id="uc-row-${stepId}-${type}-${n}" style="margin-bottom:8px;border-radius:8px;overflow:hidden;border:1px solid ${accent.b};">
+      <div style="display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,${accent.h},${accent.m});padding:5px 10px;">
         ${badge}
-        <span style="font-size:11px;font-weight:600;color:rgba(255,255,255,.75);letter-spacing:.2px;">${isExisting ? 'In-use AI use case' : 'AI opportunity'}</span>
+        <span style="font-size:10px;font-weight:600;color:rgba(255,255,255,.7);">${isExisting ? 'In-use AI use case' : 'AI opportunity'}</span>
         ${removeBtn}
       </div>
-      <div style="background:${accent.l};padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;">
+      <div style="background:${accent.l};padding:8px 10px;display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;">
         ${fields}
       </div>
     </div>`;
@@ -2411,21 +2406,21 @@ function renderUseCaseBlock(stepId, type, dimLabel, title) {
 
   const rows = Array.from({length: maxUC}, (_,i) => renderOneUC(i+1)).join('');
   const icon = isExisting
-    ? `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${accent.m}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`
-    : `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${accent.m}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>`;
+    ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${accent.m}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`
+    : `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${accent.m}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>`;
 
-  return `<div id="uc-block-${stepId}-${type}" style="background:white;border-radius:12px;border:1px solid var(--g200);box-shadow:var(--shadow-sm);overflow:hidden;margin-bottom:4px;">
-    <div style="display:flex;align-items:center;gap:10px;padding:12px 18px;background:linear-gradient(90deg,${accent.l},white);border-bottom:1.5px solid ${accent.b};">
+  return `<div id="uc-block-${stepId}-${type}" style="background:white;border-radius:10px;border:1px solid var(--g200);box-shadow:var(--shadow-sm);overflow:hidden;margin-bottom:4px;">
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:linear-gradient(90deg,${accent.l},white);border-bottom:1px solid ${accent.b};">
       ${icon}
       <div>
-        <div style="font-size:12px;font-weight:800;color:${accent.t};letter-spacing:.1px;">${isExisting ? 'AI USE CASES — CURRENTLY IN PLACE' : 'AI USE CASES — OPPORTUNITIES TO DEVELOP'}</div>
-        <div style="font-size:11px;color:var(--g500);margin-top:1px;">${isExisting ? 'Document AI solutions already live at this step' : 'Capture AI opportunities the CPO sees for this step'}</div>
+        <div style="font-size:11px;font-weight:800;color:${accent.t};letter-spacing:.1px;">${isExisting ? 'AI USE CASES — CURRENTLY IN PLACE' : 'AI USE CASES — OPPORTUNITIES TO DEVELOP'}</div>
+        <div style="font-size:10px;color:var(--g500);margin-top:1px;">${isExisting ? 'Document AI solutions already live at this step' : 'Capture AI opportunities the CPO sees for this step'}</div>
       </div>
     </div>
-    <div style="padding:14px 16px 8px;">
+    <div style="padding:10px 12px 6px;">
       <div id="uc-rows-${stepId}-${type}">${rows}</div>
       <button onclick="addUC('${stepId}','${type}')"
-        style="width:100%;margin-top:4px;padding:8px;background:${accent.l};border:1.5px dashed ${accent.b};border-radius:8px;font-size:12px;font-weight:700;color:${accent.m};cursor:pointer;transition:background 150ms,border-color 150ms;letter-spacing:.2px;"
+        style="width:100%;margin-top:2px;padding:6px;background:${accent.l};border:1.5px dashed ${accent.b};border-radius:6px;font-size:11px;font-weight:700;color:${accent.m};cursor:pointer;transition:background 150ms;letter-spacing:.1px;"
         onmouseover="this.style.background='${accent.b}'" onmouseout="this.style.background='${accent.l}'">
         + Add another ${isExisting ? 'use case' : 'opportunity'}
       </button>
