@@ -3168,9 +3168,9 @@ async function showBainCapDashboard() {
         </div>
         <div style="display:flex;align-items:center;gap:10px">
           <!-- DEMO BUTTON — remove before go-live -->
-          <button onclick="bcDrillCompany('company17')"
+          <button onclick="bcLoadDemo()"
             style="background:linear-gradient(135deg,#7c3aed,#6366f1);color:white;border:none;border-radius:6px;padding:5px 14px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.3px;display:flex;align-items:center;gap:6px">
-            <span style="font-size:14px">▶</span> Demo Company
+            <span style="font-size:14px">▶</span> Load Demo Data
           </button>
           <div style="font-size:11px;color:#64748b">Signed in as Bain Capital</div>
           <button onclick="logout()" style="background:#1e293b;color:#94a3b8;border:1px solid #334155;border-radius:6px;padding:5px 12px;font-size:11px;cursor:pointer;font-weight:600">Logout</button>
@@ -3194,6 +3194,42 @@ async function showBainCapDashboard() {
     return;
   }
   bcShowTab('overview');
+}
+
+async function bcLoadDemo() {
+  const btn = document.querySelector('[onclick="bcLoadDemo()"]');
+  if (btn) { btn.textContent = '⏳ Loading…'; btn.disabled = true; }
+  try {
+    const all = await api('GET', '/api/admin/all');
+    const demo = all.find(c => c.id === 'company17');
+    if (!demo) { alert('Demo company not found.'); return; }
+
+    // If demo not already in _bcData, inject it — otherwise ensure it's marked submitted
+    const exists = _bcData.find(c => c.id === 'company17');
+    if (!exists) {
+      _bcData.unshift({ ...demo, submitted: true });
+    } else {
+      exists.submitted = true;
+      exists.response  = demo.response;
+    }
+    // Also mark any other non-submitted company with demo data so portfolio looks populated
+    _bcData.forEach(c => {
+      if (!c.submitted && !c.response?.cmi) {
+        c._demoInjected = true;
+        c.submitted = true;
+        c.response  = JSON.parse(JSON.stringify(demo.response));
+        // Slightly vary the CMI so it's not identical
+        if (c.response.cmi) c.response.cmi = +Math.max(1.5, Math.min(4, c.response.cmi + (Math.random()-0.5)*0.8)).toFixed(2);
+      }
+    });
+
+    bcShowTab(_bcTab); // re-render current tab with demo data
+    setTimeout(bcDrawChart, 80);
+  } catch(e) {
+    alert('Error loading demo: ' + e.message);
+  } finally {
+    if (btn) { btn.innerHTML = '<span style="font-size:14px">✓</span> Demo Active'; btn.style.background = '#166534'; btn.disabled = false; }
+  }
 }
 
 function bcShowTab(tab) {
