@@ -1,0 +1,250 @@
+{
+  "fedrigoni": {
+    "scores": {},
+    "rawScores": {},
+    "useCases": {},
+    "notes": {},
+    "general": {},
+    "cmi": null,
+    "companyName": "Fedrigoni",
+    "spend": "",
+    "ftes": "",
+    "erp": "",
+    "_company": "fedrigoni",
+    "_savedAt": "2026-07-14T11:36:08.912Z"
+  },
+  "company16": {
+    "scores": {
+      "s-org": {
+        "D1": 3.2,
+        "D2": 2.5,
+        "D3": 1.8
+      },
+      "s-01": {
+        "D1": 3.5,
+        "D2": 3.0,
+        "D3": 2.5
+      },
+      "s-02": {
+        "D1": 2.8,
+        "D2": 3.5,
+        "D3": 3.2
+      },
+      "s-03": {
+        "D1": 3.0,
+        "D2": 2.8,
+        "D3": 2.0
+      },
+      "s-04": {
+        "D1": 2.5,
+        "D2": 3.2,
+        "D3": 3.5
+      },
+      "s-05": {
+        "D1": 3.8,
+        "D2": 2.5,
+        "D3": 1.5
+      },
+      "s-06": {
+        "D1": 4.0,
+        "D2": 3.5,
+        "D3": 2.0
+      },
+      "s-07": {
+        "D1": 4.2,
+        "D2": 3.0,
+        "D3": 1.8
+      },
+      "s-08": {
+        "D1": 3.5,
+        "D2": 4.0,
+        "D3": 2.5
+      },
+      "s-09": {
+        "D1": 2.5,
+        "D2": 3.5,
+        "D3": 3.8
+      },
+      "s-ai": {
+        "D1": 2.0,
+        "D2": 3.0,
+        "D3": 4.2
+      }
+    },
+    "rawScores": {
+      "q-01-d1-01": 3,
+      "q-01-d1-02": 4,
+      "q-01-d2-01": 3,
+      "q-01-d3-01": 2,
+      "q-01-d3-02": 3,
+      "q-02-d1-01": 3,
+      "q-02-d2-01": 4,
+      "q-02-d2-02": 3,
+      "q-02-d3-01": 3,
+      "q-02-d3-02": 3,
+      "q-03-d1-01": 3,
+      "q-03-d2-01": 3,
+      "q-03-d3-01": 2,
+      "q-04-d1-01": 2,
+      "q-04-d2-01": 3,
+      "q-04-d2-02": 4,
+      "q-04-d3-01": 3,
+      "q-04-d3-02": 4,
+      "q-05-d1-01": 4,
+      "q-05-d2-01": 2,
+      "q-05-d3-01": 2,
+      "q-06-d1-01": 4,
+      "q-06-d2-01": 4,
+      "q-06-d3-01": 2,
+      "q-07-d1-01": 4,
+      "q-07-d2-01": 3,
+      "q-07-d3-01": 2,
+      "q-08-d1-01": 3,
+      "q-08-d2-01": 4,
+      "q-08-d3-01": 2,
+      "q-08-d3-02": 3,
+      "q-09-d1-01": 2,
+      "q-09-d2-01": 4,
+      "q-09-d3-01": 4,
+      "q-ai-d1-01": 2,
+      "q-ai-d2-01": 3,
+      "q-ai-d3-01": 4,
+      "q-ai-d3-02": 4
+    },
+    "useCases": {
+      "_all": {
+        "existing": [
+          {
+            "step": "s-02",
+            "name": "AI-powered spend classification",
+            "technology": "Claude API (Anthropic)",
+            "integration": "SAP S/4HANA + Ariba",
+            "adoption": "85% of indirect spend, 12 categories",
+            "roi": "\u20ac420k/yr savings, \u221235% reclassification effort",
+            "enabler": "Clean GL data, taxonomy governance"
+          },
+          {
+            "step": "s-04",
+            "name": "Automated RFx template generation",
+            "technology": "GPT-4o (Azure OpenAI)",
+            "integration": "Jaggaer RFx module",
+            "adoption": "Strategic sourcing team (8 buyers)",
+            "roi": "\u221240% RFx drafting time, from 3 days to <1 day",
+            "enabler": "Structured category playbooks, buyer training"
+          },
+          {
+            "step": "s-08",
+            "name": "Invoice anomaly detection & auto-match",
+            "technology": "Custom ML model (XGBoost)",
+            "integration": "SAP FI / Concur",
+            "adoption": "100% of PO invoices (\u20ac280M)",
+            "roi": "\u221260% manual interventions, \u20ac180k/yr FTE saving",
+            "enabler": "PO data quality, IT integration with AP team"
+          },
+          {
+            "step": "s-09",
+            "name": "Procurement analytics chatbot (internal)",
+            "technology": "Claude claude-3-haiku (Anthropic)",
+            "integration": "Power BI embedded + SharePoint",
+            "adoption": "CPO + 4 category managers",
+            "roi": "Faster board reporting, \u22122 days/month",
+            "enabler": "Centralised data warehouse, SSO setup"
+          },
+          {
+            "step": "s-03",
+            "name": "Supplier risk radar (NLP news monitoring)",
+            "technology": "Azure Cognitive Services + GPT-4",
+            "integration": "Ariba Supplier Portal (manual alert sync)",
+            "adoption": "Top 150 strategic suppliers monitored",
+            "roi": "2 disruptions avoided, estimated \u20ac1.2M risk mitigated",
+            "enabler": "Supplier master data cleanliness, legal sign-off"
+          }
+        ],
+        "potential": [
+          {
+            "step": "s-04",
+            "name": "Autonomous should-cost modelling",
+            "roi": "\u221225% negotiation prep time, better price anchoring",
+            "enabler": "BOM data, commodity price feeds, category expertise"
+          },
+          {
+            "step": "s-05",
+            "name": "AI contract obligation extraction & alerting",
+            "roi": "Avoid \u20ac500k+/yr in missed SLA penalties",
+            "enabler": "Digitised contract repository, legal review workflow"
+          },
+          {
+            "step": "s-02",
+            "name": "Dynamic category strategy co-pilot",
+            "roi": "Accelerate strategy refresh cycles by 50%",
+            "enabler": "Market intelligence API, structured category data"
+          },
+          {
+            "step": "s-09",
+            "name": "Predictive savings pipeline forecasting",
+            "roi": "Improve forecast accuracy from \u00b130% to \u00b110%",
+            "enabler": "Historical pipeline data, integration with finance system"
+          }
+        ]
+      }
+    },
+    "techStack": {
+      "erp": "SAP S/4HANA (2023)",
+      "s2p": "SAP Ariba + Jaggaer (dual-platform: Ariba for direct, Jaggaer for indirect)",
+      "analytics": "Power BI (embedded), Snowflake data warehouse",
+      "other": "Coupa (T&E), Concur, ServiceNow (IT procurement), Microsoft Copilot (pilots)"
+    },
+    "general": {
+      "org-spend": "\u20ac650M",
+      "org-ftes": "42 FTEs in procurement function",
+      "org-structure": "Category-led with 4 clusters: Direct, Indirect, Capex, IT"
+    },
+    "aiReasoning": {
+      "s-01": {
+        "q-01-d1-01": "Procurement strategy is documented at category level but not yet formally linked to AI transformation roadmap. Board-level visibility exists but KPIs are not AI-specific.",
+        "q-01-d2-01": "Core ERP is modern (S/4HANA), good data foundation, but S2P tools are split across two platforms causing integration friction."
+      },
+      "s-02": {
+        "q-02-d1-01": "Category management process is well-defined across the main clusters; spend analytics is strong thanks to the Snowflake warehouse.",
+        "q-02-d2-01": "AI spend classification is live and performing well at 85% coverage \u2014 a genuine competitive advantage vs portfolio peers."
+      },
+      "s-04": {
+        "q-04-d2-02": "GPT-4o RFx generation is the most mature AI deployment: fully embedded in buyer workflow, strong adoption, measurable time savings.",
+        "q-04-d3-02": "Should-cost AI is identified as high priority but not yet started \u2014 represents the biggest near-term AI value unlock."
+      },
+      "s-08": {
+        "q-08-d2-01": "Invoice anomaly detection is the highest-ROI live use case. Full coverage of PO invoices with measurable reduction in manual effort."
+      },
+      "s-ai": {
+        "q-ai-d3-01": "AI governance is nascent \u2014 no formal AI ethics policy, no model risk framework, no AI centre of excellence. High priority gap given the live deployments.",
+        "q-ai-d3-02": "Data privacy and AI vendor management are handled ad hoc. Needs formalisation before scaling further AI use cases."
+      }
+    },
+    "aiScores": {
+      "s-01": {
+        "q-01-d1-01": 3,
+        "q-01-d2-01": 3
+      },
+      "s-02": {
+        "q-02-d1-01": 3,
+        "q-02-d2-01": 4
+      },
+      "s-04": {
+        "q-04-d2-02": 4,
+        "q-04-d3-02": 3
+      },
+      "s-08": {
+        "q-08-d2-01": 4
+      },
+      "s-ai": {
+        "q-ai-d3-01": 4,
+        "q-ai-d3-02": 4
+      }
+    },
+    "cmi": 2.94,
+    "analyzed": true,
+    "companyName": "Portfolio Co. 16",
+    "_company": "company16",
+    "_savedAt": "2026-07-15T09:00:00.000Z"
+  }
+}
