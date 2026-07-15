@@ -1067,6 +1067,18 @@ document.addEventListener('DOMContentLoaded', () => {
       applyRestoredState(s.data || {});
       if (s.surveyIndex !== undefined) SURVEY_INDEX = s.surveyIndex;
       showApp();
+      // Always re-fetch fresh data from server in background to pick up any new scores/reasoning
+      if (STATE.role === 'company') {
+        api('GET', '/api/my-response').then(fresh => {
+          applyRestoredState(fresh);
+          saveSession();
+          if (document.getElementById('app-screen').style.display !== 'none') {
+            renderAllSteps();
+            updateSidebar();
+            if (STATE.currentSection === 's-cmi') renderCMI();
+          }
+        }).catch(() => {});
+      }
       return;
     } catch {}
   }
