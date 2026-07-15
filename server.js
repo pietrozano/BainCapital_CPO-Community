@@ -4,6 +4,9 @@
  * Run: node server.js   (then open http://localhost:3000)
  */
 
+// Single source of truth for dimension weights — must match DIM_WEIGHTS in index.html
+const DIM_WEIGHTS = { D1: 0.30, D2: 0.45, D3: 0.25 };
+
 const express   = require('express');
 const fs        = require('fs');
 const path      = require('path');
@@ -384,8 +387,7 @@ Respond ONLY with valid JSON: {"score": <integer 1-4>, "reasoning": "<one concis
 
     // Compute CMI
     const stepCMIs = Object.values(scores).map(s => {
-      const w = { D1: 0.30, D2: 0.45, D3: 0.25 };
-      return (s.D1||0)*w.D1 + (s.D2||0)*w.D2 + (s.D3||0)*w.D3;
+      return (s.D1||0)*DIM_WEIGHTS.D1 + (s.D2||0)*DIM_WEIGHTS.D2 + (s.D3||0)*DIM_WEIGHTS.D3;
     });
     const cmi = stepCMIs.length ? +(stepCMIs.reduce((a,b)=>a+b,0)/stepCMIs.length).toFixed(2) : null;
 
@@ -443,7 +445,7 @@ app.post('/api/override', auth, (req, res) => {
       D3: avg(vals.slice(Math.ceil(n*0.7))) || avg(vals)
     };
   }
-  const stepCMIs = Object.values(scores).map(s=>(s.D1||0)*0.30+(s.D2||0)*0.45+(s.D3||0)*0.25);
+  const stepCMIs = Object.values(scores).map(s=>(s.D1||0)*DIM_WEIGHTS.D1+(s.D2||0)*DIM_WEIGHTS.D2+(s.D3||0)*DIM_WEIGHTS.D3);
   data[companyId].scores = scores;
   data[companyId].cmi    = stepCMIs.length ? +(stepCMIs.reduce((a,b)=>a+b,0)/stepCMIs.length).toFixed(2) : null;
   data[companyId]._overriddenAt = new Date().toISOString();

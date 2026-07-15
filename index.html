@@ -549,7 +549,7 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
       </div>
       <div class="nav-btns">
         <div></div>
-        <button class="btn-next" onclick="showSection('s-00')">Start Assessment →</button>
+        <button class="btn-next" onclick="showSection('s-org')">Start Assessment →</button>
       </div>
     </div>
 
@@ -590,7 +590,7 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
       </div>
       <div class="nav-btns">
         <button class="btn-back" onclick="showSection('s-cover')">← Back</button>
-        <button class="btn-next" onclick="showSection('s-01')">Next: Strategy &amp; Governance →</button>
+        <button class="btn-next" onclick="showSection('s-org')">Next: Organisation &amp; Capability →</button>
       </div>
     </div>
 
@@ -1006,7 +1006,7 @@ function getBand(score) {
 }
 
 const STEP_IDS = ['s-tech','s-org','s-01','s-02','s-03','s-04','s-05','s-06','s-07','s-08','s-09','s-ai'];
-const DIM_WEIGHTS = { D1: 0.40, D2: 0.35, D3: 0.25 };
+const DIM_WEIGHTS = { D1: 0.30, D2: 0.45, D3: 0.25 };
 const DIM_NAMES   = { D1: 'Process & Digital Foundation', D2: 'AI in Production', D3: 'AI at Scale' };
 const DIM_SHORT   = { D1: 'Process Foundation', D2: 'AI in Production', D3: 'AI at Scale' };
 const STEP_LABELS = {
@@ -1174,31 +1174,71 @@ function showApp() {
 }
 
 function applyRoleUI() {
-  // BCG: show company picker in header; hide submit button for read-only
   const role = STATE.role;
   const headerName = document.getElementById('header-co-name');
   if (headerName) {
-    if (role === 'bcg') {
-      headerName.textContent = 'BCG × Inverto';
-      headerName.style.background = 'rgba(0,168,89,.25)';
-    } else {
-      headerName.textContent = STATE.identity?.name || '—';
-    }
+    headerName.textContent = STATE.identity?.name || '—';
   }
-  // Hide save/submit if read-only (baincap handled separately)
   if (!canEdit()) {
     document.querySelectorAll('.btn-green,.btn-submit').forEach(b => b.style.display = 'none');
   }
-  // Show tech stack map only for BCG/BainCap/admin
-  // Tech Stack Map visible to all roles
   const techMapNav = document.getElementById('nav-s-techmap');
   if (techMapNav) techMapNav.style.display = 'flex';
-  // BCG role badge
+  // BCG: inject company picker into header
   if (role === 'bcg') {
-    const badge = document.createElement('div');
-    badge.style.cssText = 'background:#00A859;color:white;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;';
-    badge.textContent = 'BCG EDIT ACCESS';
-    document.querySelector('.header-right')?.prepend(badge);
+    const hr = document.querySelector('.header-right');
+    if (hr && !document.getElementById('bcg-company-picker')) {
+      const wrap = document.createElement('div');
+      wrap.id = 'bcg-company-picker';
+      wrap.style.cssText = 'display:flex;align-items:center;gap:8px;margin-right:8px';
+      wrap.innerHTML = `
+        <span style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px">Viewing:</span>
+        <select id="bcg-co-select" onchange="bcgSwitchCompany(this.value)"
+          style="background:#1e293b;color:white;border:1px solid #334155;border-radius:7px;padding:5px 10px;font-size:12px;font-weight:600;cursor:pointer;outline:none;max-width:180px">
+          <option value="">— Select company —</option>
+        </select>`;
+      hr.prepend(wrap);
+      bcgLoadCompanyList();
+    }
+  }
+}
+
+async function bcgLoadCompanyList() {
+  try {
+    const all = await api('GET', '/api/admin/all');
+    const sel = document.getElementById('bcg-co-select');
+    if (!sel) return;
+    all.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = c.name + (c.submitted ? ' ✓' : '');
+      if (STATE.identity?.id === c.id) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  } catch {}
+}
+
+async function bcgSwitchCompany(companyId) {
+  if (!companyId) return;
+  try {
+    const all = await api('GET', '/api/admin/all');
+    const co  = all.find(c => c.id === companyId);
+    if (!co) return;
+    STATE.identity = { id: co.id, name: co.name };
+    applyRestoredState(co.response || {});
+    STATE.analyzed = !!(co.response?.cmi);
+    saveSession();
+    populateCompanyDetails();
+    renderAllSteps();
+    updateSidebar();
+    const headerName = document.getElementById('header-co-name');
+    if (headerName) headerName.textContent = co.name;
+    // Navigate to results if analyzed, otherwise cover
+    showSection(STATE.analyzed ? 's-cmi' : 's-cover');
+    if (STATE.analyzed) renderCMI();
+    try { STATE.portfolio = await api('GET', '/api/portfolio'); } catch {}
+  } catch(e) {
+    alert('Failed to load company: ' + e.message);
   }
 }
 
@@ -3285,7 +3325,7 @@ function bcRenderOverview() {
       .map(sid => r?.scores?.[sid])
       .filter(Boolean)
       .map(s => {
-        const avg = (s.D1*0.30 + s.D2*0.45 + s.D3*0.25);
+        const avg = (s.D1*DIM_WEIGHTS.D1 + s.D2*DIM_WEIGHTS.D2 + s.D3*DIM_WEIGHTS.D3);
         const b   = getBand(avg);
         return `<div style="width:8px;height:8px;border-radius:50%;background:${b?.color||'#e2e8f0'};display:inline-block" title="${avg.toFixed(2)}"></div>`;
       }).join('');
@@ -3398,7 +3438,7 @@ function bcExportCSV() {
     const avg = arr => arr.length?(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2):'';
     const stepScores = stepIds.map(s=>{
       const sc = r.scores?.[s];
-      return sc ? (sc.D1*0.30+sc.D2*0.45+sc.D3*0.25).toFixed(2) : '';
+      return sc ? (sc.D1*DIM_WEIGHTS.D1+sc.D2*DIM_WEIGHTS.D2+sc.D3*DIM_WEIGHTS.D3).toFixed(2) : '';
     });
     return [c.name,c.sector||'',c.cpo||'',r.cmi?.toFixed(2)||'',band?.label||'',avg(d1),avg(d2),avg(d3),...stepScores].join(',');
   });
@@ -3659,7 +3699,7 @@ async function bcDrillCompany(companyId) {
       const band = getBand(co.response?.cmi);
       const stepScores = STEP_IDS.filter(s=>!QUESTIONS[s]?.isTechStack).map(s=>{
         const sc=co.response?.scores?.[s]; if(!sc) return '';
-        const avg=sc.D1*0.30+sc.D2*0.45+sc.D3*0.25; const b=getBand(avg);
+        const avg=sc.D1*DIM_WEIGHTS.D1+sc.D2*DIM_WEIGHTS.D2+sc.D3*DIM_WEIGHTS.D3; const b=getBand(avg);
         return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f1f5f9">
           <span style="font-size:12px;color:#334155">${STEP_LABELS[s].replace(/^\w+ · /,'')}</span>
           <span style="font-size:12px;font-weight:700;color:${b?.color||'#94a3b8'};background:${b?.bg||'#f1f5f9'};border-radius:5px;padding:2px 8px">${avg.toFixed(2)} · ${b?.label||''}</span>
