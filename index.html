@@ -364,13 +364,17 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
   <!-- Header -->
   <header class="header">
     <div class="header-left">
-      <div class="header-logo" style="display:flex;align-items:center;gap:10px">
-        <img src="logo-bcg.png" alt="BCG" style="height:16px;filter:brightness(0) invert(1);opacity:.9">
-        <span style="color:rgba(255,255,255,.3);font-size:14px">×</span>
-        <img src="logo-inverto.png" alt="Inverto" style="height:26px;filter:brightness(0) invert(1);opacity:.9">
+      <div class="header-logo" style="display:flex;align-items:center;gap:12px">
+        <img src="logo-bcg.png" alt="BCG" style="height:18px;filter:brightness(0) invert(1);opacity:1;display:block">
+        <span style="color:rgba(255,255,255,.25);font-size:14px;font-weight:300">×</span>
+        <img src="logo-inverto.png" alt="Inverto" style="height:28px;filter:brightness(0) invert(1);opacity:1;display:block">
       </div>
       <div class="header-sep"></div>
-      <div class="header-title" style="display:flex;align-items:center;gap:8px">Procurement AI Maturity Assessment · <img src="logo-baincapital.png" alt="Bain Capital" style="height:22px;filter:brightness(0) invert(1);opacity:.9;vertical-align:middle"></div>
+      <div class="header-title" style="display:flex;align-items:center;gap:10px">
+        Procurement AI Maturity Assessment
+        <span style="color:rgba(255,255,255,.25)">·</span>
+        <img src="logo-baincapital.png" alt="Bain Capital" style="height:20px;filter:brightness(0) invert(1);opacity:1;display:inline-block;vertical-align:middle">
+      </div>
     </div>
     <div class="header-right">
       <div class="co-chip" id="header-co-name">—</div>
@@ -406,6 +410,22 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
       <div class="nav-item active" onclick="showSection('s-cover')" id="nav-s-cover">
         <div class="nav-badge nb-special">ℹ</div>
         <div class="nav-label">Company Details</div>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Results</div>
+      <div class="nav-item" onclick="showSection('s-cmi')" id="nav-s-cmi">
+        <div class="nav-badge nb-special">📊</div>
+        <div class="nav-label">My Score vs Peers</div>
+      </div>
+      <div class="nav-item" onclick="showSection('s-techmap')" id="nav-s-techmap">
+        <span class="nav-badge nb-special" style="font-size:9px">🗺</span>
+        <span class="nav-label">Tech Stack Map</span>
+      </div>
+      <div class="nav-item" onclick="showSection('s-inv')" id="nav-s-inv">
+        <div class="nav-badge nb-special">💡</div>
+        <div class="nav-label">Portfolio AI Library</div>
       </div>
     </div>
 
@@ -464,22 +484,6 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
         <div class="nav-badge nb-empty" id="badge-s-ai">AI</div>
         <div class="nav-label">AI &amp; Tech Deep Dive</div>
         <div class="nav-score" id="score-s-ai">—</div>
-      </div>
-    </div>
-
-    <div class="nav-section">
-      <div class="nav-section-title">Results</div>
-      <div class="nav-item" onclick="showSection('s-cmi')" id="nav-s-cmi">
-        <div class="nav-badge nb-special">📊</div>
-        <div class="nav-label">My Score vs Peers</div>
-      </div>
-      <div class="nav-item" onclick="showSection('s-techmap')" id="nav-s-techmap">
-        <span class="nav-badge nb-special" style="font-size:9px">🗺</span>
-        <span class="nav-label">Tech Stack Map</span>
-      </div>
-      <div class="nav-item" onclick="showSection('s-inv')" id="nav-s-inv">
-        <div class="nav-badge nb-special">💡</div>
-        <div class="nav-label">Portfolio AI Library</div>
       </div>
     </div>
   </nav>
@@ -2675,19 +2679,26 @@ function renderBarChart(peerS) {
   const W = canvas.width, H = canvas.height;
   ctx.clearRect(0, 0, W, H);
 
-  const N = STEP_IDS.filter(sid => !QUESTIONS[sid]?.isTechStack).length;
+  const radarSteps = STEP_IDS.filter(sid => !QUESTIONS[sid]?.isTechStack);
+  const N = radarSteps.length;
   const cx = W / 2, cy = H / 2 + 10;
   const R = Math.min(W, H) * 0.36;
   const MAX = 4;
-  const labels = STEP_IDS.map(sid => STEP_LABELS[sid].replace(/^\d+ · /,'').replace('Strategic Sourcing (RFx)','Strategic Sourcing').replace('Reporting & Analytics','Reporting &\nAnalytics').replace('AI & Tech Deep Dive','AI & Tech\nDeep Dive'));
+  const labels = radarSteps.map(sid => STEP_LABELS[sid]
+    .replace(/^\w+ · /,'')
+    .replace('Strategic Sourcing (RFx)','Strategic\nSourcing')
+    .replace('Reporting & Analytics','Reporting &\nAnalytics')
+    .replace('AI & Tech Deep Dive','AI & Tech\nDeep Dive')
+    .replace('Organisation & Capability','Org &\nCapability')
+  );
 
   // Compute scores
-  const myScores = STEP_IDS.map(sid => {
+  const myScores = radarSteps.map(sid => {
     const s = STATE.scores[sid] || {};
     const vals = ['D1','D2','D3','D4'].map(d=>s[d]).filter(v=>typeof v==='number'&&v>0);
     return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
   });
-  const peerScores = STEP_IDS.map(sid => {
+  const peerScores = radarSteps.map(sid => {
     if (!peerS) return 0;
     const vals = ['D1','D2','D3','D4'].map(d=>peerS[sid]?.[d]).filter(v=>typeof v==='number'&&v>0);
     return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
