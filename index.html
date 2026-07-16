@@ -1322,9 +1322,22 @@ function renderSurveyQuestion() {
   const total = SURVEY_QUESTIONS.length;
   const pct = Math.round((SURVEY_INDEX / total) * 100);
 
+  // Only count real questions (not welcome, intro, or upload slides)
+  const realQuestions = SURVEY_QUESTIONS.filter(q => !q.isWelcome && !q.isIntro && !q.isTechUpload && !q.isUseCaseBlock);
+  const realTotal = realQuestions.length;
+  const isCountable = !item.isWelcome && !item.isIntro && !item.isTechUpload && !item.isUseCaseBlock;
+  const realIndex = isCountable ? realQuestions.indexOf(item) + 1 : null;
+
   document.getElementById('survey-progress-fill').style.width = pct + '%';
   document.getElementById('survey-step-label').textContent = item.isWelcome ? 'Welcome' : item.isUseCaseBlock ? item.stepTitle : (item.tag + ' · ' + item.stepTitle);
-  document.getElementById('survey-q-counter').textContent = (SURVEY_INDEX + 1) + ' / ' + total;
+  const counterEl = document.getElementById('survey-q-counter');
+  if (isCountable) {
+    counterEl.textContent = realIndex + ' / ' + realTotal;
+    counterEl.style.display = '';
+  } else {
+    counterEl.textContent = '';
+    counterEl.style.display = 'none';
+  }
 
   const isLast = SURVEY_INDEX === total - 1;
   document.getElementById('survey-next').style.display   = isLast ? 'none' : 'inline-flex';
