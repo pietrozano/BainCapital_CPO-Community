@@ -777,7 +777,7 @@ const QUESTIONS = {
     ]
   },
   's-01': {
-    title: 'Strategy & Governance',
+    title: 'AI Strategy & Governance',
     tag: 'Step 01',
     desc: 'AI strategy, roadmap, budget, and governance for procurement.',
     intro: "We'll start with strategy and governance — the foundation of any successful AI transformation. This section explores whether AI has a defined place in your procurement agenda, who owns it, and how decisions are made and tracked. Please answer in your own words; there is no expectation of perfection.",
@@ -1012,7 +1012,7 @@ const DIM_SHORT   = { D1: 'Process Foundation', D2: 'AI in Production', D3: 'AI 
 const STEP_LABELS = {
   's-tech': '00 · Tech Stack',
   's-org': '0A · Organisation & Capability',
-  's-01': '01 · Strategy & Governance',
+  's-01': '01 · AI Strategy & Governance',
   's-02': '02 · Category Management',
   's-03': '03 · Supplier Management',
   's-04': '04 · Strategic Sourcing (RFx)',
@@ -1281,21 +1281,23 @@ function buildSurveyQuestions() {
   for (const stepId of STEP_IDS) {
     const step = QUESTIONS[stepId];
     if (!step) continue;
+    // Tech stack moved to end — skip here
+    if (step.isTechStack) continue;
     // Section intro card
     if (step.intro) {
       SURVEY_QUESTIONS.push({ isIntro: true, stepId, stepTitle: step.title, tag: step.tag, intro: step.intro, desc: step.desc });
     }
-    if (step.isTechStack) {
-      // Dedicated document upload question first
-      SURVEY_QUESTIONS.push({ isTechUpload: true, stepId, stepTitle: step.title, tag: step.tag });
-      for (const field of step.fields) {
-        SURVEY_QUESTIONS.push({ stepId, fieldId: field.id, field, isTechStack: true, stepTitle: step.title, tag: step.tag });
-      }
-    } else {
-      for (const q of (step.questions || [])) {
-        SURVEY_QUESTIONS.push({ stepId, qId: q.id, question: q, isTechStack: false, stepTitle: step.title, tag: step.tag });
-      }
-      // (UC blocks moved to end of survey)
+    for (const q of (step.questions || [])) {
+      SURVEY_QUESTIONS.push({ stepId, qId: q.id, question: q, isTechStack: false, stepTitle: step.title, tag: step.tag });
+    }
+  }
+  // Tech stack just before use cases
+  const techStep = QUESTIONS['s-tech'];
+  if (techStep) {
+    SURVEY_QUESTIONS.push({ isIntro: true, stepId: 's-tech', stepTitle: techStep.title, tag: techStep.tag, intro: techStep.intro, desc: techStep.desc });
+    SURVEY_QUESTIONS.push({ isTechUpload: true, stepId: 's-tech', stepTitle: techStep.title, tag: techStep.tag });
+    for (const field of techStep.fields) {
+      SURVEY_QUESTIONS.push({ stepId: 's-tech', fieldId: field.id, field, isTechStack: true, stepTitle: techStep.title, tag: techStep.tag });
     }
   }
   // Two dedicated UC slides at the very end
@@ -2881,7 +2883,7 @@ function renderBarChart(peerS) {
     .replace('Reporting & Analytics','Reporting &\nAnalytics')
     .replace('AI Governance & Enablement','AI\nGovernance')
     .replace('Organisation & Capability','Org &\nCapability')
-    .replace('Strategy & Governance','Strategy &\nGovernance')
+    .replace('AI Strategy & Governance','AI Strategy &\nGovernance')
     .replace('Contract Management','Contract\nMgmt')
     .replace('PO Management','PO Mgmt')
     .replace('Invoice & AP','Invoice\n& AP')
