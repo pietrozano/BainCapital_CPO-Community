@@ -709,11 +709,10 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
         </div>
         <div style="font-size:12px;color:#64748b;margin-bottom:18px">33 proven AI use cases across 9 procurement phases — drawn from BCG &amp; Inverto engagements worldwide. Click any card to explore.</div>
 
-        <!-- Phase filter tabs -->
-        <div id="bcg-lib-tabs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px"></div>
-
-        <!-- Use case grid -->
-        <div id="bcg-lib-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px"></div>
+        <!-- Kanban columns -->
+        <div style="overflow-x:auto;padding-bottom:8px">
+          <div id="bcg-lib-cols" style="display:flex;gap:12px;min-width:max-content"></div>
+        </div>
       </div>
 
       <!-- BCG UC detail modal -->
@@ -3225,41 +3224,45 @@ const BCG_USE_CASES = [
   { phase: 's-ai', name: 'Procurement Board Expert', short: 'Board Expert', desc: 'AI agent for integrated scenario-based procurement decisions at executive and board level. Synthesizes portfolio-wide data to support strategic procurement decisions and board reporting.', impact: null, tag: 'BCG' },
 ];
 
-let _bcgActivePhase = 'all';
-
 function renderBcgLibrary() {
-  const tabsEl = document.getElementById('bcg-lib-tabs');
-  const gridEl = document.getElementById('bcg-lib-grid');
-  if (!tabsEl || !gridEl) return;
+  const colsEl = document.getElementById('bcg-lib-cols');
+  if (!colsEl) return;
 
-  // Tabs
-  tabsEl.innerHTML = BCG_PHASES.map(p => {
-    const count = p.id === 'all' ? BCG_USE_CASES.length : BCG_USE_CASES.filter(u => u.phase === p.id).length;
-    const active = _bcgActivePhase === p.id;
-    return `<button onclick="_bcgActivePhase='${p.id}';renderBcgLibrary()" style="background:${active ? '#1a2e4a' : '#f1f5f9'};color:${active ? 'white' : '#64748b'};border:none;border-radius:20px;padding:5px 13px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all 150ms">${p.label} <span style="opacity:.65">(${count})</span></button>`;
-  }).join('');
+  const phases = [
+    { id: 's-02', label: 'Category Management' },
+    { id: 's-03', label: 'Supplier Management' },
+    { id: 's-04', label: 'Strategic Sourcing (RFx)' },
+    { id: 's-05', label: 'Contract Management' },
+    { id: 's-06', label: 'PR & Requisition' },
+    { id: 's-07', label: 'PO Management' },
+    { id: 's-08', label: 'Invoice & AP' },
+    { id: 's-ai', label: 'AI Governance & Enablement' },
+  ];
 
-  // Grid
-  const filtered = _bcgActivePhase === 'all' ? BCG_USE_CASES : BCG_USE_CASES.filter(u => u.phase === _bcgActivePhase);
-  const phaseColors = { 's-01':'#7c3aed','s-02':'#0369a1','s-03':'#047857','s-04':'#b45309','s-05':'#be185d','s-06':'#0891b2','s-07':'#4338ca','s-08':'#065f46','s-ai':'#1a2e4a' };
-  const phaseLabels = { 's-01':'Foundation','s-02':'Category Mgmt','s-03':'Supplier Mgmt','s-04':'Strategic Sourcing','s-05':'Contract Mgmt','s-06':'PR & Req','s-07':'PO Mgmt','s-08':'Invoice & AP','s-ai':'AI Enablement' };
-
-  gridEl.innerHTML = filtered.map((uc, i) => {
-    const color = phaseColors[uc.phase] || '#1a2e4a';
-    const pLabel = phaseLabels[uc.phase] || '';
-    const idx = BCG_USE_CASES.indexOf(uc);
-    return `<div onclick="openBcgModal(${idx})" style="background:white;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px;cursor:pointer;transition:box-shadow 150ms,transform 150ms;display:flex;flex-direction:column;gap:10px" onmouseover="this.style.boxShadow='0 4px 16px rgba(0,0,0,.1)';this.style.transform='translateY(-1px)'" onmouseout="this.style.boxShadow='none';this.style.transform='none'">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
-        <div style="font-size:13px;font-weight:700;color:#0f172a;line-height:1.3">${uc.name}</div>
-        <span style="background:#1a2e4a;color:white;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;white-space:nowrap;flex-shrink:0">BCG</span>
-      </div>
-      <div style="font-size:11px;color:#64748b;line-height:1.5;flex:1">${uc.desc.length > 110 ? uc.desc.slice(0,110) + '…' : uc.desc}</div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto">
-        <span style="background:${color}18;color:${color};font-size:10px;font-weight:600;padding:2px 8px;border-radius:8px">${pLabel}</span>
-        ${uc.impact ? `<span style="font-size:10px;color:#16a34a;font-weight:600">✓ ${uc.impact.split(';')[0]}</span>` : ''}
-      </div>
+  const cols = phases.map(p => {
+    const tools = BCG_USE_CASES.filter(u => u.phase === p.id);
+    if (!tools.length) return '';
+    const cards = tools.map(uc => {
+      const idx = BCG_USE_CASES.indexOf(uc);
+      const impactStr = uc.impact ? `<div style="font-size:10px;color:var(--g500);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">💡 ${uc.impact.split(';')[0]}</div>` : '';
+      return `<div onclick="openBcgModal(${idx})"
+        style="background:white;border:1.5px solid #ddd6fe;border-radius:10px;padding:10px 12px;cursor:pointer;transition:box-shadow 150ms,transform 150ms;box-shadow:0 1px 3px rgba(0,0,0,.06)"
+        onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.12)';this.style.transform='translateY(-1px)'"
+        onmouseout="this.style.boxShadow='0 1px 3px rgba(0,0,0,.06)';this.style.transform=''">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+          <span style="font-size:9px;font-weight:800;color:#1a2e4a;background:#e0e7f0;border-radius:4px;padding:2px 6px;flex-shrink:0">BCG · INVERTO</span>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:var(--dark);line-height:1.35">${uc.name}</div>
+        ${impactStr}
+      </div>`;
+    }).join('');
+    return `<div style="width:200px;flex-shrink:0">
+      <div style="font-size:10px;font-weight:800;color:var(--g500);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid var(--g200)">${p.label}</div>
+      <div style="display:flex;flex-direction:column;gap:8px">${cards}</div>
     </div>`;
-  }).join('');
+  }).filter(Boolean);
+
+  colsEl.innerHTML = cols.join('');
 }
 
 function openBcgModal(idx) {
