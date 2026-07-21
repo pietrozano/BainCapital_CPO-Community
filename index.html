@@ -1474,9 +1474,12 @@ function renderSurveyQuestion() {
   } else {
     const q = item.question;
     const saved = STATE.answers[item.stepId]?.[q.id] || { text: '', files: [] };
-    const filesHtml = (saved.files || []).map(f =>
-      `<span class="survey-file-tag">📎 ${f.name} <span onclick="removeFile('${item.stepId}','${q.id}','${f.name}')" style="cursor:pointer;color:#ef4444">×</span></span>`
-    ).join('');
+    const filesHtml = (saved.files || []).map(f => {
+      const statusIcon = f.extracting
+        ? `<span style="font-size:10px;color:#7c3aed;animation:pulse 1.5s infinite">⏳ reading…</span>`
+        : (f.content ? `<span style="font-size:10px;color:#15803d" title="File content extracted and stored">✓ read</span>` : '');
+      return `<span class="survey-file-tag">📎 ${f.name} ${statusIcon} <span onclick="removeFile('${item.stepId}','${q.id}','${f.name}')" style="cursor:pointer;color:#ef4444">×</span></span>`;
+    }).join('');
 
     card.innerHTML = `
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
@@ -1587,17 +1590,50 @@ async function handleFileUpload(event, stepId, qId) {
   const files = Array.from(event.target.files);
   if (!STATE.answers[stepId]) STATE.answers[stepId] = {};
   if (!STATE.answers[stepId][qId]) STATE.answers[stepId][qId] = { text: '', files: [] };
+
+  // Show per-file extraction progress in the file list area
+  const listId = `file-list-${stepId}-${qId}`;
+  let listEl = document.getElementById(listId);
+
   for (const file of files) {
     const fd = new FormData();
     fd.append('file', file);
+    // Show "uploading" tag immediately
+    const tempId = `tmp-${Date.now()}`;
+    const filesListEl = document.querySelector('.survey-files-list') || document.createElement('div');
     try {
+      // 1. Upload
       const r = await fetch('/api/upload-file', { method: 'POST', headers: { 'X-Token': STATE.token }, body: fd });
       const data = await r.json();
-      if (data.ok) {
-        STATE.answers[stepId][qId].files.push({ name: file.name, filename: data.filename });
-      }
+      if (!data.ok) throw new Error(data.error || 'Upload failed');
+
+      // 2. Extract file content in background (non-blocking UI)
+      const fileEntry = { name: file.name, filename: data.filename, content: null, extracting: true };
+      STATE.answers[stepId][qId].files.push(fileEntry);
+      saveSession();
+      renderSurveyQuestion();
+
+      // 3. Extract content (async, update in place when done)
+      fetch('/api/read-file', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Token': STATE.token },
+        body: JSON.stringify({ filename: data.filename, originalName: file.name })
+      }).then(r2 => r2.json()).then(extracted => {
+        const entry = STATE.answers[stepId]?.[qId]?.files?.find(f => f.filename === data.filename);
+        if (entry) {
+          entry.content = extracted.content || null;
+          entry.extracting = false;
+          saveSession();
+          renderSurveyQuestion();
+        }
+      }).catch(() => {
+        const entry = STATE.answers[stepId]?.[qId]?.files?.find(f => f.filename === data.filename);
+        if (entry) { entry.extracting = false; saveSession(); }
+      });
+
     } catch(e) {
-      STATE.answers[stepId][qId].files.push({ name: file.name, filename: file.name });
+      STATE.answers[stepId][qId].files.push({ name: file.name, filename: file.name, content: null });
+      saveSession();
     }
   }
   renderSurveyQuestion();
@@ -1962,7 +1998,22 @@ function renderAllSteps() {
         }
 
         if (files.length) {
-          html += `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">${files.map(f=>`<span style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;padding:4px 10px;font-size:12px;color:#475569">📎 ${f.name}</span>`).join('')}</div>`;
+          const fileTags = files.map(f => {
+            const hasContent = !!f.content;
+            const previewId = `fp-${stepId}-${q.id}-${f.name.replace(/\W/g,'_')}`;
+            const contentHtml = hasContent
+              ? `<div id="${previewId}" style="display:none;margin-top:8px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px;font-size:11.5px;color:#334155;line-height:1.7;white-space:pre-wrap;max-height:320px;overflow-y:auto;font-family:monospace">${f.content.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`
+              : '';
+            const toggleFn = hasContent ? `onclick="const el=document.getElementById('${previewId}');el.style.display=el.style.display==='none'?'block':'none'"` : '';
+            const badge = hasContent
+              ? `<span style="font-size:10px;background:#dcfce7;color:#15803d;border-radius:4px;padding:1px 5px;font-weight:700;cursor:pointer" ${toggleFn} title="Click to preview extracted content">✓ content extracted</span>`
+              : `<span style="font-size:10px;color:#94a3b8">no content</span>`;
+            return `<div style="margin-bottom:4px">
+              <div style="display:inline-flex;align-items:center;gap:6px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;padding:4px 10px;font-size:12px;color:#475569">📎 ${f.name} ${badge}</div>
+              ${contentHtml}
+            </div>`;
+          }).join('');
+          html += `<div style="margin-bottom:10px">${fileTags}</div>`;
         }
 
         // AI score display — always show rubric trigger; pill clickable to open scoring guide
@@ -3356,9 +3407,26 @@ async function submitAssessment() {
 
 // ─── Export ───────────────────────────────────────────────────────────────────
 function exportJSON() {
+  // Build an annotated answers object that includes extracted file content
+  const answersWithContent = {};
+  for (const [stepId, stepAnswers] of Object.entries(STATE.answers || {})) {
+    answersWithContent[stepId] = {};
+    for (const [qId, ans] of Object.entries(stepAnswers || {})) {
+      answersWithContent[stepId][qId] = {
+        text: ans.text,
+        files: (ans.files || []).map(f => ({
+          name: f.name,
+          filename: f.filename,
+          contentExtracted: !!f.content,
+          content: f.content || null
+        }))
+      };
+    }
+  }
   const blob = new Blob([JSON.stringify({
     company: STATE.identity, generatedAt: new Date().toISOString(),
     cmi: STATE.cmi, scores: STATE.scores, rawScores: STATE.rawScores,
+    answers: answersWithContent,
     useCases: STATE.useCases, bcgRatings: STATE.bcgRatings,
     aiScores: STATE.aiScores, aiReasoning: STATE.aiReasoning,
     notes: STATE.notes, general: STATE.general

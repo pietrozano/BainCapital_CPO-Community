@@ -525,6 +525,67 @@ Respond ONLY with valid JSON:
   }
 });
 
+// ─── POST /api/read-file ─────────────────────────────────────────────────────
+// Extracts and returns the full text content of an uploaded file using Claude
+app.post('/api/read-file', auth, async (req, res) => {
+  const { filename, originalName } = req.body;
+  if (!filename) return res.status(400).json({ error: 'No filename provided' });
+
+  const filePath = path.join(__dirname, 'data', 'uploads', filename);
+  if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'File not found' });
+
+  try {
+    const fileBuffer = fs.readFileSync(filePath);
+    const ext = path.extname(originalName || filename).toLowerCase();
+
+    let messages;
+    if (ext === '.pdf') {
+      messages = [{ role: 'user', content: [
+        { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: fileBuffer.toString('base64') } },
+        { type: 'text', text: 'Extract and return ALL text content from this document verbatim. Preserve structure (headings, bullet points, tables) as closely as possible using plain text formatting. Do not summarize — return the full content.' }
+      ]}];
+    } else {
+      // For text-based files, just return the raw content directly (no LLM needed)
+      const textContent = fileBuffer.toString('utf8').substring(0, 80000);
+      return res.json({ ok: true, content: textContent, originalName });
+    }
+
+    const msg = await anthropic.messages.create({
+      model: 'claude-opus-4-5',
+      max_tokens: 4096,
+      messages
+    });
+    const content = msg.content[0].text.trim();
+    res.json({ ok: true, content, originalName });
+  } catch (err) {
+    console.error('Read-file error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── GET /api/uploaded-files ─────────────────────────────────────────────────
+// Returns extracted file contents for a company (admin/BCG view)
+app.get('/api/uploaded-files/:companyId', auth, (req, res) => {
+  if (req.identity.role === 'company') return res.status(403).json({ error: 'Forbidden' });
+  const data = readData();
+  const company = data[req.params.companyId];
+  if (!company) return res.status(404).json({ error: 'Not found' });
+
+  // Collect all files from answers with their stored content
+  const result = [];
+  const answers = company.answers || {};
+  for (const [stepId, stepAnswers] of Object.entries(answers)) {
+    for (const [qId, answer] of Object.entries(stepAnswers || {})) {
+      for (const file of (answer.files || [])) {
+        if (file.content) {
+          result.push({ stepId, qId, name: file.name, content: file.content });
+        }
+      }
+    }
+  }
+  res.json({ files: result });
+});
+
 // ─── GET /api/techstack-map ───────────────────────────────────────────────────
 // Returns all companies' tech stack data for BCG/BainCap/admin view
 app.get('/api/techstack-map', auth, (req, res) => {
