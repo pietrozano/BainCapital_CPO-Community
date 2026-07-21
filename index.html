@@ -271,7 +271,7 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
 <body>
 
 <!-- ═══════════════ PERSISTENT MATRIX CANVAS (behind all screens) ══════════ -->
-<canvas id="matrix-canvas" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;opacity:0.88;pointer-events:none"></canvas>
+<canvas id="matrix-canvas" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;opacity:1;pointer-events:none"></canvas>
 
 <!-- ═══════════════════════════ LANDING SCREEN ══════════════════════════ -->
 <div id="landing-screen" style="position:fixed;inset:0;z-index:9999;background:transparent;display:flex;align-items:center;justify-content:center;overflow:hidden">
@@ -1045,59 +1045,125 @@ function startMatrix() {
   const canvas = document.getElementById('matrix-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
-  const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$€%#@!&*=+<>{}[]|\\^~αβγδεζηθλμπσ∑∆∫√≈≠≤≥∞';
-  const fontSize = 14;
-  let cols, drops;
 
-  function resize() {
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
-    cols  = Math.floor(canvas.width / fontSize);
-    drops = Array.from({ length: cols }, () => Math.random() * -canvas.height / fontSize);
-  }
-  resize();
-  window.addEventListener('resize', resize);
+  let W = canvas.width  = window.innerWidth;
+  let H = canvas.height = window.innerHeight;
+  window.addEventListener('resize', () => {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    // re-spread nodes on resize
+    nodes.forEach(n => { n.x = Math.random()*W; n.y = Math.random()*H; });
+  });
+
+  // --- Nodes (particles) ---
+  const NODE_COUNT = Math.min(120, Math.floor(W * H / 12000));
+  const CONNECT_DIST = 160;
+  const nodes = Array.from({ length: NODE_COUNT }, () => ({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    vx: (Math.random() - 0.5) * 0.5,
+    vy: (Math.random() - 0.5) * 0.5,
+    r: 1.5 + Math.random() * 2,
+    pulse: Math.random() * Math.PI * 2,
+  }));
+
+  // --- Floating data labels ---
+  const LABELS = ['AI','ML','ERP','S2P','API','RFx','CLM','SRM','KPI','GPT','LLM','NLP','OCR','BI','ERP','ROI','P2P','IoT','ESG','DAO'];
+  const labels = Array.from({ length: 18 }, () => ({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    vx: (Math.random() - 0.5) * 0.3,
+    vy: (Math.random() - 0.5) * 0.3,
+    text: LABELS[Math.floor(Math.random() * LABELS.length)],
+    opacity: 0.08 + Math.random() * 0.12,
+  }));
+
+  let frame = 0;
 
   function draw() {
-    ctx.fillStyle = 'rgba(0,0,0,0.05)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    for (let i = 0; i < cols; i++) {
-      const ch = chars[Math.floor(Math.random() * chars.length)];
-      const y  = drops[i] * fontSize;
-      ctx.fillStyle = drops[i] > 2 && Math.random() > 0.95 ? '#ffffff' : '#00ff66';
-      ctx.font = `bold ${fontSize}px monospace`;
-      ctx.fillText(ch, i * fontSize, y);
-      if (Math.random() > 0.5) {
-        const trailCh = chars[Math.floor(Math.random() * chars.length)];
-        const trailY  = y - fontSize * (1 + Math.floor(Math.random() * 4));
-        ctx.fillStyle = `rgba(0,180,80,${0.15 + Math.random() * 0.3})`;
-        ctx.font = `${fontSize}px monospace`;
-        ctx.fillText(trailCh, i * fontSize, trailY);
+    frame++;
+    ctx.clearRect(0, 0, W, H);
+
+    // Background
+    ctx.fillStyle = '#050c18';
+    ctx.fillRect(0, 0, W, H);
+
+    // Subtle radial glow in center
+    const grd = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W, H) * 0.6);
+    grd.addColorStop(0, 'rgba(0,80,40,0.08)');
+    grd.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, W, H);
+
+    // Move nodes
+    nodes.forEach(n => {
+      n.x += n.vx; n.y += n.vy; n.pulse += 0.02;
+      if (n.x < 0 || n.x > W) n.vx *= -1;
+      if (n.y < 0 || n.y > H) n.vy *= -1;
+    });
+
+    // Draw connections
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const dx = nodes[i].x - nodes[j].x;
+        const dy = nodes[i].y - nodes[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < CONNECT_DIST) {
+          const alpha = (1 - dist / CONNECT_DIST) * 0.35;
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(0,200,100,${alpha})`;
+          ctx.lineWidth = 0.7;
+          ctx.moveTo(nodes[i].x, nodes[i].y);
+          ctx.lineTo(nodes[j].x, nodes[j].y);
+          ctx.stroke();
+
+          // Occasional data pulse travelling along edge
+          if (Math.random() < 0.002) {
+            const t = (frame % 60) / 60;
+            const px = nodes[i].x + (nodes[j].x - nodes[i].x) * t;
+            const py = nodes[i].y + (nodes[j].y - nodes[i].y) * t;
+            ctx.beginPath();
+            ctx.arc(px, py, 2, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(100,255,160,0.9)';
+            ctx.fill();
+          }
+        }
       }
-      if (y > canvas.height && Math.random() > 0.975) drops[i] = 0;
-      drops[i] += 0.5;
     }
+
+    // Draw nodes
+    nodes.forEach(n => {
+      const pulse = 0.6 + 0.4 * Math.sin(n.pulse);
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r * pulse, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(0,220,110,${0.5 + 0.5 * pulse})`;
+      ctx.fill();
+      // glow ring
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r * pulse + 3, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(0,200,100,${0.12 * pulse})`;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    });
+
+    // Floating tech labels
+    labels.forEach(l => {
+      l.x += l.vx; l.y += l.vy;
+      if (l.x < -40 || l.x > W+40) l.vx *= -1;
+      if (l.y < -20 || l.y > H+20) l.vy *= -1;
+      ctx.font = 'bold 11px monospace';
+      ctx.fillStyle = `rgba(0,220,110,${l.opacity})`;
+      ctx.fillText(l.text, l.x, l.y);
+    });
+
+    canvas._raf = requestAnimationFrame(draw);
   }
-  const interval = setInterval(draw, 40);
-  canvas._matrixInterval = interval;
-}
 
-function enterAssessment() {
-  const landing = document.getElementById('landing-screen');
-  if (!landing) return;
-  landing.style.transition = 'opacity 600ms ease';
-  landing.style.opacity = '0';
-  setTimeout(() => {
-    landing.style.display = 'none';
-    document.getElementById('login-screen').style.display = 'flex';
-    const inp = document.getElementById('login-code');
-    if (inp) inp.focus();
-  }, 620);
+  canvas._raf = requestAnimationFrame(draw);
 }
-
 function stopMatrix() {
   const canvas = document.getElementById('matrix-canvas');
-  if (canvas?._matrixInterval) { clearInterval(canvas._matrixInterval); canvas._matrixInterval = null; }
+  if (canvas?._raf) { cancelAnimationFrame(canvas._raf); canvas._raf = null; }
   if (canvas) canvas.style.display = 'none';
 }
 
