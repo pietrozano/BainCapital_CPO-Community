@@ -1446,7 +1446,7 @@ function renderSurveyQuestion() {
         icon:'🔁', color:'#7c3aed', badge:'STEPS 02 – 10',
         title:'End-to-End Process Assessment',
         desc:'9 process areas across the full procurement lifecycle',
-        extra: `<div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:0 12px">${processList}</div>`
+        extra: `<div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 16px">${processList}</div>`
       },
       {
         icon:'🖥️', color:'#0284c7', badge:'TECH STACK',
@@ -1491,7 +1491,7 @@ function renderSurveyQuestion() {
           ${[['💬','One question at a time'],['🎙️','Voice dictation'],['📎','Attach documents'],['🤖','AI-scored · BCG-reviewed'],['💾','Auto-saved']].map(([ic,lbl])=>`<div style="display:inline-flex;align-items:center;gap:5px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:99px;padding:4px 11px;font-size:11.5px;font-weight:600;color:#475569">${ic} ${lbl}</div>`).join('')}
         </div>
         <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">What you will cover</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${cardsHtml}</div>
+        <div style="display:flex;flex-direction:column;gap:10px">${cardsHtml}</div>
       </div>
     `;
     return;
