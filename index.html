@@ -429,14 +429,9 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
         <span style="font-size:11px;font-weight:700;color:#6366f1;letter-spacing:.1px">Review Assessment Results</span>
       </div>
       <div id="nav-steps-list" style="display:none;overflow:hidden">
-        <div class="nav-item" onclick="showSection('s-org')" id="nav-s-org">
-          <div class="nav-badge nb-empty" id="badge-s-org">0A</div>
-          <div class="nav-label">Organisation &amp; Capability</div>
-          <div class="nav-score" id="score-s-org">—</div>
-        </div>
         <div class="nav-item" onclick="showSection('s-01')" id="nav-s-01">
           <div class="nav-badge nb-empty" id="badge-s-01">01</div>
-          <div class="nav-label">Strategy &amp; Governance</div>
+          <div class="nav-label">Procurement Foundation &amp; AI Strategy</div>
           <div class="nav-score" id="score-s-01">—</div>
         </div>
         <div class="nav-item" onclick="showSection('s-02')" id="nav-s-02">
@@ -549,7 +544,7 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
       </div>
       <div class="nav-btns">
         <div></div>
-        <button class="btn-next" onclick="showSection('s-org')">Start Assessment →</button>
+        <button class="btn-next" onclick="showSection('s-01')">Start Assessment →</button>
       </div>
     </div>
 
@@ -590,12 +585,12 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
       </div>
       <div class="nav-btns">
         <button class="btn-back" onclick="showSection('s-cover')">← Back</button>
-        <button class="btn-next" onclick="showSection('s-org')">Next: Organisation &amp; Capability →</button>
+        <button class="btn-next" onclick="showSection('s-01')">Next: Procurement Foundation →</button>
       </div>
     </div>
 
     <!-- ── STEPS 0A + 01–09 + AI — injected by renderAllSteps() ── -->
-    <div class="section" id="s-org"></div>
+
     <div class="section" id="s-01"></div>
     <div class="section" id="s-02"></div>
     <div class="section" id="s-03"></div>
@@ -747,11 +742,11 @@ const QUESTIONS = {
       { id: 'integration',label: 'How are these systems integrated with each other?',               placeholder: 'Fully API-integrated / Partial / Largely manual exports' }
     ]
   },
-  's-org': {
-    title: 'Organisation & Capability',
-    tag: 'Step A',
-    desc: 'Procurement mandate, org design, skills, and change capability.',
-    intro: "Before assessing AI maturity, we want to understand the organisational foundation. This section explores procurement\'s strategic positioning, how the function is structured, and the capabilities your team has in place. There is no right or wrong — we\'re building a complete picture.",
+  's-01': {
+    title: 'Procurement Foundation & AI Strategy',
+    tag: 'Step 01',
+    desc: 'Procurement positioning, organisational foundation, AI strategy and roadmap.',
+    intro: "We'll start with the foundation — procurement's strategic position within the organisation and its AI ambition. This section explores how procurement is structured and mandated, and whether AI has a defined place in your agenda, who owns it, and how decisions are made and tracked. Please answer in your own words; there is no expectation of perfection.",
     questions: [
       { id: 'q-a-01', short: 'Board visibility & voice',
         text: 'Does procurement have appropriate visibility and a meaningful voice at board or ExCo level — including regular CPO reporting to CFO/CEO, procurement input into major strategic decisions, and board-level accountability for procurement performance?',
@@ -765,29 +760,9 @@ const QUESTIONS = {
       { id: 'q-a-04', short: 'Core procurement capabilities',
         text: 'To what extent are core procurement skills and capabilities present — such as analytics, market and category knowledge, sourcing and negotiation, supplier relationship management, and supplier scouting — and where do capability gaps still need to be developed?',
         scores: ['Core procurement capabilities are absent or very underdeveloped. Significant gaps across analytics, market knowledge, sourcing, negotiation, and SRM.','Some capabilities present but inconsistently distributed. No formal capability framework or gap assessment in place.','Core capabilities are defined in a skills framework. Gaps are identified and addressed through structured development programmes.','All core capabilities are present at a high level across the team. Gaps are continuously assessed and closed. Procurement is recognised internally as a centre of expertise.'] },
-      { id: 'q-a-05', short: 'AI capabilities in the team',
-        text: 'Are procurement teams equipped with AI capabilities?',
-        scores: ['Procurement teams have no AI skills or awareness. AI tools are not used or understood.','Some individuals have basic AI literacy but no structured AI capability exists across the team.','A defined set of AI capabilities is required for procurement roles. Training programmes are in place and adoption is tracked.','AI capability is embedded across all procurement roles. Teams actively use AI tools in daily work. AI skills are assessed and developed as part of career paths.'] },
-      { id: 'q-a-06', short: 'Change management capability',
-        text: 'Does procurement have the capability to manage change effectively — including stakeholder engagement, communication, training, and adoption tracking for new processes or tools?',
-        scores: ['No change management capability in procurement. New tools and processes are deployed without structured adoption support.','Change management is ad hoc. Some communication and training occurs but not structured or consistently applied.','A structured change management approach is applied to major initiatives — including stakeholder engagement, communication plans, training, and adoption tracking.','Change management is a core procurement competency. All significant changes are managed with full methodology. Adoption is tracked and reported. Lessons learned are systematically captured.'] },
-      { id: 'q-a-07', short: 'Training & upskilling programmes',
-        text: 'Are structured training, upskilling, and capability-building programmes in place for procurement staff? Are AI and analytics skills formally embedded in procurement career paths — with role-based assessments, development targets, and a skills framework that evolves as AI capabilities advance?',
-        scores: ['No structured training or upskilling for procurement staff. Development is informal and ad hoc.','Some training available but not tailored to procurement roles or linked to a capability framework.','Role-based training programmes are in place for core procurement roles. AI and analytics skills are included. Development tracks are defined.','Structured training is embedded in procurement career paths. AI and analytics skills are formally assessed. The skills framework is regularly updated as AI capabilities evolve.'] }
-    ]
-  },
-  's-01': {
-    title: 'AI Strategy & Governance',
-    tag: 'Step 01',
-    desc: 'AI strategy, roadmap, budget, and governance for procurement.',
-    intro: "We'll start with strategy and governance — the foundation of any successful AI transformation. This section explores whether AI has a defined place in your procurement agenda, who owns it, and how decisions are made and tracked. Please answer in your own words; there is no expectation of perfection.",
-    questions: [
       { id: 'q-01-01', short: 'AI strategy & roadmap',
         text: 'Describe your AI strategy for procurement. Do you have a formal AI roadmap, dedicated budget, and an executive sponsor? How is AI progress tracked and reported?',
         scores: ['No AI consideration in strategy. No roadmap, budget, or sponsor.','AI mentioned in strategy but no defined roadmap or allocated budget.','Formal AI roadmap exists with budget allocated and executive sponsor identified.','AI is a core pillar of strategy — roadmap actively tracked, budget is multi-year, executive sponsor reviews progress quarterly.'] },
-      { id: 'q-01-02', short: 'AI governance model',
-        text: 'How is AI governed in your procurement function? Who has authority to approve AI deployments? Are there audit trails, data privacy controls, and oversight mechanisms for AI decisions?',
-        scores: ['No AI governance. Tools used without controls or oversight.','Basic usage guidelines exist but not formally enforced. No audit trails.','Formal AI governance framework in place — covering authorisation, audit trails, and data privacy.','AI governance embedded in operations — autonomous AI bounded by formal controls, audit trails complete, governance reviewed regularly.'] },
       { id: 'q-01-03', short: 'AI performance tracking',
         text: 'How do you measure and report the business value of AI in procurement? Are savings, productivity gains, and cycle-time improvements tracked and validated by Finance?',
         scores: ['No measurement of AI value. ROI of AI investments is unknown.','AI value estimated informally but not tracked or validated.','AI value formally tracked for major deployments — KPIs reported and finance-validated.','AI value managed as a portfolio — investment tied to measured outcomes, underperforming use cases retired, AI ROI in financial reporting.'] },
@@ -811,9 +786,6 @@ const QUESTIONS = {
       { id: 'q-02-03', short: 'AI in category management',
         text: 'What AI tools are actively used in category management today? Describe specific use cases — market intelligence, price benchmarking, demand forecasting, or strategy generation.',
         scores: ['No AI used in category management. All analysis is manual.','GenAI tools used informally by some category managers for research or drafting.','AI formally deployed for at least one task (market intelligence, price benchmarking, or demand forecasting).','AI embedded across category management — automated market scanning, AI-generated strategies, price prediction in production.'] },
-      { id: 'q-02-04', short: 'AI for negotiation & strategy',
-        text: 'Are you using or piloting AI to support negotiation preparation, generate category strategies, or provide real-time market intelligence? Describe what is in place or planned.',
-        scores: ['No plans or pilots for advanced AI in category management.','Exploring or evaluating tools but no active pilot.','Active pilot for at least one advanced AI application in category management.','Advanced AI scaled — autonomous market intelligence, AI negotiation coaching, AI-generated strategy updates at portfolio scale.'] },
       { id: 'q-02-05', short: 'Measured AI outcomes',
         text: 'What measurable outcomes has AI delivered in category management — cost savings, time saved, quality of insights? Can you quantify the impact?',
         scores: ['No measured outcomes. AI impact is unknown or untracked.','Some anecdotal evidence of value but no formal measurement.','Specific, quantified outcomes tracked for at least one AI use case in category management.','AI value in category management regularly reported with quantified savings, efficiency gains, and quality improvements.'] }
@@ -837,15 +809,9 @@ const QUESTIONS = {
       { id: 'q-03-04', short: 'Supplier data quality',
         text: 'How clean and structured is your supplier master data? Is it deduplicated? What external risk data feeds (financial, ESG, geopolitical) are connected?',
         scores: ['Supplier data fragmented, not deduplicated, not connected to external data sources.','Partially consolidated but with known quality issues. Some manual risk monitoring.','Clean and deduplicated. At least one external risk data feed connected.','Fully integrated with multiple external risk data feeds. AI continuously monitors and scores supplier risk in real time.'] },
-      { id: 'q-03-05', short: 'AI supplier risk monitoring',
-        text: 'Is AI actively monitoring your supplier base for risk? Describe what signals are monitored (financial distress, ESG, geopolitical, delivery) and how alerts are actioned.',
-        scores: ['No AI monitoring. Supplier risk assessed manually and periodically.','Some automated alerts from a third-party provider but not AI-driven or integrated into workflows.','AI-powered monitoring for critical suppliers with automated alerts and defined response workflows.','Continuous AI monitoring across full supplier base across multiple risk dimensions with autonomous escalation.'] },
       { id: 'q-03-06', short: 'AI for supplier development',
         text: 'Are you using AI for supplier innovation scouting, autonomous qualification, or supplier development prioritisation? What has been piloted or deployed?',
         scores: ['No plans for AI in supplier development or innovation scouting.','Exploring AI tools for supplier qualification or innovation scouting.','Active pilot for AI-assisted supplier qualification or innovation identification.','AI actively used to identify and qualify new suppliers and scout innovations with measurable commercial outcomes.'] },
-      { id: 'q-03-07', short: 'Supplier collaboration AI',
-        text: 'Are AI tools being used to enhance supplier collaboration — portals, performance dashboards, joint planning tools? Describe what is in place.',
-        scores: ['No AI in supplier collaboration. Communication is email/manual.','Basic supplier portal in place but no AI-enhanced features.','AI-enhanced supplier portal with performance dashboards, automated scorecards, and digital collaboration tools.','AI-driven supplier collaboration platform with predictive performance insights, automated issue detection, and joint planning.'] }
     ]
   },
   's-04': {
@@ -854,9 +820,6 @@ const QUESTIONS = {
     desc: 'Negotiation capability, sourcing data, and AI in the RFx process.',
     intro: "Strategic sourcing is evolving fast — from structured negotiation disciplines to fully autonomous sourcing agents. This section explores how your sourcing capability is built, how AI is being applied today, and where the biggest opportunities lie.",
     questions: [
-      { id: 'q-04-01', short: 'Structured negotiation approach',
-        text: 'Does procurement apply a structured negotiation approach — including preparation (BATNA, reserve price, concession planning), tactic selection, and post-negotiation review — as a distinct, teachable capability applied consistently across sourcing events?',
-        scores: ['No structured negotiation approach. Negotiations are informal with no consistent preparation or post-event review.','Some negotiation preparation occurs but is not standardised. BATNA and concession planning are used by some buyers but not consistently.','A structured negotiation approach is defined and applied consistently — including preparation, tactic selection, and post-negotiation review.','Negotiation excellence is a recognised procurement capability applied across all significant sourcing events. Post-negotiation reviews drive continuous improvement. AI tools support preparation and coaching.'] },
       { id: 'q-04-02', short: 'Sourcing data structure',
         text: 'How are historical sourcing events, bid data, and award decisions stored? Is this data structured and accessible for AI analysis and learning?',
         scores: ['Sourcing data in emails, spreadsheets, or unstructured formats. Not accessible for AI.','Recorded in S2P platform but historical data is incomplete or unstructured for AI use.','Clean, structured database of historical events, bids, and awards accessible for AI analysis.','Fully structured, tagged data continuously fed into AI models to improve future sourcing recommendations.'] },
@@ -877,9 +840,6 @@ const QUESTIONS = {
     desc: 'Contract templates, digitisation, and AI in CLM.',
     intro: "Contracts are a goldmine of commercial intelligence — yet in most companies they remain locked in PDFs and shared drives. This section explores whether standard templates are in place, how digitised your contract portfolio is, and how AI is being used to extract value, manage obligations, and prevent compliance failures.",
     questions: [
-      { id: 'q-05-01', short: 'Contract template library',
-        text: 'Is there a standard contract template library governed by procurement and/or legal?',
-        scores: ['No standard contract templates. Contracts are drafted from scratch or by external legal counsel each time.','Some standard templates exist but coverage is incomplete and they are not consistently used across the organisation.','A governed contract template library is in place covering major contract types, maintained by procurement and/or legal, and consistently used.','Comprehensive, regularly updated template library covering all major contract types. Templates embed pre-approved clauses, risk standards, and commercial terms. Non-standard deviations require formal approval.'] },
       { id: 'q-05-02', short: 'Contract digitisation',
         text: 'What share of your active contracts are digitised and stored in a central repository? Is metadata (value, expiry, key clauses, obligations) structured and searchable?',
         scores: ['Contracts stored as PDFs or paper. No central repository. No structured metadata.','Partially digitised and centrally stored but metadata incomplete or manually maintained.','>70% digitised in CLM/repository with structured metadata (parties, value, expiry, key clauses).','Fully digitised with AI-extracted metadata. Repository is the single source of truth, integrated with finance and procurement.'] },
@@ -903,15 +863,9 @@ const QUESTIONS = {
       { id: 'q-06-01', short: 'Requisition data quality',
         text: 'Is your requisition process fully digital with structured data capture? Are categories, cost centres, and preferred suppliers consistently and reliably recorded?',
         scores: ['Requisitions via email or paper. No consistent data capture.','Digital system exists but data quality is inconsistent. Categories and preferred suppliers not reliably captured.','Fully digital with consistent data capture. Category, cost centre, and preferred supplier are mandatory structured fields.','Fully structured and integrated with AI — enabling real-time guided buying, automatic compliance checking, and demand pattern analysis.'] },
-      { id: 'q-06-02', short: 'E-catalogues',
-        text: 'Are e-catalogues available for requisitioners\' self-service use, and does procurement consistently identify additional e-catalogues to be implemented?',
-        scores: ['No e-catalogues in place. All purchases require manual requisition and sourcing.','Some e-catalogues exist for a limited range of categories but coverage is low and adoption is inconsistent.','E-catalogues are available for key categories and actively promoted for self-service. Procurement regularly identifies and implements new catalogues.','E-catalogues cover the majority of addressable indirect spend. Adoption is tracked and continuously improved. Catalogues are integrated with guided buying and AI recommendations.'] },
       { id: 'q-06-03', short: 'Guided buying & AI',
         text: 'What AI capabilities are deployed in your requisition and guided buying process? Describe use cases — smart recommendations, auto-categorisation, policy compliance, approval routing.',
         scores: ['No AI in requisitioning. Manual process throughout.','Basic automated approval workflows exist but no AI-driven recommendations.','AI deployed for at least one task — guided buying, category auto-coding, or AI policy compliance checking.','AI guides the full requisition experience — personalised recommendations, automatic compliance, intelligent approval routing in production.'] },
-      { id: 'q-06-04', short: 'Conversational AI for purchasing',
-        text: 'Are employees able to request purchases through a conversational interface — chatbot, virtual assistant, or AI copilot? What is the adoption and scope?',
-        scores: ['No conversational AI in procurement.','Exploring conversational AI or virtual assistant for self-service.','Active pilot for a conversational AI procurement assistant in a defined scope.','Conversational AI live and widely adopted — handling a significant share of purchase requests and policy queries without human intervention.'] }
     ]
   },
   's-07': {
@@ -943,9 +897,6 @@ const QUESTIONS = {
       { id: 'q-08-02', short: 'AI in invoice processing',
         text: 'What AI tools are used in invoice processing today? Describe the level of automation — OCR, AI matching, 3-way match, exception routing, payment timing optimisation.',
         scores: ['No AI in invoice processing. Manual keying, matching, and approval throughout.','Basic OCR for data extraction but matching and approval remain largely manual.','AI-powered matching with automated exception routing. Touchless match rate >70%.','AI handles the full workflow — automated matching, intelligent exception resolution, payment timing optimisation. Touchless rate >85%.'] },
-      { id: 'q-08-03', short: 'Touchless AP target',
-        text: 'What is your roadmap to achieve fully touchless invoice processing? What are the barriers and how are you addressing them?',
-        scores: ['No plans for touchless invoice processing.','Evaluating or planning a touchless initiative.','Active programme with defined target match rate and timeline.','Touchless processing achieved for standard invoices. Human review is exception-only.'] },
       { id: 'q-08-04', short: 'AP AI outcomes',
         text: 'What measurable improvements has AI delivered in AP — cost per invoice, cycle time, early payment discount capture, error rate reduction?',
         scores: ['No measured AI outcomes in AP.','Anecdotal efficiency improvements but no formal measurement.','Quantified improvements in at least one AP metric tracked and reported.','AI impact in AP regularly reported with cost per invoice, cycle time, and discount capture vs. baseline.'] }
@@ -963,9 +914,6 @@ const QUESTIONS = {
       { id: 'q-09-02', short: 'AI in procurement analytics',
         text: 'What AI analytics capabilities are in place? Describe specific use cases — natural language querying, anomaly detection, predictive spend forecasting, AI-generated insight summaries.',
         scores: ['No AI in analytics. All reporting is manual and backward-looking.','GenAI tools used informally to summarise reports but not integrated into the analytics platform.','At least one AI capability in production — natural language querying, anomaly detection, or AI-generated insight summaries.','AI-powered analytics is the primary interface — predictive forecasting, autonomous anomaly detection, and AI recommendations embedded in management reporting.'] },
-      { id: 'q-09-03', short: 'AI self-serve analytics',
-        text: 'Can procurement teams self-serve AI-generated insights without depending on IT? Describe the level of self-service and the tools in use.',
-        scores: ['Teams depend entirely on IT for data and reporting. No self-service capability.','Basic self-service BI dashboards exist but limited in scope and require IT for custom analysis.','Teams can self-serve standard and custom analysis using connected BI tools without IT.','AI-powered self-service is standard — natural language queries and AI-generated insights available to all procurement roles on demand.'] },
       { id: 'q-09-04', short: 'Predictive analytics',
         text: 'Are predictive analytics used in procurement decisions — demand forecasting, price prediction, risk signal detection? What is the accuracy and business impact?',
         scores: ['No predictive analytics. All analysis is backward-looking.','Some experimentation with predictive models but not in production decision-making.','Predictive analytics in production for at least one area (demand forecasting, price prediction, or risk detection).','Predictive analytics embedded in core procurement decisions across multiple areas with tracked accuracy and business impact.'] }
@@ -1005,14 +953,13 @@ function getBand(score) {
   return BANDS.find(b => score >= b.min && score <= b.max) || BANDS[BANDS.length - 1];
 }
 
-const STEP_IDS = ['s-tech','s-org','s-01','s-02','s-03','s-04','s-05','s-06','s-07','s-08','s-09','s-ai'];
+const STEP_IDS = ['s-tech','s-01','s-02','s-03','s-04','s-05','s-06','s-07','s-08','s-09','s-ai'];
 const DIM_WEIGHTS = { D1: 0.30, D2: 0.45, D3: 0.25 };
 const DIM_NAMES   = { D1: 'Process & Digital Foundation', D2: 'AI in Production', D3: 'AI at Scale' };
 const DIM_SHORT   = { D1: 'Process Foundation', D2: 'AI in Production', D3: 'AI at Scale' };
 const STEP_LABELS = {
   's-tech': '00 · Tech Stack',
-  's-org': '0A · Organisation & Capability',
-  's-01': '01 · AI Strategy & Governance',
+  's-01': '01 · Procurement Foundation & AI Strategy',
   's-02': '02 · Category Management',
   's-03': '03 · Supplier Management',
   's-04': '04 · Strategic Sourcing (RFx)',
@@ -1787,7 +1734,7 @@ function updateSidebar() {
 // ─── Render all step sections ─────────────────────────────────────────────────
 function renderAllSteps() {
   const bcgView = isBCG() || isAdmin();
-  const allSections = ['s-cover','s-org','s-01','s-02','s-03','s-04','s-05','s-06','s-07','s-08','s-09','s-ai','s-cmi','s-inv'];
+  const allSections = ['s-cover','s-01','s-02','s-03','s-04','s-05','s-06','s-07','s-08','s-09','s-ai','s-cmi','s-inv'];
 
   STEP_IDS.forEach(stepId => {
     const def = QUESTIONS[stepId];
@@ -3682,7 +3629,7 @@ async function bcDrillCompany(companyId) {
       </div>
       <main class="main-content">
         <div class="section active" id="s-cover"></div>
-        <div class="section" id="s-org"></div>
+    
         ${STEP_IDS.filter(s=>s!=='s-tech'&&s!=='s-org').map(s=>`<div class="section" id="${s}"></div>`).join('')}
         <div class="section" id="s-cmi"></div>
         <div class="section" id="s-techmap"></div>
