@@ -26,7 +26,7 @@
 body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(--g100);color:var(--g800);min-height:100vh;-webkit-font-smoothing:antialiased}
 
 /* ── LOGIN ── */
-#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(145deg,#0a1628 0%,#0F172A 40%,#1a2e52 100%);position:relative;overflow:hidden}
+#login-screen{display:none;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(145deg,#0a1628 0%,#0F172A 40%,#1a2e52 100%);position:relative;overflow:hidden}
 #login-screen::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(0,168,89,.15) 0%,transparent 60%);pointer-events:none}
 .login-box{background:white;border-radius:var(--radius-lg);padding:44px 40px 36px;width:440px;box-shadow:0 32px 80px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.05);position:relative;z-index:1}
 .login-subtitle{font-size:13px;color:var(--g600);margin-bottom:28px;line-height:1.6;padding-top:4px;border-top:1px solid var(--g100);margin-top:16px}
@@ -270,6 +270,27 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
 </style>
 </head>
 <body>
+
+<!-- ═══════════════════════════ LANDING SCREEN ══════════════════════════ -->
+<div id="landing-screen" style="position:fixed;inset:0;z-index:9999;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden">
+  <canvas id="matrix-canvas" style="position:absolute;inset:0;width:100%;height:100%;opacity:0.85"></canvas>
+  <!-- Radial dark vignette so text pops -->
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 50% 50%,rgba(0,0,0,.55) 0%,rgba(0,0,0,.0) 100%);pointer-events:none"></div>
+  <!-- CTA card -->
+  <div style="position:relative;z-index:2;text-align:center;display:flex;flex-direction:column;align-items:center;gap:28px">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+      <div style="font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:#00A859;opacity:.85">BCG × INVERTO × BAIN CAPITAL</div>
+      <div style="font-size:clamp(28px,5vw,52px);font-weight:900;color:#ffffff;line-height:1.1;letter-spacing:-1px;text-shadow:0 0 40px rgba(0,168,89,.4)">Procurement AI<br>Maturity Assessment</div>
+    </div>
+    <button onclick="enterAssessment()"
+      style="background:#00A859;color:white;border:none;border-radius:14px;padding:18px 44px;font-size:16px;font-weight:800;cursor:pointer;letter-spacing:.3px;font-family:inherit;box-shadow:0 0 32px rgba(0,168,89,.5),0 4px 20px rgba(0,0,0,.4);transition:transform 150ms,box-shadow 150ms;position:relative;overflow:hidden"
+      onmouseover="this.style.transform='translateY(-2px) scale(1.03)';this.style.boxShadow='0 0 48px rgba(0,168,89,.7),0 8px 30px rgba(0,0,0,.5)'"
+      onmouseout="this.style.transform='';this.style.boxShadow='0 0 32px rgba(0,168,89,.5),0 4px 20px rgba(0,0,0,.4)'">
+      Start your Procurement AI journey &nbsp;→
+    </button>
+    <div style="font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.5px">Confidential · For authorised participants only</div>
+  </div>
+</div>
 
 <!-- ═══════════════════════════ LOGIN SCREEN ═══════════════════════════ -->
 <div id="login-screen">
@@ -1018,6 +1039,66 @@ const isBCG     = () => STATE.role === 'bcg';
 const isAdmin   = () => STATE.role === 'admin';
 const isBainCap = () => STATE.role === 'baincap';
 
+// ─── Matrix Rain Animation ────────────────────────────────────────────────────
+(function initMatrix() {
+  const canvas = document.getElementById('matrix-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$€%#@!&*=+<>{}[]|\\^~αβγδεζηθλμπσ∑∆∫√≈≠≤≥∞';
+  const fontSize = 14;
+  let cols, drops;
+
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    cols  = Math.floor(canvas.width / fontSize);
+    drops = Array.from({ length: cols }, () => Math.random() * -canvas.height / fontSize);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function draw() {
+    ctx.fillStyle = 'rgba(0,0,0,0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < cols; i++) {
+      const ch = chars[Math.floor(Math.random() * chars.length)];
+      const y  = drops[i] * fontSize;
+      // Lead character — bright green/white
+      ctx.fillStyle = drops[i] > 2 && Math.random() > 0.95 ? '#ffffff' : '#00ff66';
+      ctx.font = `bold ${fontSize}px monospace`;
+      ctx.fillText(ch, i * fontSize, y);
+      // Fade trail (random earlier chars)
+      if (Math.random() > 0.5) {
+        const trailCh = chars[Math.floor(Math.random() * chars.length)];
+        const trailY  = y - fontSize * (1 + Math.floor(Math.random() * 4));
+        ctx.fillStyle = `rgba(0,180,80,${0.15 + Math.random() * 0.3})`;
+        ctx.font = `${fontSize}px monospace`;
+        ctx.fillText(trailCh, i * fontSize, trailY);
+      }
+      if (y > canvas.height && Math.random() > 0.975) drops[i] = 0;
+      drops[i] += 0.5;
+    }
+  }
+  const interval = setInterval(draw, 40);
+  canvas._matrixInterval = interval;
+})();
+
+function enterAssessment() {
+  const landing = document.getElementById('landing-screen');
+  if (!landing) return;
+  landing.style.transition = 'opacity 600ms ease';
+  landing.style.opacity = '0';
+  setTimeout(() => {
+    landing.style.display = 'none';
+    // Stop animation to free resources
+    const canvas = document.getElementById('matrix-canvas');
+    if (canvas?._matrixInterval) clearInterval(canvas._matrixInterval);
+    document.getElementById('login-screen').style.display = 'flex';
+    const inp = document.getElementById('login-code');
+    if (inp) inp.focus();
+  }, 620);
+}
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   const saved = localStorage.getItem('pam_session');
@@ -1063,8 +1144,16 @@ function applyRestoredState(data) {
   STATE.analyzed    = data.analyzed    || false;
 }
 
-// ─── Login ────────────────────────────────────────────────────────────────────
+// ─── Landing / Login helpers ──────────────────────────────────────────────────
+function hideLanding() {
+  const landing = document.getElementById('landing-screen');
+  if (landing) landing.style.display = 'none';
+  const canvas = document.getElementById('matrix-canvas');
+  if (canvas?._matrixInterval) clearInterval(canvas._matrixInterval);
+}
+
 function showLogin() {
+  hideLanding();
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('app-screen').style.display   = 'none';
 }
@@ -1110,6 +1199,7 @@ function logout() {
 
 // ─── Show app ─────────────────────────────────────────────────────────────────
 function showApp() {
+  hideLanding();
   const role = STATE.role;
 
   // Company role: show survey first, results after analysis
