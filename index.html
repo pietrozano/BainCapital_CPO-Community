@@ -2476,29 +2476,59 @@ function renderUseCaseBlock(stepId, type, dimLabel, title) {
     const removeBtn = n > 1
       ? `<button onclick="removeUC('${stepId}','${type}',${n})" title="Remove" style="background:none;border:none;color:#cbd5e1;font-size:16px;cursor:pointer;line-height:1;padding:0;transition:color 150ms" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#cbd5e1'">×</button>` : '';
 
-    const inputStyle = `width:100%;box-sizing:border-box;font-size:14px;font-family:inherit;border:none;border-bottom:1.5px solid #e2e8f0;background:transparent;color:#0f172a;padding:6px 0;outline:none;transition:border-color 150ms`;
+    const inputStyle = `width:100%;box-sizing:border-box;font-size:13px;font-family:inherit;border:none;border-bottom:1.5px solid #e2e8f0;background:transparent;color:#0f172a;padding:6px 0;outline:none;transition:border-color 150ms`;
+    const labelStyle = `font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px`;
 
-    return `<div id="uc-row-${stepId}-${type}-${n}" style="display:flex;align-items:flex-start;gap:14px;padding:16px 0;border-bottom:1px solid #f1f5f9;">
-      <div style="font-size:12px;font-weight:800;color:#94a3b8;min-width:24px;padding-top:8px">${n}.</div>
-      <div style="flex:1;display:flex;flex-direction:column;gap:10px;">
-        <input id="${uid}-name" placeholder="${isExisting ? 'Use case name — e.g. AI spend classification' : 'Opportunity — e.g. Autonomous RFx drafting'}"
-          style="${inputStyle};font-weight:600" onfocus="this.style.borderColor='#0f172a'" onblur="this.style.borderColor='#e2e8f0'"
-          onchange="saveUC('${stepId}','${type}',${n},'name',this.value)" oninput="saveUC('${stepId}','${type}',${n},'name',this.value)">
-        <input id="${uid}-desc" placeholder="Brief description — what does it do and who uses it?"
-          style="${inputStyle};font-size:13px;color:#64748b" onfocus="this.style.borderColor='#0f172a'" onblur="this.style.borderColor='#e2e8f0'"
-          onchange="saveUC('${stepId}','${type}',${n},'desc',this.value)" oninput="saveUC('${stepId}','${type}',${n},'desc',this.value)">
-        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-          <select id="${uid}-step" onchange="saveUC('${stepId}','${type}',${n},'step',this.value)"
-            style="font-size:12px;font-family:inherit;border:none;border-bottom:1.5px solid #e2e8f0;background:transparent;color:#64748b;padding:4px 0;outline:none;cursor:pointer;flex:1;min-width:160px">
-            <option value="">— Process step —</option>
-            ${stepOptions}
+    return `<div id="uc-row-${stepId}-${type}-${n}" style="display:flex;align-items:flex-start;gap:14px;padding:18px 0;border-bottom:1px solid #f1f5f9;">
+      <div style="font-size:12px;font-weight:800;color:#94a3b8;min-width:24px;padding-top:6px">${n}.</div>
+      <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:12px 20px;">
+
+        <!-- Name — full width -->
+        <div style="grid-column:1/-1">
+          <div style="${labelStyle}">Name</div>
+          <input id="${uid}-name" placeholder="${isExisting ? 'e.g. AI spend classification' : 'e.g. Autonomous RFx drafting'}"
+            style="${inputStyle};font-weight:600;font-size:14px" onfocus="this.style.borderColor='#0f172a'" onblur="this.style.borderColor='#e2e8f0'"
+            onchange="saveUC('${stepId}','${type}',${n},'name',this.value)" oninput="saveUC('${stepId}','${type}',${n},'name',this.value)">
+        </div>
+
+        <!-- Description — full width -->
+        <div style="grid-column:1/-1">
+          <div style="${labelStyle}">Description</div>
+          <input id="${uid}-desc" placeholder="What does it do and who uses it?"
+            style="${inputStyle};color:#334155" onfocus="this.style.borderColor='#0f172a'" onblur="this.style.borderColor='#e2e8f0'"
+            onchange="saveUC('${stepId}','${type}',${n},'desc',this.value)" oninput="saveUC('${stepId}','${type}',${n},'desc',this.value)">
+        </div>
+
+        <!-- Technology -->
+        <div>
+          <div style="${labelStyle}">Technology / Tool</div>
+          <input id="${uid}-tech" placeholder="e.g. ChatGPT, Coupa, custom model…"
+            style="${inputStyle}" onfocus="this.style.borderColor='#0f172a'" onblur="this.style.borderColor='#e2e8f0'"
+            onchange="saveUC('${stepId}','${type}',${n},'tech',this.value)" oninput="saveUC('${stepId}','${type}',${n},'tech',this.value)">
+        </div>
+
+        <!-- Integrated to company systems -->
+        <div>
+          <div style="${labelStyle}">Integrated to company systems?</div>
+          <select id="${uid}-integrated" onchange="saveUC('${stepId}','${type}',${n},'integrated',this.value)"
+            style="width:100%;font-size:13px;font-family:inherit;border:none;border-bottom:1.5px solid #e2e8f0;background:transparent;color:#334155;padding:6px 0;outline:none;cursor:pointer">
+            <option value="">— Select —</option>
+            <option value="yes">Yes — fully integrated</option>
+            <option value="partial">Partially integrated</option>
+            <option value="no">No — standalone</option>
           </select>
-          <input id="${uid}-roi" placeholder="${isExisting ? 'Business impact / ROI (optional)' : 'Expected impact (optional)'}"
-            style="${inputStyle};flex:1;min-width:180px;font-size:12px;color:#64748b"
-            onfocus="this.style.borderColor='#0f172a'" onblur="this.style.borderColor='#e2e8f0'"
+        </div>
+
+        <!-- Business impact — full width -->
+        <div style="grid-column:1/-1">
+          <div style="${labelStyle}">Business Impact</div>
+          <input id="${uid}-roi" placeholder="${isExisting ? 'e.g. 15% cost reduction, 3h saved per RFx…' : 'e.g. Expected 10% savings on tail spend…'}"
+            style="${inputStyle}" onfocus="this.style.borderColor='#0f172a'" onblur="this.style.borderColor='#e2e8f0'"
             onchange="saveUC('${stepId}','${type}',${n},'roi',this.value)" oninput="saveUC('${stepId}','${type}',${n},'roi',this.value)">
         </div>
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+
+        <!-- File attach — full width -->
+        <div style="grid-column:1/-1;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
           <label style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#94a3b8;cursor:pointer;padding:4px 0;transition:color 150ms" onmouseover="this.style.color='#475569'" onmouseout="this.style.color='#94a3b8'">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
             Attach file
@@ -2506,6 +2536,7 @@ function renderUseCaseBlock(stepId, type, dimLabel, title) {
           </label>
           <span id="${uid}-files" style="font-size:11px;color:#64748b"></span>
         </div>
+
       </div>
       <div style="padding-top:6px">${removeBtn}</div>
     </div>`;
@@ -2584,7 +2615,7 @@ function saveUCFiles(stepId, type, n, files) {
 }
 
 function restoreUCValues(stepId, type) {
-  const fields = ['name','desc','step','roi'];
+  const fields = ['name','desc','tech','integrated','roi'];
   (STATE.useCases[stepId]?.[type]||[]).forEach((uc, i) => {
     if (!uc) return;
     fields.forEach(f => {
