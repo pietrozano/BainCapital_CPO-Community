@@ -1007,6 +1007,7 @@ let STATE = {
   scores:         {},
   rawScores:      {},
   useCases:       {},
+  bcgRatings:     {},
   notes:          {},
   general:        {},
   cmi:            null,
@@ -1062,6 +1063,7 @@ function applyRestoredState(data) {
   STATE.scores      = data.scores      || {};
   STATE.rawScores   = data.rawScores   || {};
   STATE.useCases    = data.useCases    || {};
+  STATE.bcgRatings  = data.bcgRatings  || {};
   STATE.notes       = data.notes       || {};
   STATE.general     = data.general     || {};
   STATE.cmi         = data.cmi         || null;
@@ -1234,7 +1236,7 @@ function saveSession() {
     surveyIndex: SURVEY_INDEX,
     data: {
       scores: STATE.scores, rawScores: STATE.rawScores,
-      useCases: STATE.useCases, notes: STATE.notes,
+      useCases: STATE.useCases, bcgRatings: STATE.bcgRatings, notes: STATE.notes,
       general: STATE.general, cmi: STATE.cmi,
       answers: STATE.answers, techStack: STATE.techStack,
       aiScores: STATE.aiScores, aiReasoning: STATE.aiReasoning,
@@ -1273,6 +1275,8 @@ function buildSurveyQuestions() {
       SURVEY_QUESTIONS.push({ stepId: 's-tech', fieldId: field.id, field, isTechStack: true, stepTitle: techStep.title, tag: techStep.tag });
     }
   }
+  // BCG Tool Rating slide
+  SURVEY_QUESTIONS.push({ isBcgRating: true, stepId: '_bcgrating', stepTitle: 'BCG & Inverto AI Tools', tag: 'AI Tools' });
   // Use Cases intro slide
   SURVEY_QUESTIONS.push({
     isIntro: true,
@@ -1305,13 +1309,13 @@ function renderSurveyQuestion() {
   const pct = Math.round((SURVEY_INDEX / total) * 100);
 
   // Only count real questions (not welcome, intro, or upload slides)
-  const realQuestions = SURVEY_QUESTIONS.filter(q => !q.isWelcome && !q.isIntro && !q.isTechUpload && !q.isUseCaseBlock);
+  const realQuestions = SURVEY_QUESTIONS.filter(q => !q.isWelcome && !q.isIntro && !q.isTechUpload && !q.isUseCaseBlock && !q.isBcgRating);
   const realTotal = realQuestions.length;
-  const isCountable = !item.isWelcome && !item.isIntro && !item.isTechUpload && !item.isUseCaseBlock;
+  const isCountable = !item.isWelcome && !item.isIntro && !item.isTechUpload && !item.isUseCaseBlock && !item.isBcgRating;
   const realIndex = isCountable ? realQuestions.indexOf(item) + 1 : null;
 
   document.getElementById('survey-progress-fill').style.width = pct + '%';
-  document.getElementById('survey-step-label').textContent = item.isWelcome ? 'Welcome' : item.isUseCaseBlock ? item.stepTitle : (item.tag + ' · ' + item.stepTitle);
+  document.getElementById('survey-step-label').textContent = item.isWelcome ? 'Welcome' : (item.isUseCaseBlock || item.isBcgRating) ? item.stepTitle : (item.tag + ' · ' + item.stepTitle);
   const counterEl = document.getElementById('survey-q-counter');
   if (isCountable) {
     counterEl.textContent = realIndex + ' / ' + realTotal;
@@ -1410,6 +1414,45 @@ function renderSurveyQuestion() {
     restoreUCValues('_all', ucType);
     return;
   }
+  if (item.isBcgRating) {
+    const surveyBody = document.querySelector('.survey-body');
+    if (surveyBody) surveyBody.style.maxWidth = '860px';
+    if (!STATE.bcgRatings) STATE.bcgRatings = {};
+    const phaseLabels = { 's-02':'Category Management','s-03':'Supplier Management','s-04':'Strategic Sourcing','s-05':'Contract Management','s-06':'PR & Requisition','s-07':'PO Management','s-08':'Invoice & AP','s-ai':'AI Governance & Enablement' };
+    const phases = [...new Set(BCG_USE_CASES.map(u => u.phase))];
+    const groupsHtml = phases.map(ph => {
+      const tools = BCG_USE_CASES.filter(u => u.phase === ph);
+      const rowsHtml = tools.map(uc => {
+        const key = uc.name.replace(/\s+/g,'_');
+        const saved = STATE.bcgRatings[key] || 0;
+        const stars = [1,2,3,4,5].map(n =>
+          `<span class="bcg-star" data-key="${key}" data-val="${n}" onclick="setBcgRating('${key}',${n})" style="font-size:22px;cursor:pointer;color:${n<=saved?'#f59e0b':'#cbd5e1'};transition:color 100ms" onmouseover="hoverBcgStars('${key}',${n})" onmouseout="restoreBcgStars('${key}')">★</span>`
+        ).join('');
+        return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f1f5f9">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:700;color:#0f172a">${uc.name}</div>
+            <div style="font-size:11px;color:#94a3b8;margin-top:1px">${uc.desc.length>90?uc.desc.slice(0,90)+'…':uc.desc}</div>
+          </div>
+          <div style="display:flex;gap:2px;flex-shrink:0;margin-left:16px" id="stars-${key}">${stars}</div>
+        </div>`;
+      }).join('');
+      return `<div style="margin-bottom:24px">
+        <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid #e2e8f0">${phaseLabels[ph]||ph}</div>
+        ${rowsHtml}
+      </div>`;
+    }).join('');
+    card.innerHTML = `
+      <div style="padding:4px 0">
+        <div style="margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--g200)">
+          <div style="font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">AI Tools</div>
+          <div style="font-size:22px;font-weight:800;color:var(--dark);line-height:1.2;margin-bottom:6px">BCG &amp; Inverto AI Tool Wishlist</div>
+          <div style="font-size:13px;color:var(--g500);line-height:1.65">Rate each BCG &amp; Inverto AI tool by how interested you are in deploying it. <strong>1 star = low interest · 5 stars = high priority.</strong> Skip any tools you don't have a view on — just click Next.</div>
+        </div>
+        <div style="max-height:520px;overflow-y:auto;padding-right:8px">${groupsHtml}</div>
+      </div>`;
+    return;
+  }
+
   // Restore normal width for all other cards
   const surveyBody = document.querySelector('.survey-body');
   if (surveyBody) surveyBody.style.maxWidth = '';
@@ -1623,11 +1666,12 @@ async function surveySaveExit() {
   // Save current answers to server before logging out
   try {
     await api('POST', '/api/save', {
-      answers:   STATE.answers,
-      techStack: STATE.techStack,
-      useCases:  STATE.useCases,
-      notes:     STATE.notes,
-      general:   STATE.general
+      answers:    STATE.answers,
+      techStack:  STATE.techStack,
+      useCases:   STATE.useCases,
+      bcgRatings: STATE.bcgRatings,
+      notes:      STATE.notes,
+      general:    STATE.general
     });
   } catch {}
   saveSession(); // keep SURVEY_INDEX in localStorage so we resume here
@@ -2501,6 +2545,28 @@ function removeUC(stepId, type, n) {
     restoreUCValues(stepId, type);
   }
   saveSession();
+}
+
+function setBcgRating(key, val) {
+  if (!STATE.bcgRatings) STATE.bcgRatings = {};
+  STATE.bcgRatings[key] = val;
+  restoreBcgStars(key);
+  saveSession();
+}
+function hoverBcgStars(key, val) {
+  const container = document.getElementById('stars-' + key);
+  if (!container) return;
+  container.querySelectorAll('.bcg-star').forEach(s => {
+    s.style.color = parseInt(s.dataset.val) <= val ? '#fbbf24' : '#cbd5e1';
+  });
+}
+function restoreBcgStars(key) {
+  const container = document.getElementById('stars-' + key);
+  if (!container) return;
+  const saved = (STATE.bcgRatings && STATE.bcgRatings[key]) || 0;
+  container.querySelectorAll('.bcg-star').forEach(s => {
+    s.style.color = parseInt(s.dataset.val) <= saved ? '#f59e0b' : '#cbd5e1';
+  });
 }
 
 function saveUCFiles(stepId, type, n, files) {
