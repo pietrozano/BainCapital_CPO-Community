@@ -3242,15 +3242,28 @@ function renderBcgLibrary() {
   const cols = phases.map(p => {
     const tools = BCG_USE_CASES.filter(u => u.phase === p.id);
     if (!tools.length) return '';
-    const cards = tools.map(uc => {
+    // Sort by rating descending
+    const ratings = STATE.bcgRatings || {};
+    const sorted = [...tools].sort((a, b) => {
+      const ra = ratings[a.name.replace(/\s+/g,'_')] || 0;
+      const rb = ratings[b.name.replace(/\s+/g,'_')] || 0;
+      return rb - ra;
+    });
+    const cards = sorted.map(uc => {
       const idx = BCG_USE_CASES.indexOf(uc);
+      const key = uc.name.replace(/\s+/g,'_');
+      const rating = ratings[key] || 0;
+      const starsHtml = [1,2,3,4,5].map(n =>
+        `<span style="font-size:12px;color:${n<=rating?'#f59e0b':'#e2e8f0'}">★</span>`
+      ).join('');
       const impactStr = uc.impact ? `<div style="font-size:10px;color:var(--g500);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">💡 ${uc.impact.split(';')[0]}</div>` : '';
       return `<div onclick="openBcgModal(${idx})"
         style="background:white;border:1.5px solid #ddd6fe;border-radius:10px;padding:10px 12px;cursor:pointer;transition:box-shadow 150ms,transform 150ms;box-shadow:0 1px 3px rgba(0,0,0,.06)"
         onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.12)';this.style.transform='translateY(-1px)'"
         onmouseout="this.style.boxShadow='0 1px 3px rgba(0,0,0,.06)';this.style.transform=''">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:6px">
           <span style="font-size:9px;font-weight:800;color:#1a2e4a;background:#e0e7f0;border-radius:4px;padding:2px 6px;flex-shrink:0">BCG · INVERTO</span>
+          <span style="letter-spacing:1px;line-height:1">${starsHtml}</span>
         </div>
         <div style="font-size:12px;font-weight:700;color:var(--dark);line-height:1.35">${uc.name}</div>
         ${impactStr}
