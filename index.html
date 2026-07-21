@@ -336,7 +336,10 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
       <span id="survey-step-label" class="survey-step-label">Loading...</span>
       <span id="survey-q-counter" class="survey-q-counter"></span>
     </div>
-    <div style="display:flex;align-items:center;justify-content:flex-end;padding:8px 0 0">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0 0">
+      <button onclick="surveySaveExit()" style="background:transparent;border:1.5px solid #cbd5e1;border-radius:7px;padding:7px 14px;font-size:12px;font-weight:600;color:#64748b;cursor:pointer;font-family:inherit;transition:all 150ms;display:flex;align-items:center;gap:6px" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='transparent'">
+        💾 Save &amp; Exit
+      </button>
       <img src="logo-baincapital.png" alt="Bain Capital" style="height:44px;opacity:1;display:block">
     </div>
   </div>
@@ -1438,19 +1441,6 @@ function renderSurveyQuestion() {
     `;
   }
 
-  // Inject company logo watermark on card
-  const coId = STATE.identity?.id || '';
-  if (coId && coId !== 'company16') {
-    const existing = card.querySelector('.co-logo-watermark');
-    if (!existing) {
-      const logoDiv = document.createElement('div');
-      logoDiv.className = 'co-logo-watermark';
-      logoDiv.style.cssText = 'position:absolute;bottom:14px;right:18px;opacity:.25;pointer-events:none';
-      logoDiv.innerHTML = `<img src="logo-${coId}.png" alt="" style="height:26px;object-fit:contain;max-width:100px">`;
-      card.style.position = 'relative';
-      card.appendChild(logoDiv);
-    }
-  }
 }
 
 function saveAnswer(stepId, qId, text) {
@@ -1599,6 +1589,20 @@ function surveyPrev() {
 }
 function surveyNext() {
   if (SURVEY_INDEX < SURVEY_QUESTIONS.length - 1) { SURVEY_INDEX++; saveSession(); renderSurveyQuestion(); window.scrollTo(0,0); }
+}
+async function surveySaveExit() {
+  // Save current answers to server before logging out
+  try {
+    await api('POST', '/api/save', {
+      answers:   STATE.answers,
+      techStack: STATE.techStack,
+      useCases:  STATE.useCases,
+      notes:     STATE.notes,
+      general:   STATE.general
+    });
+  } catch {}
+  saveSession(); // keep SURVEY_INDEX in localStorage so we resume here
+  logout();
 }
 
 async function surveySubmit() {
