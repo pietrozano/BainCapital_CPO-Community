@@ -707,7 +707,7 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
           <span style="background:#1a2e4a;color:white;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;letter-spacing:.4px">BCG · INVERTO</span>
           <div class="card-title">AI use cases from BCG &amp; Inverto's procurement AI portfolio</div>
         </div>
-        <div style="font-size:12px;color:#64748b;margin-bottom:18px">35 proven AI use cases across 10 procurement phases — drawn from BCG &amp; Inverto engagements worldwide. Click any card to explore.</div>
+        <div style="font-size:12px;color:#64748b;margin-bottom:18px">33 proven AI use cases across 9 procurement phases — drawn from BCG &amp; Inverto engagements worldwide. Click any card to explore.</div>
 
         <!-- Phase filter tabs -->
         <div id="bcg-lib-tabs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px"></div>
@@ -3074,7 +3074,6 @@ function closeUCModal() {
 
 const BCG_PHASES = [
   { id: 'all',  label: 'All' },
-  { id: 's-01', label: '01 · Foundation & AI Strategy' },
   { id: 's-02', label: '02 · Category Management' },
   { id: 's-03', label: '03 · Supplier Management' },
   { id: 's-04', label: '04 · Strategic Sourcing' },
@@ -3086,9 +3085,6 @@ const BCG_PHASES = [
 ];
 
 const BCG_USE_CASES = [
-  // 01 · Foundation & AI Strategy
-  { phase: 's-01', name: 'Procurement Excellence Monitor', short: 'PEM', desc: 'AI-enabled holistic procurement maturity assessment evaluating operating model and capabilities across 14 dimensions. Benchmarks performance against 160+ peer companies and identifies targeted improvement priorities.', impact: 'Benchmarks vs 160+ peers', tag: 'BCG' },
-  { phase: 's-01', name: 'Spend Pattern IQ', short: 'Spend Pattern IQ', desc: 'Horizontal AI capability for spend pattern recognition with generative recommendations across workflows. Surfaces structural spend anomalies and category-level opportunities.', impact: null, tag: 'BCG' },
   // 02 · Category Management
   { phase: 's-02', name: 'Value Finder', short: 'Value Finder', desc: 'AI spend classification engine that uncovers savings opportunities, supplier harmonization, and spend categorization. Includes a "chat-your-spend" interface for category-specific insights across direct and indirect spend.', impact: '1–2% incremental savings on total spend; deployed 100+ times in 30+ countries', tag: 'BCG' },
   { phase: 's-02', name: 'Spark!', short: 'Spark!', desc: 'Converts any spend extract into transaction-level categorized output in ~15 minutes using Claude (LLM). Cleans, standardizes, and classifies transactions into a common taxonomy. Delivers a structured, decision-ready spend view for early diagnostic.', impact: '15 min vs days of manual work', tag: 'BCG' },
