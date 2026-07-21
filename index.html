@@ -496,16 +496,6 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
         <div class="sec-title">Company Details</div>
         <div class="sec-desc">Confirm your company information before starting the assessment.</div>
       </div>
-      <div class="welcome">
-        <h2>Bain Capital · Procurement AI Maturity Assessment 2026</h2>
-        <p>This tool maps your procurement AI maturity across 9 process steps and 4 dimensions, producing a Composite Maturity Index (CMI). Once you submit, you will see your score benchmarked against the portfolio average and gain full access to all AI use cases identified across Bain Capital portfolio companies.</p>
-        <div class="pills">
-          <span class="pill">9 Process Steps</span>
-          <span class="pill">4 Dimensions</span>
-          <span class="pill">Process Foundation 40% · AI in Production 35% · AI at Scale 25%</span>
-          <span class="pill">~45 min to complete</span>
-        </div>
-      </div>
       <div class="card">
         <div class="card-hdr"><div class="card-title">Your Company</div></div>
         <div class="form2">
@@ -1701,7 +1691,7 @@ async function surveySubmit() {
   }
 
   try {
-    const r = await api('POST', '/api/analyze', { answers: STATE.answers, rubrics, techStack: STATE.techStack });
+    const r = await api('POST', '/api/analyze', { answers: STATE.answers, rubrics, techStack: STATE.techStack, bcgRatings: STATE.bcgRatings, useCases: STATE.useCases });
     STATE.scores      = r.scores      || {};
     STATE.cmi         = r.cmi         || null;
     STATE.aiScores    = r.aiScores    || {};
@@ -3329,7 +3319,7 @@ async function saveProgress() {
   });
   const payload = {
     scores: STATE.scores, rawScores: STATE.rawScores,
-    useCases: STATE.useCases, notes: STATE.notes,
+    useCases: STATE.useCases, bcgRatings: STATE.bcgRatings, notes: STATE.notes,
     general: STATE.general, cmi: STATE.cmi,
     _targetCompany: STATE.identity?.id
   };
@@ -3357,7 +3347,9 @@ async function submitAssessment() {
 function exportJSON() {
   const blob = new Blob([JSON.stringify({
     company: STATE.identity, generatedAt: new Date().toISOString(),
-    cmi: STATE.cmi, scores: STATE.scores, useCases: STATE.useCases,
+    cmi: STATE.cmi, scores: STATE.scores, rawScores: STATE.rawScores,
+    useCases: STATE.useCases, bcgRatings: STATE.bcgRatings,
+    aiScores: STATE.aiScores, aiReasoning: STATE.aiReasoning,
     notes: STATE.notes, general: STATE.general
   }, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
@@ -3880,7 +3872,7 @@ async function bcDrillCompany(companyId) {
       <main class="main-content">
         <div class="section active" id="s-cover"></div>
     
-        ${STEP_IDS.filter(s=>s!=='s-tech'&&s!=='s-org').map(s=>`<div class="section" id="${s}"></div>`).join('')}
+        ${STEP_IDS.filter(s=>s!=='s-tech').map(s=>`<div class="section" id="${s}"></div>`).join('')}
         <div class="section" id="s-cmi"></div>
         <div class="section" id="s-techmap"></div>
         <div class="section" id="s-inv"></div>
@@ -4047,17 +4039,7 @@ function renderInvStats() {
     </div>`).join('');
 }
 
-// On load: update header chip with company name
-const _origShowApp = showApp;
-showApp = function() {
-  _origShowApp();
-  if(STATE.company) {
-    document.getElementById('header-co-name').textContent = STATE.company.name;
-  }
-};
-
-// Update header company name on restore
-if(STATE.company) document.getElementById('header-co-name').textContent = STATE.company.name;
+// Dead code removed: STATE.company no longer exists (replaced by STATE.identity)
 </script>
 </body>
 </html>
