@@ -2508,15 +2508,15 @@ function renderUseCaseBlock(stepId, type, dimLabel, title) {
           </select>
         </div>
 
-        <!-- Business impact + Adoption rate -->
-        <div>
+        <!-- Business impact + Adoption rate (existing only) -->
+        <div${isExisting ? '' : ' style="grid-column:1/-1"'}>
           <div style="${labelStyle}">Business Impact</div>
           <input id="${uid}-roi" placeholder="${isExisting ? 'e.g. 15% cost reduction, 3h saved per RFx…' : 'e.g. Expected 10% savings on tail spend…'}"
             style="${inputStyle}" onfocus="this.style.borderColor='#0f172a'" onblur="this.style.borderColor='#e2e8f0'"
             onchange="saveUC('${stepId}','${type}',${n},'roi',this.value)" oninput="saveUC('${stepId}','${type}',${n},'roi',this.value)">
         </div>
 
-        <div>
+        ${isExisting ? `<div>
           <div style="${labelStyle}">Adoption rate in procurement</div>
           <select id="${uid}-adoption" onchange="saveUC('${stepId}','${type}',${n},'adoption',this.value)"
             style="width:100%;font-size:13px;font-family:inherit;border:none;border-bottom:1.5px solid #e2e8f0;background:transparent;color:#334155;padding:6px 0;outline:none;cursor:pointer">
@@ -2526,7 +2526,7 @@ function renderUseCaseBlock(stepId, type, dimLabel, title) {
             <option value="50-75">50 – 75%</option>
             <option value="75-100">75 – 100%</option>
           </select>
-        </div>
+        </div>` : ''}
 
         <!-- Comments — full width -->
         <div style="grid-column:1/-1">
