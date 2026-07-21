@@ -1374,15 +1374,12 @@ function renderSurveyQuestion() {
     if (surveyBody) surveyBody.style.maxWidth = '860px';
     const ucType = item.ucMode || 'existing';
     const isEx = ucType === 'existing';
-    const accent = isEx ? { t:'#4c1d95', m:'#7c3aed', l:'#ede9fe', b:'#ddd6fe' } : { t:'#78350f', m:'#d97706', l:'#fffbeb', b:'#fde68a' };
     card.innerHTML = `
       <div style="padding:4px 0">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-          <span style="background:${accent.l};color:${accent.m};font-size:10px;font-weight:800;padding:3px 10px;border-radius:99px;text-transform:uppercase;letter-spacing:.6px">${isEx ? 'In Place' : 'Opportunities'}</span>
-        </div>
-        <div style="margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--g200);">
-          <div style="font-size:20px;font-weight:800;color:var(--dark);line-height:1.2;margin-bottom:5px;">${item.stepTitle}</div>
-          <div style="font-size:13px;color:var(--g500);line-height:1.6;">${isEx ? 'Document AI solutions already live in your procurement organisation. For each, select the process step it belongs to.' : 'Capture AI opportunities the CPO sees for the future. For each, select the process step where it would apply.'}</div>
+        <div style="margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--g200);">
+          <div style="font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">${isEx ? 'Currently in Place' : 'Opportunities'}</div>
+          <div style="font-size:22px;font-weight:800;color:var(--dark);line-height:1.2;margin-bottom:6px;">${item.stepTitle}</div>
+          <div style="font-size:13px;color:var(--g500);line-height:1.65;">${isEx ? 'List the AI use cases already live in your procurement organisation. Add as many as you like — one per row.' : 'List the AI opportunities you see as priorities to develop. Add as many as you like — one per row.'}</div>
         </div>
         ${renderUseCaseBlock('_all', ucType, '', '')}
       </div>
@@ -2402,88 +2399,49 @@ function renderScaleRow(qid, stepId, dim, scores) {
 
 function renderUseCaseBlock(stepId, type, dimLabel, title) {
   const isExisting = type === 'existing';
-  // Existing: rich purple — Potential: warm amber-orange
-  const accent     = isExisting ? {h:'#5b21b6',m:'#7c3aed',l:'#ede9fe',b:'#ddd6fe',t:'#4c1d95'} : {h:'#92400e',m:'#d97706',l:'#fffbeb',b:'#fde68a',t:'#78350f'};
-  const ucCount    = Math.max(1, (STATE.useCases[stepId]?.[type]||[]).filter(u=>u?.name).length + 1);
-  const maxUC      = Math.max(ucCount, (STATE.useCases[stepId]?.[type]||[]).length + 1);
+  const maxUC = Math.max(1, (STATE.useCases[stepId]?.[type]||[]).length + 1);
 
-  // Process step options for the dropdown
-  const stepOptions = STEP_IDS.filter(sid => !QUESTIONS[sid]?.isTechStack && sid !== 's-org' && sid !== '_all')
+  const stepOptions = STEP_IDS.filter(sid => !QUESTIONS[sid]?.isTechStack && sid !== '_all')
     .map(sid => `<option value="${sid}">${STEP_LABELS[sid]}</option>`).join('');
-  const stepSelect = (id, n) => `<div style="grid-column:1/-1">
-    <div style="font-size:9px;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;">Process Step</div>
-    <select id="${id}" onchange="saveUC('${stepId}','${type}',${n},'step',this.value)"
-      style="width:100%;box-sizing:border-box;font-size:12px;font-family:inherit;border:1.5px solid var(--g200);border-radius:5px;background:white;color:var(--dark);padding:0 8px;height:28px;cursor:pointer;transition:border-color 150ms,box-shadow 150ms;"
-      onfocus="this.style.borderColor='${accent.m}';this.style.boxShadow='0 0 0 3px ${accent.m}22'" onblur="this.style.borderColor='';this.style.boxShadow=''">
-      <option value="">— Select process step —</option>
-      ${stepOptions}
-    </select>
-  </div>`;
-
-  // Compact field builder — label inline above, no textarea
-  const F = (id, label, ph, n) => {
-    const base = `id="${id}" placeholder="${ph}" onchange="saveUC('${stepId}','${type}',${n},'${id.split('-').pop()}',this.value)"`;
-    const inputStyle = `width:100%;box-sizing:border-box;font-size:12px;font-family:inherit;border:1.5px solid var(--g200);border-radius:5px;background:white;color:var(--dark);padding:0 8px;height:28px;transition:border-color 150ms,box-shadow 150ms;`;
-    return `<div>
-      <div style="font-size:9px;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;">${label}</div>
-      <input ${base} style="${inputStyle}" onfocus="this.style.borderColor='${accent.m}';this.style.boxShadow='0 0 0 3px ${accent.m}22'" onblur="this.style.borderColor='';this.style.boxShadow=''">
-    </div>`;
-  };
 
   function renderOneUC(n) {
-    const uid   = `uc-${stepId}-${type}-${n}`;
-    const badge = `<span style="display:inline-flex;align-items:center;justify-content:center;background:${accent.m};color:white;font-size:9px;font-weight:800;letter-spacing:.6px;border-radius:4px;padding:1px 7px;">${isExisting?'UC':'OPP'}${n}</span>`;
+    const uid = `uc-${stepId}-${type}-${n}`;
     const removeBtn = n > 1
-      ? `<button onclick="removeUC('${stepId}','${type}',${n})" style="margin-left:auto;background:none;border:1px solid rgba(255,255,255,.35);color:rgba(255,255,255,.85);font-size:10px;font-weight:600;cursor:pointer;border-radius:4px;padding:1px 8px;transition:background 150ms;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='none'">✕</button>` : '';
+      ? `<button onclick="removeUC('${stepId}','${type}',${n})" title="Remove" style="background:none;border:none;color:#cbd5e1;font-size:16px;cursor:pointer;line-height:1;padding:0;transition:color 150ms" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#cbd5e1'">×</button>` : '';
 
-    const fields = isExisting ? `
-      ${stepSelect(`${uid}-step`, n)}
-      <div style="grid-column:1/-1">${F(`${uid}-name`,        'Use Case Name',          'e.g. AI-powered spend classification', n)}</div>
-      ${F(`${uid}-technology`,  'AI Technology',              'e.g. Claude, ChatGPT…', n)}
-      ${F(`${uid}-integration`, 'ERP / Tool',                 'e.g. SAP Ariba, API…', n)}
-      ${F(`${uid}-adoption`,    'Adoption Rate',              'e.g. 80% of buyers…', n)}
-      ${F(`${uid}-roi`,         'Business Impact / ROI',      'e.g. €200k/yr, −15% cycle time…', n)}
-      <div style="grid-column:1/-1">${F(`${uid}-enabler`, 'Enablers Required',         'e.g. Clean spend data, IT integration…', n)}</div>
-    ` : `
-      ${stepSelect(`${uid}-step`, n)}
-      <div style="grid-column:1/-1">${F(`${uid}-name`,    'Opportunity Name',           'e.g. Autonomous RFx drafting', n)}</div>
-      ${F(`${uid}-roi`,     'Expected Impact / ROI',       'e.g. −20% cycle time, €150k/yr', n)}
-      ${F(`${uid}-enabler`, 'Implementation Enablers',     'e.g. Structured bid data, S2P platform…', n)}
-    `;
+    const inputStyle = `width:100%;box-sizing:border-box;font-size:14px;font-family:inherit;border:none;border-bottom:1.5px solid #e2e8f0;background:transparent;color:#0f172a;padding:6px 0;outline:none;transition:border-color 150ms`;
 
-    return `<div id="uc-row-${stepId}-${type}-${n}" style="margin-bottom:8px;border-radius:8px;overflow:hidden;border:1px solid ${accent.b};">
-      <div style="display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,${accent.h},${accent.m});padding:5px 10px;">
-        ${badge}
-        <span style="font-size:10px;font-weight:600;color:rgba(255,255,255,.7);">${isExisting ? 'In-use AI use case' : 'AI opportunity'}</span>
-        ${removeBtn}
+    return `<div id="uc-row-${stepId}-${type}-${n}" style="display:flex;align-items:flex-start;gap:14px;padding:16px 0;border-bottom:1px solid #f1f5f9;">
+      <div style="font-size:12px;font-weight:800;color:#94a3b8;min-width:24px;padding-top:8px">${n}.</div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:10px;">
+        <input id="${uid}-name" placeholder="${isExisting ? 'Use case name — e.g. AI spend classification' : 'Opportunity — e.g. Autonomous RFx drafting'}"
+          style="${inputStyle}" onfocus="this.style.borderColor='#0f172a'" onblur="this.style.borderColor='#e2e8f0'"
+          onchange="saveUC('${stepId}','${type}',${n},'name',this.value)" oninput="saveUC('${stepId}','${type}',${n},'name',this.value)">
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+          <select id="${uid}-step" onchange="saveUC('${stepId}','${type}',${n},'step',this.value)"
+            style="font-size:12px;font-family:inherit;border:none;border-bottom:1.5px solid #e2e8f0;background:transparent;color:#64748b;padding:4px 0;outline:none;cursor:pointer;flex:1;min-width:160px">
+            <option value="">— Process step —</option>
+            ${stepOptions}
+          </select>
+          <input id="${uid}-roi" placeholder="${isExisting ? 'Business impact / ROI (optional)' : 'Expected impact (optional)'}"
+            style="${inputStyle};flex:1;min-width:180px;font-size:12px;color:#64748b"
+            onfocus="this.style.borderColor='#0f172a'" onblur="this.style.borderColor='#e2e8f0'"
+            onchange="saveUC('${stepId}','${type}',${n},'roi',this.value)" oninput="saveUC('${stepId}','${type}',${n},'roi',this.value)">
+        </div>
       </div>
-      <div style="background:${accent.l};padding:8px 10px;display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;">
-        ${fields}
-      </div>
+      <div style="padding-top:6px">${removeBtn}</div>
     </div>`;
   }
 
   const rows = Array.from({length: maxUC}, (_,i) => renderOneUC(i+1)).join('');
-  const icon = isExisting
-    ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${accent.m}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`
-    : `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${accent.m}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>`;
 
-  return `<div id="uc-block-${stepId}-${type}" style="background:white;border-radius:10px;border:1px solid var(--g200);box-shadow:var(--shadow-sm);overflow:hidden;margin-bottom:4px;">
-    <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:linear-gradient(90deg,${accent.l},white);border-bottom:1px solid ${accent.b};">
-      ${icon}
-      <div>
-        <div style="font-size:11px;font-weight:800;color:${accent.t};letter-spacing:.1px;">${isExisting ? 'AI USE CASES — CURRENTLY IN PLACE' : 'AI USE CASES — OPPORTUNITIES TO DEVELOP'}</div>
-        <div style="font-size:10px;color:var(--g500);margin-top:1px;">${isExisting ? 'Document AI solutions already live at this step' : 'Capture AI opportunities the CPO sees for this step'}</div>
-      </div>
-    </div>
-    <div style="padding:10px 12px 6px;">
-      <div id="uc-rows-${stepId}-${type}">${rows}</div>
-      <button onclick="addUC('${stepId}','${type}')"
-        style="width:100%;margin-top:2px;padding:6px;background:${accent.l};border:1.5px dashed ${accent.b};border-radius:6px;font-size:11px;font-weight:700;color:${accent.m};cursor:pointer;transition:background 150ms;letter-spacing:.1px;"
-        onmouseover="this.style.background='${accent.b}'" onmouseout="this.style.background='${accent.l}'">
-        + Add another ${isExisting ? 'use case' : 'opportunity'}
-      </button>
-    </div>
+  return `<div id="uc-block-${stepId}-${type}">
+    <div id="uc-rows-${stepId}-${type}">${rows}</div>
+    <button onclick="addUC('${stepId}','${type}')"
+      style="margin-top:8px;background:none;border:none;font-size:13px;font-weight:600;color:#64748b;cursor:pointer;padding:8px 0;display:flex;align-items:center;gap:6px;transition:color 150ms"
+      onmouseover="this.style.color='#0f172a'" onmouseout="this.style.color='#64748b'">
+      <span style="font-size:18px;line-height:1">+</span> Add another ${isExisting ? 'use case' : 'opportunity'}
+    </button>
   </div>`;
 }
 
@@ -2512,10 +2470,7 @@ function removeUC(stepId, type, n) {
 }
 
 function restoreUCValues(stepId, type) {
-  const isExisting = type === 'existing';
-  const fields = isExisting
-    ? ['step','name','technology','integration','adoption','roi','enabler']
-    : ['step','name','roi','enabler'];
+  const fields = ['name','step','roi'];
   (STATE.useCases[stepId]?.[type]||[]).forEach((uc, i) => {
     if (!uc) return;
     fields.forEach(f => {
