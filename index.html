@@ -1040,7 +1040,7 @@ const isAdmin   = () => STATE.role === 'admin';
 const isBainCap = () => STATE.role === 'baincap';
 
 // ─── Matrix Rain Animation ────────────────────────────────────────────────────
-(function initMatrix() {
+function startMatrix() {
   const canvas = document.getElementById('matrix-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
@@ -1063,11 +1063,9 @@ const isBainCap = () => STATE.role === 'baincap';
     for (let i = 0; i < cols; i++) {
       const ch = chars[Math.floor(Math.random() * chars.length)];
       const y  = drops[i] * fontSize;
-      // Lead character — bright green/white
       ctx.fillStyle = drops[i] > 2 && Math.random() > 0.95 ? '#ffffff' : '#00ff66';
       ctx.font = `bold ${fontSize}px monospace`;
       ctx.fillText(ch, i * fontSize, y);
-      // Fade trail (random earlier chars)
       if (Math.random() > 0.5) {
         const trailCh = chars[Math.floor(Math.random() * chars.length)];
         const trailY  = y - fontSize * (1 + Math.floor(Math.random() * 4));
@@ -1081,7 +1079,7 @@ const isBainCap = () => STATE.role === 'baincap';
   }
   const interval = setInterval(draw, 40);
   canvas._matrixInterval = interval;
-})();
+}
 
 function enterAssessment() {
   const landing = document.getElementById('landing-screen');
@@ -1110,6 +1108,7 @@ document.addEventListener('DOMContentLoaded', () => {
       STATE.identity = s.identity;
       applyRestoredState(s.data || {});
       if (s.surveyIndex !== undefined) SURVEY_INDEX = s.surveyIndex;
+      hideLanding();
       showApp();
       // Always re-fetch fresh data from server in background to pick up any new scores/reasoning
       if (STATE.role === 'company') {
@@ -1126,7 +1125,8 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     } catch {}
   }
-  showLogin();
+  // No saved session — show landing with Matrix animation
+  startMatrix();
 });
 
 function applyRestoredState(data) {
