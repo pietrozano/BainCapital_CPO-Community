@@ -1275,8 +1275,6 @@ function buildSurveyQuestions() {
       SURVEY_QUESTIONS.push({ stepId: 's-tech', fieldId: field.id, field, isTechStack: true, stepTitle: techStep.title, tag: techStep.tag });
     }
   }
-  // BCG Tool Rating slide
-  SURVEY_QUESTIONS.push({ isBcgRating: true, stepId: '_bcgrating', stepTitle: 'BCG & Inverto AI Tools', tag: 'AI Tools' });
   // Use Cases intro slide
   SURVEY_QUESTIONS.push({
     isIntro: true,
@@ -1289,6 +1287,8 @@ function buildSurveyQuestions() {
   // Two dedicated UC slides at the very end
   SURVEY_QUESTIONS.push({ isUseCaseBlock: true, ucMode: 'existing',  stepId: '_all', stepTitle: 'AI Use Cases — Currently in Place',       tag: 'UC' });
   SURVEY_QUESTIONS.push({ isUseCaseBlock: true, ucMode: 'potential', stepId: '_all', stepTitle: 'AI Use Cases — Opportunities to Develop', tag: 'UC' });
+  // BCG Tool Rating slide — very last question
+  SURVEY_QUESTIONS.push({ isBcgRating: true, stepId: '_bcgrating', stepTitle: 'BCG & Inverto AI Tools', tag: 'AI Tools' });
 }
 
 function showSurvey() {
@@ -1431,7 +1431,7 @@ function renderSurveyQuestion() {
         return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f1f5f9">
           <div style="flex:1;min-width:0">
             <div style="font-size:13px;font-weight:700;color:#0f172a">${uc.name}</div>
-            <div style="font-size:11px;color:#94a3b8;margin-top:1px">${uc.desc.length>90?uc.desc.slice(0,90)+'…':uc.desc}</div>
+            <div style="font-size:11px;color:#94a3b8;margin-top:1px;line-height:1.5">${uc.desc}</div>
           </div>
           <div style="display:flex;gap:2px;flex-shrink:0;margin-left:16px" id="stars-${key}">${stars}</div>
         </div>`;
