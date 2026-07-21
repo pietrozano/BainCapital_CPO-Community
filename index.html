@@ -701,6 +701,29 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
         </div>
       </div>
 
+      <!-- BCG / Inverto Portfolio Library -->
+      <div class="card" style="padding:20px 20px 14px;margin-top:4px" id="bcg-library-card">
+        <div class="card-hdr" style="margin-bottom:16px">
+          <span style="background:#1a2e4a;color:white;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;letter-spacing:.4px">BCG · INVERTO</span>
+          <div class="card-title">AI use cases from BCG &amp; Inverto's procurement AI portfolio</div>
+        </div>
+        <div style="font-size:12px;color:#64748b;margin-bottom:18px">35 proven AI use cases across 10 procurement phases — drawn from BCG &amp; Inverto engagements worldwide. Click any card to explore.</div>
+
+        <!-- Phase filter tabs -->
+        <div id="bcg-lib-tabs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px"></div>
+
+        <!-- Use case grid -->
+        <div id="bcg-lib-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px"></div>
+      </div>
+
+      <!-- BCG UC detail modal -->
+      <div id="bcg-uc-modal-overlay" onclick="closeBcgModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:2000;align-items:center;justify-content:center">
+        <div id="bcg-uc-modal" onclick="event.stopPropagation()" style="background:white;border-radius:16px;padding:32px;max-width:540px;width:90%;max-height:85vh;overflow-y:auto;position:relative;box-shadow:0 24px 64px rgba(0,0,0,.25)">
+          <button onclick="closeBcgModal()" style="position:absolute;top:16px;right:16px;background:#f1f5f9;border:none;border-radius:50%;width:30px;height:30px;font-size:18px;cursor:pointer;color:#64748b;display:flex;align-items:center;justify-content:center">×</button>
+          <div id="bcg-uc-modal-content"></div>
+        </div>
+      </div>
+
       <!-- UC detail modal -->
       <div id="uc-modal-overlay" onclick="closeUCModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;align-items:center;justify-content:center">
         <div id="uc-modal" onclick="event.stopPropagation()" style="background:white;border-radius:16px;padding:32px;max-width:540px;width:90%;max-height:85vh;overflow-y:auto;position:relative;box-shadow:0 24px 64px rgba(0,0,0,.25)">
@@ -2950,6 +2973,7 @@ function renderInventory() {
   renderInvStats(portUCs);
   renderInvKanban('my', null);
   renderInvKanban('port', portUCs);
+  renderBcgLibrary();
 }
 
 function renderInvKanban(mode, portUCs) {
@@ -3044,6 +3068,128 @@ function openUCModal(dataStr) {
 
 function closeUCModal() {
   document.getElementById('uc-modal-overlay').style.display = 'none';
+}
+
+// ── BCG / INVERTO PORTFOLIO LIBRARY ──────────────────────────────────────────
+
+const BCG_PHASES = [
+  { id: 'all',  label: 'All' },
+  { id: 's-01', label: '01 · Foundation & AI Strategy' },
+  { id: 's-02', label: '02 · Category Management' },
+  { id: 's-03', label: '03 · Supplier Management' },
+  { id: 's-04', label: '04 · Strategic Sourcing' },
+  { id: 's-05', label: '05 · Contract Management' },
+  { id: 's-06', label: '06 · PR & Requisition' },
+  { id: 's-07', label: '07 · PO Management' },
+  { id: 's-08', label: '08 · Invoice & AP' },
+  { id: 's-ai', label: '10 · AI Governance & Enablement' },
+];
+
+const BCG_USE_CASES = [
+  // 01 · Foundation & AI Strategy
+  { phase: 's-01', name: 'Procurement Excellence Monitor', short: 'PEM', desc: 'AI-enabled holistic procurement maturity assessment evaluating operating model and capabilities across 14 dimensions. Benchmarks performance against 160+ peer companies and identifies targeted improvement priorities.', impact: 'Benchmarks vs 160+ peers', tag: 'BCG' },
+  { phase: 's-01', name: 'Spend Pattern IQ', short: 'Spend Pattern IQ', desc: 'Horizontal AI capability for spend pattern recognition with generative recommendations across workflows. Surfaces structural spend anomalies and category-level opportunities.', impact: null, tag: 'BCG' },
+  // 02 · Category Management
+  { phase: 's-02', name: 'Value Finder', short: 'Value Finder', desc: 'AI spend classification engine that uncovers savings opportunities, supplier harmonization, and spend categorization. Includes a "chat-your-spend" interface for category-specific insights across direct and indirect spend.', impact: '1–2% incremental savings on total spend; deployed 100+ times in 30+ countries', tag: 'BCG' },
+  { phase: 's-02', name: 'Spark!', short: 'Spark!', desc: 'Converts any spend extract into transaction-level categorized output in ~15 minutes using Claude (LLM). Cleans, standardizes, and classifies transactions into a common taxonomy. Delivers a structured, decision-ready spend view for early diagnostic.', impact: '15 min vs days of manual work', tag: 'BCG' },
+  { phase: 's-02', name: 'Spotlight', short: 'Spotlight', desc: 'Integrates all business-critical spend for transparency and analytics across the entire supplier base. Identifies, estimates, and validates opportunities (e.g. supplier consolidation) across categories based on spend, demand, and payment terms.', impact: '3–11% annual cost savings; >50 clients', tag: 'BCG' },
+  { phase: 's-02', name: 'GNFR AI / Indirect Spend Optimizer', short: 'GNFR AI', desc: 'GenAI-powered analysis of indirect vendor spend (AP data) for rapid opportunity sizing. Classifies vendors into categories using GenAI and web scraping against UNSPSC and BCG research taxonomy. Reduces manual effort from 1–3 weeks to 5–6 hours.', impact: '80%+ accuracy; saves multiple days per engagement', tag: 'BCG' },
+  { phase: 's-02', name: 'Semico AI', short: 'Semico AI', desc: 'GenAI-enabled tool for semiconductor procurement. Identifies pin-to-pin alternatives for active and passive devices and applies commercial and negotiation levers by ECU and Tier 1 context to reduce chip costs.', impact: '85% time reduction for pin-to-pin analysis; 15% chip price reduction', tag: 'BCG' },
+  { phase: 's-02', name: 'Delta Cost', short: 'Delta Cost', desc: 'AI-supported value engineering hub enabling cost intelligence through teardowns, benchmarks, and design-to-cost. Dynamic should-costing tool with breakdown of actual vs. should-costs, market index integration, and CO₂ emissions transparency.', impact: '1,000+ product teardowns of experience', tag: 'BCG' },
+  { phase: 's-02', name: 'ShouldCost', short: 'ShouldCost', desc: 'AI-powered should-cost modelling tool integrated within the BCG procurement AI suite. Builds bottom-up cost models for components and assemblies to establish robust negotiation targets.', impact: null, tag: 'BCG' },
+  { phase: 's-02', name: 'Tech Optimizer', short: 'Tech Optimizer', desc: 'Automatically reads and extracts technical drawings at mass-data scale, suggests technical levers based on parameters (thickness, material, variance), and calculates cost-saving potential per measure and component.', impact: '50–60% time savings in data extraction; 10–15% annual tech cost savings', tag: 'BCG' },
+  { phase: 's-02', name: 'GEAR', short: 'GEAR', desc: 'Agentic AI for MRO spend optimization. Analyzes messy MRO line-item data to standardize specifications, identify comparable items, and uncover price gaps and consolidation or substitution opportunities across suppliers and sites.', impact: 'Analyzed 20K+ SKUs; identified $35–50M opportunities at a US utility', tag: 'BCG' },
+  { phase: 's-02', name: 'M365 Optimizer', short: 'M365 Optimizer', desc: 'AI-powered Microsoft 365 license optimization tool. Applies AI-based license analytics and persona modeling to clean up inactive accounts, right-size licenses, and optimize contract structures before true-up cycles.', impact: '5–12% license cost reduction; 10 days to first quick wins', tag: 'BCG' },
+  // 03 · Supplier Management
+  { phase: 's-03', name: 'Supplier Profiler', short: 'Supplier Profiler', desc: 'AI-enabled 360° supplier intelligence for negotiation preparation. Automatically generates detailed supplier views by curating internal and external databases, extracting key figures, KPIs, and news headlines for negotiation and event preparation.', impact: '30% faster negotiation prep; +1–2% negotiation results', tag: 'BCG' },
+  { phase: 's-03', name: 'Supplier Risk Radar', short: 'Risk Radar', desc: 'AI tool for continuous supplier risk monitoring and assessment across financial, ESG, geopolitical, and quality dimensions. Flags emerging risks and recommends mitigation actions.', impact: null, tag: 'BCG' },
+  { phase: 's-03', name: 'Supplier Day Assistant', short: 'Supplier Day', desc: 'AI accelerator supporting the preparation and execution of supplier days and cost-out conventions. Helps structure agendas, prepare data packages, and generate supplier-specific briefing materials at scale.', impact: null, tag: 'BCG' },
+  // 04 · Strategic Sourcing
+  { phase: 's-04', name: 'Tender Co-Pilot', short: 'Tender Co-Pilot', desc: 'AI-supported creation and customization of supplier tenders. Automatically generates tender documents based on pre-defined guidelines; procurement manager adapts output via AI chat interface. Template selection based on previous tenders.', impact: '50% time reduction to generate and review supplier tenders (~10h saving per tender)', tag: 'BCG' },
+  { phase: 's-04', name: 'Offer Analyst', short: 'Offer Analyst', desc: 'AI-driven analysis, comparison, and summary of supplier offers across pre-defined KPIs. Highlights key differences across commercial, technical, and legal documents including version history and CO₂ footprint.', impact: '50% time reduction to evaluate bids', tag: 'BCG' },
+  { phase: 's-04', name: 'Geo Source / BCC Workflow', short: 'Geo Source', desc: 'Best-cost country sourcing agentic workflow. Identifies and prioritizes sourcing shift opportunities; breaks down spend into factor costs and benchmarks across 25+ BCCs using 7 external databases; suggests target suppliers and builds implementation timelines.', impact: '>5% value extraction; ~700h time savings per case; >80% faster Go/No-Go', tag: 'BCG' },
+  { phase: 's-04', name: 'Market Intelligence Engine', short: 'Market Intel', desc: 'Understands market solutions to challenge internal demand and requirements. Used in the go-to-market phase to shape sourcing strategies and identify alternative supply options through agentic web research.', impact: null, tag: 'BCG' },
+  { phase: 's-04', name: 'Negotiation Co-Pilot', short: 'Nego Co-Pilot', desc: 'Dynamic negotiation preparation, target-setting, and game-theory simulation for A-suppliers. Includes detailed supplier factbook, dynamic LAA/MDO target setting, game-theory scenario modelling, and agentic negotiation simulation.', impact: '2–3% incremental savings on A-supplier spend; 50% time savings in prep', tag: 'BCG' },
+  { phase: 's-04', name: 'Negotiation Coach', short: 'Nego Coach', desc: 'GenAI tool that complements buyer expertise with tailored negotiation design. Learning algorithm from previous successful negotiations. Recommends negotiation technique, commercial, and technical levers to optimize preparation and outcomes.', impact: '10% cost savings on initiatives using the coach's recommendations', tag: 'BCG' },
+  { phase: 's-04', name: 'Savings Radar', short: 'Savings Radar', desc: 'GenAI-enabled identification and prioritization of savings levers for B and C suppliers. Quantifies potential and recommends tailored negotiation arguments and techniques at scale. Generates customized supplier letters in multiple languages.', impact: '5–7% savings increase with B/C suppliers; 90% less time to create tailored letters', tag: 'BCG' },
+  { phase: 's-04', name: 'Tail Negotiator', short: 'Tail Negotiator', desc: 'AI-supported price reduction for C-suppliers. Determines optimal savings target per supplier, selects right communication tone, automatically generates customized letters in multiple languages, and manages delivery workflow end-to-end.', impact: '3–5% cost savings from automated price reduction requests', tag: 'BCG' },
+  // 05 · Contract Management
+  { phase: 's-05', name: 'Claim Scout', short: 'Claim Scout', desc: 'AI-enabled detection and recovery of supplier overpayments. Identifies discrepancies between invoices, POs, and supplier contracts. Automatically generates emails with tailored tone and negotiation arguments using NLP and LLMs.', impact: '0.5–1% clawback on claimable spend; deployed 14+ times across consumer, industrial, and energy', tag: 'BCG' },
+  { phase: 's-05', name: 'Claim Defender', short: 'Claim Defender', desc: 'GenAI tool that standardizes and automates supplier claim assessment. Aggregates contract and cost data, validates claims, generates structured decision-ready responses, and proactively monitors inbound supplier price increase claims.', impact: 'Up to 67% cost avoidance on claims', tag: 'BCG' },
+  { phase: 's-05', name: 'Contract Intelligence', short: 'Contract Intel', desc: 'AI layer providing document and policy intelligence at portfolio scale. Analyzes contracts across the supplier base to inform negotiations, flag risks, and identify favorable or unfavorable clause patterns.', impact: null, tag: 'BCG' },
+  { phase: 's-05', name: 'Contract Analyst', short: 'Contract Analyst', desc: 'Cloud-agnostic app that processes contracts into machine-searchable format and builds a contract hierarchy via AI understanding. Identifies unfavorable terms, assists in customizing clauses, finds gaps, and harmonizes structured data across sources.', impact: null, tag: 'BCG' },
+  // 06 · PR & Requisition
+  { phase: 's-06', name: 'PR Triage', short: 'PR Triage', desc: 'AI intake management and demand challenging at the point of requisition. Ensures PR completeness, challenges demand validity, automatically moves spend to better buying channels, and compares spend against existing catalogues. LLM trained with buyer feedback. Integrated in Ariba.', impact: '4–7% reduction in low-value spend demand; up to 5% incremental savings through channel optimization', tag: 'BCG' },
+  // 07 · PO Management
+  { phase: 's-07', name: 'PO Creation Agent', short: 'PO Creation', desc: 'Agentic capability that generates purchase orders automatically based on agreed contract terms and negotiated conditions. Reduces manual PO creation effort and ensures contractual compliance at the point of ordering.', impact: null, tag: 'BCG' },
+  // 08 · Invoice & AP
+  { phase: 's-08', name: 'Invoice Validation Agent', short: 'Invoice Validation', desc: 'Agentic capability to validate invoices against POs and contracts to ensure compliance with agreed terms. Automatically flags discrepancies and routes exceptions for human review.', impact: null, tag: 'BCG' },
+  { phase: 's-08', name: 'AI Requisitions', short: 'AI Requisitions', desc: 'Auto-generates compliant purchase requests based on existing contracts and procurement policies. Reduces requisition cycle time and ensures policy adherence without manual intervention.', impact: null, tag: 'BCG' },
+  // 10 · AI Governance & Enablement
+  { phase: 's-ai', name: 'Agentic Procurement Hub', short: 'APH', desc: 'Modular platform that orchestrates agentic workflows to autonomously convert internal and external data into insights, implementation plans, and autonomous actions (e.g. automated tendering, supplier interaction). Includes interaction avatar, MCP server/tool registry, and an agent library.', impact: null, tag: 'BCG' },
+  { phase: 's-ai', name: 'GenAI PRO Companion', short: 'PRO Companion', desc: 'The daily GenAI companion for the procurement organization. Includes a knowledge navigator, day-to-day chat interface (e.g. emails to suppliers), system connector (SharePoint, SAP Ariba), and use case connector to procurement AI tools.', impact: null, tag: 'BCG' },
+  { phase: 's-ai', name: 'Knowledge Search Bar', short: 'Knowledge Search', desc: 'GenAI-enabled extraction and curation of key information across the entire procurement department, including internal and external databases. Automatic document search, answer summarization, and source citation.', impact: '50–75% time reduction per search', tag: 'BCG' },
+  { phase: 's-ai', name: 'Procurement Board Expert', short: 'Board Expert', desc: 'AI agent for integrated scenario-based procurement decisions at executive and board level. Synthesizes portfolio-wide data to support strategic procurement decisions and board reporting.', impact: null, tag: 'BCG' },
+];
+
+let _bcgActivePhase = 'all';
+
+function renderBcgLibrary() {
+  const tabsEl = document.getElementById('bcg-lib-tabs');
+  const gridEl = document.getElementById('bcg-lib-grid');
+  if (!tabsEl || !gridEl) return;
+
+  // Tabs
+  tabsEl.innerHTML = BCG_PHASES.map(p => {
+    const count = p.id === 'all' ? BCG_USE_CASES.length : BCG_USE_CASES.filter(u => u.phase === p.id).length;
+    const active = _bcgActivePhase === p.id;
+    return `<button onclick="_bcgActivePhase='${p.id}';renderBcgLibrary()" style="background:${active ? '#1a2e4a' : '#f1f5f9'};color:${active ? 'white' : '#64748b'};border:none;border-radius:20px;padding:5px 13px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all 150ms">${p.label} <span style="opacity:.65">(${count})</span></button>`;
+  }).join('');
+
+  // Grid
+  const filtered = _bcgActivePhase === 'all' ? BCG_USE_CASES : BCG_USE_CASES.filter(u => u.phase === _bcgActivePhase);
+  const phaseColors = { 's-01':'#7c3aed','s-02':'#0369a1','s-03':'#047857','s-04':'#b45309','s-05':'#be185d','s-06':'#0891b2','s-07':'#4338ca','s-08':'#065f46','s-ai':'#1a2e4a' };
+  const phaseLabels = { 's-01':'Foundation','s-02':'Category Mgmt','s-03':'Supplier Mgmt','s-04':'Strategic Sourcing','s-05':'Contract Mgmt','s-06':'PR & Req','s-07':'PO Mgmt','s-08':'Invoice & AP','s-ai':'AI Enablement' };
+
+  gridEl.innerHTML = filtered.map((uc, i) => {
+    const color = phaseColors[uc.phase] || '#1a2e4a';
+    const pLabel = phaseLabels[uc.phase] || '';
+    const idx = BCG_USE_CASES.indexOf(uc);
+    return `<div onclick="openBcgModal(${idx})" style="background:white;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px;cursor:pointer;transition:box-shadow 150ms,transform 150ms;display:flex;flex-direction:column;gap:10px" onmouseover="this.style.boxShadow='0 4px 16px rgba(0,0,0,.1)';this.style.transform='translateY(-1px)'" onmouseout="this.style.boxShadow='none';this.style.transform='none'">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+        <div style="font-size:13px;font-weight:700;color:#0f172a;line-height:1.3">${uc.name}</div>
+        <span style="background:#1a2e4a;color:white;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;white-space:nowrap;flex-shrink:0">BCG</span>
+      </div>
+      <div style="font-size:11px;color:#64748b;line-height:1.5;flex:1">${uc.desc.length > 110 ? uc.desc.slice(0,110) + '…' : uc.desc}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto">
+        <span style="background:${color}18;color:${color};font-size:10px;font-weight:600;padding:2px 8px;border-radius:8px">${pLabel}</span>
+        ${uc.impact ? `<span style="font-size:10px;color:#16a34a;font-weight:600">✓ ${uc.impact.split(';')[0]}</span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openBcgModal(idx) {
+  const uc = BCG_USE_CASES[idx];
+  if (!uc) return;
+  const phaseColors = { 's-01':'#7c3aed','s-02':'#0369a1','s-03':'#047857','s-04':'#b45309','s-05':'#be185d','s-06':'#0891b2','s-07':'#4338ca','s-08':'#065f46','s-ai':'#1a2e4a' };
+  const phaseLabels = { 's-01':'01 · Foundation & AI Strategy','s-02':'02 · Category Management','s-03':'03 · Supplier Management','s-04':'04 · Strategic Sourcing','s-05':'05 · Contract Management','s-06':'06 · PR & Requisition','s-07':'07 · PO Management','s-08':'08 · Invoice & AP','s-ai':'10 · AI Governance & Enablement' };
+  const color = phaseColors[uc.phase] || '#1a2e4a';
+  document.getElementById('bcg-uc-modal-content').innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <span style="background:#1a2e4a;color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px">BCG · INVERTO</span>
+      <span style="background:${color}18;color:${color};font-size:11px;font-weight:600;padding:3px 10px;border-radius:12px">${phaseLabels[uc.phase]||''}</span>
+    </div>
+    <div style="font-size:22px;font-weight:800;color:#0f172a;margin-bottom:12px;line-height:1.2">${uc.name}</div>
+    <div style="font-size:14px;color:#334155;line-height:1.65;margin-bottom:20px">${uc.desc}</div>
+    ${uc.impact ? `<div style="background:#f0fdf4;border-radius:10px;padding:14px 16px;border-left:3px solid #16a34a"><div style="font-size:10px;font-weight:700;color:#15803d;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Proven Impact</div><div style="font-size:13px;font-weight:600;color:#166534">${uc.impact.split(';').join('<br>')}</div></div>` : ''}
+  `;
+  const overlay = document.getElementById('bcg-uc-modal-overlay');
+  overlay.style.display = 'flex';
+}
+
+function closeBcgModal() {
+  document.getElementById('bcg-uc-modal-overlay').style.display = 'none';
 }
 
 function renderInvStats(portUCs) {
