@@ -2561,13 +2561,10 @@ function expandAllRubrics() {
     btn.style.borderColor = _reviewModeOn ? '#6366f1' : '#e2e8f0';
   }
   if (_reviewModeOn) {
-    // Navigate to first scored step
+    // Navigate to first scored step — rubrics stay closed by default
     const steps = ['s-01','s-02','s-03','s-04','s-05','s-06','s-07','s-08','s-09','s-ai'];
     const firstScored = steps.find(sid => Object.keys(STATE.scores[sid] || {}).length > 0) || 's-01';
     showSection(firstScored);
-    setTimeout(() => {
-      document.querySelectorAll('[id^="rubric-"]').forEach(el => { el.style.display = 'block'; });
-    }, 150);
   }
 }
 function saveNote(qid, val) { STATE.notes[qid] = val; saveSession(); }
