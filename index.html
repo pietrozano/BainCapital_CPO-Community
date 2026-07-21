@@ -2415,8 +2415,11 @@ function renderUseCaseBlock(stepId, type, dimLabel, title) {
       <div style="font-size:12px;font-weight:800;color:#94a3b8;min-width:24px;padding-top:8px">${n}.</div>
       <div style="flex:1;display:flex;flex-direction:column;gap:10px;">
         <input id="${uid}-name" placeholder="${isExisting ? 'Use case name — e.g. AI spend classification' : 'Opportunity — e.g. Autonomous RFx drafting'}"
-          style="${inputStyle}" onfocus="this.style.borderColor='#0f172a'" onblur="this.style.borderColor='#e2e8f0'"
+          style="${inputStyle};font-weight:600" onfocus="this.style.borderColor='#0f172a'" onblur="this.style.borderColor='#e2e8f0'"
           onchange="saveUC('${stepId}','${type}',${n},'name',this.value)" oninput="saveUC('${stepId}','${type}',${n},'name',this.value)">
+        <input id="${uid}-desc" placeholder="Brief description — what does it do and who uses it?"
+          style="${inputStyle};font-size:13px;color:#64748b" onfocus="this.style.borderColor='#0f172a'" onblur="this.style.borderColor='#e2e8f0'"
+          onchange="saveUC('${stepId}','${type}',${n},'desc',this.value)" oninput="saveUC('${stepId}','${type}',${n},'desc',this.value)">
         <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
           <select id="${uid}-step" onchange="saveUC('${stepId}','${type}',${n},'step',this.value)"
             style="font-size:12px;font-family:inherit;border:none;border-bottom:1.5px solid #e2e8f0;background:transparent;color:#64748b;padding:4px 0;outline:none;cursor:pointer;flex:1;min-width:160px">
@@ -2427,6 +2430,14 @@ function renderUseCaseBlock(stepId, type, dimLabel, title) {
             style="${inputStyle};flex:1;min-width:180px;font-size:12px;color:#64748b"
             onfocus="this.style.borderColor='#0f172a'" onblur="this.style.borderColor='#e2e8f0'"
             onchange="saveUC('${stepId}','${type}',${n},'roi',this.value)" oninput="saveUC('${stepId}','${type}',${n},'roi',this.value)">
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <label style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#94a3b8;cursor:pointer;padding:4px 0;transition:color 150ms" onmouseover="this.style.color='#475569'" onmouseout="this.style.color='#94a3b8'">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Attach file
+            <input type="file" multiple style="display:none" onchange="saveUCFiles('${stepId}','${type}',${n},this.files)">
+          </label>
+          <span id="${uid}-files" style="font-size:11px;color:#64748b"></span>
         </div>
       </div>
       <div style="padding-top:6px">${removeBtn}</div>
@@ -2469,14 +2480,33 @@ function removeUC(stepId, type, n) {
   saveSession();
 }
 
+function saveUCFiles(stepId, type, n, files) {
+  if (!STATE.useCases[stepId]) STATE.useCases[stepId] = {};
+  if (!STATE.useCases[stepId][type]) STATE.useCases[stepId][type] = [];
+  while (STATE.useCases[stepId][type].length < n) STATE.useCases[stepId][type].push({});
+  const uc = STATE.useCases[stepId][type][n-1] || {};
+  uc.files = uc.files || [];
+  Array.from(files).forEach(f => { if (!uc.files.find(x => x.name === f.name)) uc.files.push({ name: f.name, size: f.size }); });
+  STATE.useCases[stepId][type][n-1] = uc;
+  const uid = `uc-${stepId}-${type}-${n}`;
+  const el = document.getElementById(`${uid}-files`);
+  if (el) el.innerHTML = uc.files.map(f => `<span style="background:#f1f5f9;border-radius:4px;padding:2px 7px;margin-right:4px">📎 ${f.name}</span>`).join('');
+  saveSession();
+}
+
 function restoreUCValues(stepId, type) {
-  const fields = ['name','step','roi'];
+  const fields = ['name','desc','step','roi'];
   (STATE.useCases[stepId]?.[type]||[]).forEach((uc, i) => {
     if (!uc) return;
     fields.forEach(f => {
       const el = document.getElementById(`uc-${stepId}-${type}-${i+1}-${f}`);
       if (el && uc[f]) el.value = uc[f];
     });
+    // Restore file tags
+    if (uc.files?.length) {
+      const el = document.getElementById(`uc-${stepId}-${type}-${i+1}-files`);
+      if (el) el.innerHTML = uc.files.map(f => `<span style="background:#f1f5f9;border-radius:4px;padding:2px 7px;margin-right:4px">📎 ${f.name}</span>`).join('');
+    }
   });
 }
 
