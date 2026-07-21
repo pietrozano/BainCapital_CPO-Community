@@ -1250,6 +1250,15 @@ function buildSurveyQuestions() {
       SURVEY_QUESTIONS.push({ stepId: 's-tech', fieldId: field.id, field, isTechStack: true, stepTitle: techStep.title, tag: techStep.tag });
     }
   }
+  // Use Cases intro slide
+  SURVEY_QUESTIONS.push({
+    isIntro: true,
+    stepId: '_uc',
+    stepTitle: 'AI Use Cases',
+    tag: 'Use Cases',
+    intro: "You've completed all process area questions. In this final section we'd like to capture the AI use cases your organisation has already deployed and those you see as priorities to develop. For each use case, simply note what it is, where it sits in the procurement process, and — where you have it — the business impact. There are no right or wrong answers.",
+    desc: 'Document deployed AI solutions and future opportunities across your procurement function.'
+  });
   // Two dedicated UC slides at the very end
   SURVEY_QUESTIONS.push({ isUseCaseBlock: true, ucMode: 'existing',  stepId: '_all', stepTitle: 'AI Use Cases — Currently in Place',       tag: 'UC' });
   SURVEY_QUESTIONS.push({ isUseCaseBlock: true, ucMode: 'potential', stepId: '_all', stepTitle: 'AI Use Cases — Opportunities to Develop', tag: 'UC' });
