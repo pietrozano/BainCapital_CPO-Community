@@ -461,47 +461,52 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
         </div>
         <div class="nav-item" onclick="showSection('s-02')" id="nav-s-02">
           <div class="nav-badge nb-empty" id="badge-s-02">02</div>
-          <div class="nav-label">Category Management</div>
+          <div class="nav-label">People</div>
           <div class="nav-score" id="score-s-02">—</div>
         </div>
         <div class="nav-item" onclick="showSection('s-03')" id="nav-s-03">
           <div class="nav-badge nb-empty" id="badge-s-03">03</div>
-          <div class="nav-label">Supplier Management</div>
+          <div class="nav-label">Category Management</div>
           <div class="nav-score" id="score-s-03">—</div>
         </div>
         <div class="nav-item" onclick="showSection('s-04')" id="nav-s-04">
           <div class="nav-badge nb-empty" id="badge-s-04">04</div>
-          <div class="nav-label">Strategic Sourcing (RFx)</div>
+          <div class="nav-label">Supplier Management</div>
           <div class="nav-score" id="score-s-04">—</div>
         </div>
         <div class="nav-item" onclick="showSection('s-05')" id="nav-s-05">
           <div class="nav-badge nb-empty" id="badge-s-05">05</div>
-          <div class="nav-label">Contract Management</div>
+          <div class="nav-label">Strategic Sourcing (RFx)</div>
           <div class="nav-score" id="score-s-05">—</div>
         </div>
         <div class="nav-item" onclick="showSection('s-06')" id="nav-s-06">
           <div class="nav-badge nb-empty" id="badge-s-06">06</div>
-          <div class="nav-label">PR &amp; Requisition</div>
+          <div class="nav-label">Contract Management</div>
           <div class="nav-score" id="score-s-06">—</div>
         </div>
         <div class="nav-item" onclick="showSection('s-07')" id="nav-s-07">
           <div class="nav-badge nb-empty" id="badge-s-07">07</div>
-          <div class="nav-label">PO Management</div>
+          <div class="nav-label">PR &amp; Requisition</div>
           <div class="nav-score" id="score-s-07">—</div>
         </div>
         <div class="nav-item" onclick="showSection('s-08')" id="nav-s-08">
           <div class="nav-badge nb-empty" id="badge-s-08">08</div>
-          <div class="nav-label">Invoice &amp; AP</div>
+          <div class="nav-label">PO Management</div>
           <div class="nav-score" id="score-s-08">—</div>
         </div>
         <div class="nav-item" onclick="showSection('s-09')" id="nav-s-09">
           <div class="nav-badge nb-empty" id="badge-s-09">09</div>
-          <div class="nav-label">Reporting &amp; Analytics</div>
+          <div class="nav-label">Invoice &amp; AP</div>
           <div class="nav-score" id="score-s-09">—</div>
         </div>
+        <div class="nav-item" onclick="showSection('s-10')" id="nav-s-10">
+          <div class="nav-badge nb-empty" id="badge-s-10">10</div>
+          <div class="nav-label">Reporting &amp; Analytics</div>
+          <div class="nav-score" id="score-s-10">—</div>
+        </div>
         <div class="nav-item" onclick="showSection('s-ai')" id="nav-s-ai">
-          <div class="nav-badge nb-empty" id="badge-s-ai">10</div>
-          <div class="nav-label">AI &amp; Tech Deep Dive</div>
+          <div class="nav-badge nb-empty" id="badge-s-ai">11</div>
+          <div class="nav-label">AI Governance &amp; Enablement</div>
           <div class="nav-score" id="score-s-ai">—</div>
         </div>
       </div>
@@ -538,23 +543,15 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
             <input class="input-f" type="date" id="co-date">
           </div>
         </div>
-        <div class="form3" style="margin-top:4px">
+        <div class="form2" style="margin-top:4px">
           <div class="field-group">
-            <label class="field-label">Annual Spend Managed (M€)</label>
-            <input class="input-f" type="number" id="co-spend" placeholder="e.g. 250">
+            <label class="field-label">Total Direct Spend (M€)</label>
+            <input class="input-f" type="number" id="co-spend-direct" placeholder="e.g. 150">
           </div>
           <div class="field-group">
-            <label class="field-label">Total Procurement FTEs</label>
-            <input class="input-f" type="number" id="co-ftes" placeholder="e.g. 45">
+            <label class="field-label">Total Indirect Spend (M€)</label>
+            <input class="input-f" type="number" id="co-spend-indirect" placeholder="e.g. 100">
           </div>
-          <div class="field-group">
-            <label class="field-label">Front Office FTEs (S2C)</label>
-            <input class="input-f" type="number" id="co-ftes-fo" placeholder="e.g. 25">
-          </div>
-        </div>
-        <div class="field-group" style="margin-top:4px">
-          <label class="field-label">ERP System(s) in Place</label>
-          <input class="input-f" id="co-erp" placeholder="e.g. SAP S/4HANA — single instance">
         </div>
       </div>
       <div class="nav-btns">
@@ -615,6 +612,7 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
     <div class="section" id="s-07"></div>
     <div class="section" id="s-08"></div>
     <div class="section" id="s-09"></div>
+    <div class="section" id="s-10"></div>
     <div class="section" id="s-ai"></div>
 
     <!-- ── CMI DASHBOARD ── -->
@@ -782,196 +780,210 @@ const QUESTIONS = {
   's-01': {
     title: 'Procurement Foundation & AI Strategy',
     tag: 'Step 01',
-    desc: 'Procurement positioning, organisational foundation, AI strategy and roadmap.',
-    intro: "We'll start with the foundation — procurement's strategic position within the organisation and its AI ambition. This section explores how procurement is structured and mandated, and whether AI has a defined place in your agenda, who owns it, and how decisions are made and tracked. Please answer in your own words; there is no expectation of perfection.",
+    desc: 'Procurement positioning, board visibility, AI strategy and roadmap.',
+    intro: "We'll start with the foundation — procurement's strategic position within the organisation and its AI ambition. This section explores how procurement is mandated, and whether AI has a defined place in your agenda, who owns it, and how decisions are made and tracked. Please answer in your own words; there is no expectation of perfection.",
     questions: [
-      { id: 'q-a-01', short: 'Board visibility & voice',
+      { id: 'q-01-01', scored: true, short: 'Board visibility & voice',
         text: 'Does procurement have appropriate visibility and a meaningful voice at board or ExCo level — including regular CPO reporting to CFO/CEO, procurement input into major strategic decisions, and board-level accountability for procurement performance?',
         scores: ['Procurement has no regular reporting at board/ExCo level. No board accountability for procurement performance.','Some ad hoc reporting to senior leadership but no structured cadence. Procurement input into strategic decisions is occasional and informal.','CPO reports regularly to CFO/CEO. Procurement has a defined voice in major strategic decisions. Board-level KPIs for procurement are established.','Procurement is a strategic board agenda item. CPO has direct ExCo access, formal input into corporate strategy, and board-level accountability for procurement value delivery.'] },
-      { id: 'q-a-02', short: 'Procurement mandate',
+      { id: 'q-01-02', scored: true, short: 'Procurement mandate',
         text: 'Is a clear procurement mandate defined — articulating the ambition level, the role procurement plays for the business, across the entities and regions?',
         scores: ['No formal procurement mandate. The role of procurement is undefined or varies by business unit.','A general mandate exists but is not formally documented or consistently understood across the organisation.','A clear, documented procurement mandate defines ambition, scope across entities/regions, and is communicated to key stakeholders.','The mandate is formally endorsed at ExCo level, regularly reviewed, and actively used to guide resource allocation, priorities, and stakeholder engagement across all entities and regions.'] },
-      { id: 'q-a-03', short: 'Org structure & process standardisation',
-        text: 'Are strategic (Front Office) and operational (Back Office) procurement roles clearly separated, defined, and structured? Are procurement processes standardised and consistently applied across the organisation, regions, and categories?',
-        scores: ['No separation between strategic and operational procurement. Processes are ad hoc and vary significantly across regions and categories.','Some role separation exists but is informal. Process standardisation is partial and inconsistently applied.','Strategic and operational roles are clearly defined. Core procurement processes are standardised and documented across the organisation.','Full role separation with clear career paths for both tracks. Processes are standardised, digitally enforced, and continuously improved across all entities, regions, and categories.'] },
-      { id: 'q-a-04', short: 'Core procurement capabilities',
-        text: 'To what extent are core procurement skills and capabilities present — such as analytics, market and category knowledge, sourcing and negotiation, supplier relationship management, and supplier scouting — and where do capability gaps still need to be developed?',
-        scores: ['Core procurement capabilities are absent or very underdeveloped. Significant gaps across analytics, market knowledge, sourcing, negotiation, and SRM.','Some capabilities present but inconsistently distributed. No formal capability framework or gap assessment in place.','Core capabilities are defined in a skills framework. Gaps are identified and addressed through structured development programmes.','All core capabilities are present at a high level across the team. Gaps are continuously assessed and closed. Procurement is recognised internally as a centre of expertise.'] },
-      { id: 'q-01-01', short: 'AI strategy & roadmap',
+      { id: 'q-01-03', scored: true, short: 'AI strategy & roadmap',
         text: 'Describe your AI strategy for procurement. Do you have a formal AI roadmap, dedicated budget, and an executive sponsor? How is AI progress tracked and reported?',
         scores: ['No AI consideration in strategy. No roadmap, budget, or sponsor.','AI mentioned in strategy but no defined roadmap or allocated budget.','Formal AI roadmap exists with budget allocated and executive sponsor identified.','AI is a core pillar of strategy — roadmap actively tracked, budget is multi-year, executive sponsor reviews progress quarterly.'] },
-      { id: 'q-01-03', short: 'AI performance tracking',
+      { id: 'q-01-04', scored: true, short: 'AI performance tracking',
         text: 'How do you measure and report the business value of AI in procurement? Are savings, productivity gains, and cycle-time improvements tracked and validated by Finance?',
         scores: ['No measurement of AI value. ROI of AI investments is unknown.','AI value estimated informally but not tracked or validated.','AI value formally tracked for major deployments — KPIs reported and finance-validated.','AI value managed as a portfolio — investment tied to measured outcomes, underperforming use cases retired, AI ROI in financial reporting.'] },
-      { id: 'q-01-04', short: 'AI use case pipeline',
+      { id: 'q-01-05', scored: true, short: 'AI use case pipeline',
         text: 'Do you manage a pipeline of AI use cases from ideation to deployment? How are use cases prioritised, funded, and retired?',
         scores: ['No pipeline. AI use cases are ad hoc and untracked.','A list of AI ideas exists but no formal prioritisation or tracking.','Formal AI use case pipeline with owners, status tracking, and prioritisation criteria.','AI use cases managed as a portfolio with investment decisions, measured outcomes, and active retirement of underperformers.'] }
     ]
   },
   's-02': {
-    title: 'Category Management',
+    title: 'People',
     tag: 'Step 02',
+    desc: 'Organisational structure, procurement capabilities, AI training and dedicated AI roles.',
+    intro: "People are the engine behind any successful AI transformation. This section explores how your procurement organisation is structured, the maturity of core capabilities, and how your team is being equipped — through training, dedicated roles, and AI fluency — to deliver AI-enabled procurement at scale.",
+    questions: [
+      { id: 'q-02-01', scored: true, short: 'Org structure & process standardisation',
+        text: 'Are strategic (Front Office) and operational (Back Office) procurement roles clearly separated, defined, and structured? Are procurement processes standardised and consistently applied across the organisation, regions, and categories?',
+        scores: ['No separation between strategic and operational procurement. Processes are ad hoc and vary significantly across regions and categories.','Some role separation exists but is informal. Process standardisation is partial and inconsistently applied.','Strategic and operational roles are clearly defined. Core procurement processes are standardised and documented across the organisation.','Full role separation with clear career paths for both tracks. Processes are standardised, digitally enforced, and continuously improved across all entities, regions, and categories.'] },
+      { id: 'q-02-02', scored: false, short: 'Core procurement capabilities',
+        text: 'To what extent are core procurement skills and capabilities present — such as analytics, market and category knowledge, sourcing and negotiation, supplier relationship management, and supplier scouting — and where do capability gaps still need to be developed?',
+        scores: ['Core procurement capabilities are absent or very underdeveloped. Significant gaps across analytics, market knowledge, sourcing, negotiation, and SRM.','Some capabilities present but inconsistently distributed. No formal capability framework or gap assessment in place.','Core capabilities are defined in a skills framework. Gaps are identified and addressed through structured development programmes.','All core capabilities are present at a high level across the team. Gaps are continuously assessed and closed. Procurement is recognised internally as a centre of expertise.'] },
+      { id: 'q-02-03', scored: true, short: 'AI Trainings',
+        text: 'What structured AI training and upskilling is in place for procurement staff? Are programmes role-based (buyers, category managers, AP, leadership)?',
+        scores: ['No AI training for procurement staff. AI literacy is ad hoc.','Some AI training available (e.g. company-wide digital literacy) but not tailored to procurement roles.','Role-based AI training in place for core procurement roles with defined capability levels and development tracks.','AI capability formally embedded in procurement career paths — role-based assessments, structured programmes, updated as capabilities advance.'] },
+      { id: 'q-02-04', scored: true, short: 'AI Capability level',
+        text: 'How would you evaluate the level of proficiency in using AI across your Procurement organization (among team members involved in strategic and tactical activities such as Category Management, Supplier Relationship Management, RFx, and Contracting)?',
+        scores: ['LEVEL 1: AI usage is minimal or absent. Team members have limited awareness of relevant AI tools and rely primarily on traditional methods to perform strategic and tactical procurement activities.','LEVEL 2: Some team members are experimenting with AI for selected tasks, such as market research, document drafting, or data analysis. Usage remains informal, inconsistent, and dependent on individual initiative.','LEVEL 3: AI is used regularly across several strategic and tactical procurement activities. Team members have a good understanding of relevant tools and apply prompting to consistently improve efficiency, analysis, and decision-making.','LEVEL 4: AI is embedded in day-to-day procurement activities across Category Management, SRM, RFx, and Contracting. Team members have advanced capabilities and use AI confidently and systematically.'] },
+      { id: 'q-02-05', scored: false, short: 'AI procurement roles',
+        text: 'To what extent does your Procurement organization have dedicated roles and capabilities to identify, prioritize, govern, and deliver AI use cases? Please consider both a dedicated AI PMO role reporting to the CPO and dedicated Data Engineer support for AI solution development.',
+        scores: ['No dedicated Procurement AI PMO role or Data Engineer support is in place. AI needs are managed informally, and use cases are developed on an ad hoc basis, if at all.','Ownership for Procurement AI exists but is assigned alongside other responsibilities. Procurement needs are collected informally, governance is limited, and Data Engineer support is available only occasionally through IT or external providers.','A clearly identified role or team is responsible for collecting, prioritizing, and governing Procurement AI use cases, with regular alignment with the CPO. Dedicated or formally allocated Data Engineer support is available for selected initiatives.','A dedicated Procurement AI PMO role reports directly to the CPO and manages the end-to-end AI use-case portfolio through a structured governance process. Dedicated Data Engineer resources support the development, deployment, scaling, and continuous improvement of Procurement AI solutions.'] }
+    ]
+  },
+  's-03': {
+    title: 'Category Management',
+    tag: 'Step 03',
     desc: 'Category strategy governance, data quality, and AI in category management.',
     intro: "Category management is often the first area where AI delivers visible value — through richer market intelligence, faster strategy development, and smarter negotiation support. In this section we explore how your category strategies are governed, the quality of your spend data, and how AI is being used — or could be used — across your category management activities.",
     questions: [
-      { id: 'q-02-01', short: 'Category strategy governance',
+      { id: 'q-03-01', scored: true, short: 'Category strategy governance',
         text: 'Are formal category strategies created, reviewed and refreshed on a defined governance cadence — with documented sign-off, stakeholder alignment, and a clear process for incorporating changes in business strategy, market conditions, or technology into updated procurement priorities?',
         scores: ['No formal category strategies. Category planning is ad hoc with no governance cadence or documented sign-off.','Category strategies exist for some categories but review cadence is irregular and sign-off process is informal.','Formal category strategies are in place for major categories with a defined governance cadence, documented sign-off, and stakeholder alignment.','All strategic categories have documented strategies refreshed on a defined cadence. Changes in business strategy, market, or technology are systematically incorporated. Sign-off is tracked and auditable.'] },
-      { id: 'q-02-02', short: 'Spend data quality',
+      { id: 'q-03-02', scored: true, short: 'Spend data quality',
         text: 'How clean, classified, and accessible is your category spend data? What percentage is correctly classified? Is taxonomy consistent? Are suppliers deduplicated?',
         scores: ['Spend data fragmented, manually managed, unreliably classified. No taxonomy standard.','Taxonomy exists but <70% classified, data extracted manually.','Spend >80% classified with consistent taxonomy. Automated data feeds from ERP/S2P.','Spend >95% classified in real time with AI auto-classification. Taxonomy maintained automatically.'] },
-      { id: 'q-02-03', short: 'AI in category management',
+      { id: 'q-03-03', scored: false, short: 'AI in category management',
         text: 'What AI tools are actively used in category management today? Describe specific use cases — market intelligence, price benchmarking, demand forecasting, or strategy generation.',
         scores: ['No AI used in category management. All analysis is manual.','GenAI tools used informally by some category managers for research or drafting.','AI formally deployed for at least one task (market intelligence, price benchmarking, or demand forecasting).','AI embedded across category management — automated market scanning, AI-generated strategies, price prediction in production.'] },
-      { id: 'q-02-05', short: 'Measured AI outcomes',
+      { id: 'q-03-04', scored: false, short: 'Measured AI outcomes',
         text: 'What measurable outcomes has AI delivered in category management — cost savings, time saved, quality of insights? Can you quantify the impact?',
         scores: ['No measured outcomes. AI impact is unknown or untracked.','Some anecdotal evidence of value but no formal measurement.','Specific, quantified outcomes tracked for at least one AI use case in category management.','AI value in category management regularly reported with quantified savings, efficiency gains, and quality improvements.'] }
     ]
   },
-  's-03': {
+  's-04': {
     title: 'Supplier Management',
-    tag: 'Step 03',
+    tag: 'Step 04',
     desc: 'Supplier onboarding, segmentation, risk monitoring, and AI in supplier management.',
     intro: "Supplier management is becoming one of the highest-impact areas for AI — from continuous risk monitoring to intelligent supplier development. This section looks at how your supplier base is structured, managed, and monitored today, and how AI is helping — or could help — you manage it more proactively.",
     questions: [
-      { id: 'q-03-01', short: 'Supplier onboarding standardisation',
+      { id: 'q-04-01', scored: true, short: 'Supplier onboarding standardisation',
         text: 'Is the supplier onboarding process standardised and digitally enabled — covering registration, qualification, compliance checks, data setup, and system activation — with defined cycle time targets linked to business need?',
         scores: ['Supplier onboarding is manual, inconsistent, and has no defined process or cycle time target.','A basic onboarding process exists but is not fully digitised. Cycle times are tracked informally.','Standardised, digitally enabled onboarding covering registration, qualification, compliance, data setup, and system activation with defined cycle time targets.','Fully digital, automated onboarding with integrated compliance checks, risk screening, and system activation. Cycle times are met consistently and continuously improved.'] },
-      { id: 'q-03-02', short: 'Supplier segmentation',
+      { id: 'q-04-02', scored: true, short: 'Supplier segmentation',
         text: 'Is a supplier segmentation model in place — classifying suppliers by strategic importance, spend, and risk — and used to differentiate the level of governance, management attention, and resources applied to each segment?',
         scores: ['No supplier segmentation. All suppliers are managed the same way regardless of spend or risk.','An informal segmentation exists (e.g. preferred/non-preferred) but is not systematically applied or used to differentiate management approach.','A formal segmentation model classifies suppliers by strategic importance, spend, and risk. Management approach is differentiated by segment.','Supplier segmentation is dynamic, data-driven, and used to allocate governance, management attention, and resources. Segmentation is reviewed regularly and drives prioritisation decisions.'] },
-      { id: 'q-03-03', short: 'Supplier risk monitoring',
+      { id: 'q-04-03', scored: true, short: 'Supplier risk monitoring',
         text: 'Is supplier risk monitored across key risk types (financial, operational, geopolitical, ESG, cyber) and linked to defined mitigation actions — including visibility into tier-2 and tier-n supplier dependencies for critical categories?',
         scores: ['No systematic supplier risk monitoring. Risk is assessed reactively and informally.','Some risk monitoring in place for key suppliers but coverage is incomplete and not linked to defined mitigation actions.','Risk is monitored across key risk types for strategic suppliers and linked to mitigation actions by supplier or category risk profile.','Comprehensive risk monitoring across all segments and risk types including tier-2/n dependencies. Risk profiles drive differentiated management and mitigation plans. Monitoring is continuous and automated.'] },
-      { id: 'q-03-04', short: 'Supplier data quality',
+      { id: 'q-04-04', scored: true, short: 'Supplier data quality',
         text: 'How clean and structured is your supplier master data? Is it deduplicated? What external risk data feeds (financial, ESG, geopolitical) are connected?',
         scores: ['Supplier data fragmented, not deduplicated, not connected to external data sources.','Partially consolidated but with known quality issues. Some manual risk monitoring.','Clean and deduplicated. At least one external risk data feed connected.','Fully integrated with multiple external risk data feeds. AI continuously monitors and scores supplier risk in real time.'] },
-      { id: 'q-03-06', short: 'AI for supplier development',
+      { id: 'q-04-05', scored: false, short: 'AI for supplier development',
         text: 'Are you using AI for supplier innovation scouting, autonomous qualification, or supplier development prioritisation? What has been piloted or deployed?',
-        scores: ['No plans for AI in supplier development or innovation scouting.','Exploring AI tools for supplier qualification or innovation scouting.','Active pilot for AI-assisted supplier qualification or innovation identification.','AI actively used to identify and qualify new suppliers and scout innovations with measurable commercial outcomes.'] },
+        scores: ['No plans for AI in supplier development or innovation scouting.','Exploring AI tools for supplier qualification or innovation scouting.','Active pilot for AI-assisted supplier qualification or innovation identification.','AI actively used to identify and qualify new suppliers and scout innovations with measurable commercial outcomes.'] }
     ]
   },
-  's-04': {
+  's-05': {
     title: 'Strategic Sourcing (RFx)',
-    tag: 'Step 04',
-    desc: 'Negotiation capability, sourcing data, and AI in the RFx process.',
+    tag: 'Step 05',
+    desc: 'Sourcing data, AI in the RFx process, and autonomous sourcing.',
     intro: "Strategic sourcing is evolving fast — from structured negotiation disciplines to fully autonomous sourcing agents. This section explores how your sourcing capability is built, how AI is being applied today, and where the biggest opportunities lie.",
     questions: [
-      { id: 'q-04-02', short: 'Sourcing data structure',
+      { id: 'q-05-01', scored: true, short: 'Sourcing data structure',
         text: 'How are historical sourcing events, bid data, and award decisions stored? Is this data structured and accessible for AI analysis and learning?',
         scores: ['Sourcing data in emails, spreadsheets, or unstructured formats. Not accessible for AI.','Recorded in S2P platform but historical data is incomplete or unstructured for AI use.','Clean, structured database of historical events, bids, and awards accessible for AI analysis.','Fully structured, tagged data continuously fed into AI models to improve future sourcing recommendations.'] },
-      { id: 'q-04-03', short: 'AI in RFx process',
+      { id: 'q-05-02', scored: false, short: 'AI in RFx process',
         text: 'What AI tools are used in your sourcing process today? Describe use cases — RFx drafting, bid analysis, award recommendations, negotiation support.',
         scores: ['No AI used in sourcing. All RFx processes are manual.','GenAI used informally for RFx drafting but not integrated into the sourcing platform.','AI formally deployed in at least one sourcing activity within the S2P platform.','AI embedded across sourcing — automated RFx generation, AI bid analysis, award recommendations, and negotiation coaching in production.'] },
-      { id: 'q-04-04', short: 'Autonomous sourcing',
+      { id: 'q-05-03', scored: false, short: 'Autonomous sourcing',
         text: 'Are you piloting or planning autonomous sourcing agents capable of running defined sourcing events end-to-end? What categories are in scope?',
         scores: ['No plans for autonomous sourcing agents.','Exploring autonomous sourcing — evaluating vendors or defining use cases.','Active pilot for autonomous or semi-autonomous sourcing for defined categories (e.g. tail spend).','Autonomous sourcing agents in production — handling full RFx lifecycle with human approval at award only.'] },
-      { id: 'q-04-05', short: 'Sourcing AI outcomes',
+      { id: 'q-05-04', scored: false, short: 'Sourcing AI outcomes',
         text: 'What measurable savings or efficiency gains has AI delivered in your sourcing process? Describe specific outcomes with numbers where possible.',
         scores: ['No measured AI outcomes in sourcing.','Anecdotal time savings from AI tools but no formal tracking.','Quantified savings or efficiency gains tracked for AI-assisted sourcing events.','AI sourcing ROI regularly reported — with savings %, cycle time reduction, and quality improvements vs. baseline.'] }
     ]
   },
-  's-05': {
+  's-06': {
     title: 'Contract Management',
-    tag: 'Step 05',
-    desc: 'Contract templates, digitisation, and AI in CLM.',
-    intro: "Contracts are a goldmine of commercial intelligence — yet in most companies they remain locked in PDFs and shared drives. This section explores whether standard templates are in place, how digitised your contract portfolio is, and how AI is being used to extract value, manage obligations, and prevent compliance failures.",
+    tag: 'Step 06',
+    desc: 'Contract digitisation, AI in CLM, and compliance monitoring.',
+    intro: "Contracts are a goldmine of commercial intelligence — yet in most companies they remain locked in PDFs and shared drives. This section explores how digitised your contract portfolio is, and how AI is being used to extract value, manage obligations, and prevent compliance failures.",
     questions: [
-      { id: 'q-05-02', short: 'Contract digitisation',
+      { id: 'q-06-01', scored: true, short: 'Contract digitisation',
         text: 'What share of your active contracts are digitised and stored in a central repository? Is metadata (value, expiry, key clauses, obligations) structured and searchable?',
         scores: ['Contracts stored as PDFs or paper. No central repository. No structured metadata.','Partially digitised and centrally stored but metadata incomplete or manually maintained.','>70% digitised in CLM/repository with structured metadata (parties, value, expiry, key clauses).','Fully digitised with AI-extracted metadata. Repository is the single source of truth, integrated with finance and procurement.'] },
-      { id: 'q-05-03', short: 'AI in contract management',
+      { id: 'q-06-02', scored: false, short: 'AI in contract management',
         text: 'What AI tools are used in contract management today? Describe use cases — clause extraction, obligation tracking, risk flagging, renewal alerts, or AI-assisted drafting.',
         scores: ['No AI in contract management. Review and tracking are fully manual.','AI tools used informally for summarisation but not embedded in the process.','AI deployed for at least one contract task — clause extraction, obligation tracking, risk flagging, or renewal alerts.','AI manages the full contract lifecycle — drafting support, automated obligation monitoring, proactive renewal and renegotiation triggers.'] },
-      { id: 'q-05-04', short: 'Contract intelligence',
+      { id: 'q-06-03', scored: false, short: 'Contract intelligence',
         text: 'Are you using AI to extract commercial intelligence from your contract portfolio — obligation mining, benchmarking of commercial terms, identification of value leakage or renegotiation opportunities?',
         scores: ['No AI contract intelligence. Portfolio is not analysed systematically.','Evaluating AI CLM tools or piloting AI review in limited scope.','Active pilot for portfolio-wide clause analysis, commercial benchmarking, or AI-generated first drafts.','AI contract intelligence in production — full portfolio continuously analysed for risk, value leakage, and renegotiation opportunities.'] },
-      { id: 'q-05-05', short: 'Contract compliance AI',
+      { id: 'q-06-04', scored: false, short: 'Contract compliance AI',
         text: 'Is AI being used to monitor contract compliance — flagging off-contract purchases, preferred supplier bypass, or pricing deviations from agreed rates?',
         scores: ['No AI contract compliance monitoring. Compliance checked manually or not at all.','Some automated alerts for contract expiry but no AI-driven compliance monitoring.','AI monitors contract compliance for key categories — flagging off-contract spend and preferred supplier bypass automatically.','AI provides real-time contract compliance monitoring across all spend — with automated alerts, root cause analysis, and corrective action workflows.'] }
     ]
   },
-  's-06': {
+  's-07': {
     title: 'PR & Requisition',
-    tag: 'Step 06',
+    tag: 'Step 07',
     desc: 'Digital requisitioning, e-catalogues, and AI in guided buying.',
-    intro: "The requisition process is the front door of procurement — and one of the highest-volume touchpoints with internal customers. This section looks at how digital and structured your request process is, whether e-catalogues are enabling self-service, and where AI is reducing friction in the purchasing experience.",
+    intro: "The requisition process is the front door of procurement — and one of the highest-volume touchpoints with internal customers. This section looks at how digital and structured your request process is, and where AI is reducing friction in the purchasing experience.",
     questions: [
-      { id: 'q-06-01', short: 'Requisition data quality',
+      { id: 'q-07-01', scored: true, short: 'Requisition data quality',
         text: 'Is your requisition process fully digital with structured data capture? Are categories, cost centres, and preferred suppliers consistently and reliably recorded?',
         scores: ['Requisitions via email or paper. No consistent data capture.','Digital system exists but data quality is inconsistent. Categories and preferred suppliers not reliably captured.','Fully digital with consistent data capture. Category, cost centre, and preferred supplier are mandatory structured fields.','Fully structured and integrated with AI — enabling real-time guided buying, automatic compliance checking, and demand pattern analysis.'] },
-      { id: 'q-06-03', short: 'Guided buying & AI',
+      { id: 'q-07-02', scored: false, short: 'Guided buying & AI',
         text: 'What AI capabilities are deployed in your requisition and guided buying process? Describe use cases — smart recommendations, auto-categorisation, policy compliance, approval routing.',
-        scores: ['No AI in requisitioning. Manual process throughout.','Basic automated approval workflows exist but no AI-driven recommendations.','AI deployed for at least one task — guided buying, category auto-coding, or AI policy compliance checking.','AI guides the full requisition experience — personalised recommendations, automatic compliance, intelligent approval routing in production.'] },
+        scores: ['No AI in requisitioning. Manual process throughout.','Basic automated approval workflows exist but no AI-driven recommendations.','AI deployed for at least one task — guided buying, category auto-coding, or AI policy compliance checking.','AI guides the full requisition experience — personalised recommendations, automatic compliance, intelligent approval routing in production.'] }
     ]
   },
-  's-07': {
+  's-08': {
     title: 'PO Management',
-    tag: 'Step 07',
+    tag: 'Step 08',
     desc: 'AI in PO creation, exception management, and lifecycle tracking.',
     intro: "Purchase order management sits at the intersection of procurement and operations — and is often where significant manual effort is hidden. This section explores how digital and integrated your PO process is, and where AI can eliminate exceptions, predict delivery risks, and reduce human intervention.",
     questions: [
-      { id: 'q-07-01', short: 'PO data integration',
+      { id: 'q-08-01', scored: true, short: 'PO data integration',
         text: 'Is PO data fully digital and integrated with your ERP and supplier systems? What is the level of real-time status tracking and supplier acknowledgement?',
         scores: ['POs issued manually (email, paper). No digital integration with suppliers or ERP.','POs digital but integration with ERP or suppliers is limited. Status tracking is manual.','Fully digital, integrated with ERP, electronically transmitted to suppliers with digital acknowledgement.','PO data flows in real time between ERP, procurement platform, and supplier portals — enabling AI-powered delivery tracking and exception detection.'] },
-      { id: 'q-07-02', short: 'AI in PO management',
+      { id: 'q-08-02', scored: false, short: 'AI in PO management',
         text: 'What AI is used in PO management today? Describe use cases — automated creation, exception detection, delivery risk prediction, supplier acknowledgement tracking.',
         scores: ['No AI in PO management. Creation and tracking are fully manual.','Basic automation (e.g. auto-PO from approved requisitions) but no AI exception detection or risk prediction.','AI-driven exception detection or delivery risk prediction in place — flagging issues automatically.','AI manages PO exceptions autonomously — detecting, routing, and resolving standard exceptions without human intervention.'] },
-      { id: 'q-07-03', short: 'Autonomous PO processing',
+      { id: 'q-08-03', scored: false, short: 'Autonomous PO processing',
         text: 'Are you piloting or planning autonomous PO agents that manage the full PO lifecycle with only exception-based human oversight?',
         scores: ['No plans for autonomous PO management.','Exploring autonomous PO capabilities or evaluating agentic tools.','Active pilot for autonomous PO management in a defined scope.','Autonomous PO agents in production — managing standard PO lifecycle end-to-end with human oversight at exception thresholds only.'] }
     ]
   },
-  's-08': {
+  's-09': {
     title: 'Invoice & AP',
-    tag: 'Step 08',
+    tag: 'Step 09',
     desc: 'AI in invoice processing and accounts payable automation.',
     intro: "Accounts payable is one of the most data-intensive and AI-ready areas of procurement operations. Touchless invoice processing is now an achievable benchmark — not a distant aspiration. This section examines your current level of e-invoicing adoption and where AI can drive the next step-change in efficiency.",
     questions: [
-      { id: 'q-08-01', short: 'E-invoice adoption',
+      { id: 'q-09-01', scored: true, short: 'E-invoice adoption',
         text: 'What share of invoices are received digitally (e-invoice, EDI, structured format)? What is your current touchless processing rate and what is the target?',
         scores: ['<20% of invoices received digitally. Most are paper or unstructured PDF requiring manual keying.','20–50% received digitally. E-invoicing available but supplier adoption is low.','>50% received digitally. Active programme to increase e-invoice adoption.','>80% received digitally. E-invoicing is standard for all significant suppliers.'] },
-      { id: 'q-08-02', short: 'AI in invoice processing',
+      { id: 'q-09-02', scored: false, short: 'AI in invoice processing',
         text: 'What AI tools are used in invoice processing today? Describe the level of automation — OCR, AI matching, 3-way match, exception routing, payment timing optimisation.',
         scores: ['No AI in invoice processing. Manual keying, matching, and approval throughout.','Basic OCR for data extraction but matching and approval remain largely manual.','AI-powered matching with automated exception routing. Touchless match rate >70%.','AI handles the full workflow — automated matching, intelligent exception resolution, payment timing optimisation. Touchless rate >85%.'] },
-      { id: 'q-08-04', short: 'AP AI outcomes',
+      { id: 'q-09-03', scored: false, short: 'AP AI outcomes',
         text: 'What measurable improvements has AI delivered in AP — cost per invoice, cycle time, early payment discount capture, error rate reduction?',
         scores: ['No measured AI outcomes in AP.','Anecdotal efficiency improvements but no formal measurement.','Quantified improvements in at least one AP metric tracked and reported.','AI impact in AP regularly reported with cost per invoice, cycle time, and discount capture vs. baseline.'] }
     ]
   },
-  's-09': {
+  's-10': {
     title: 'Reporting & Analytics',
-    tag: 'Step 09',
+    tag: 'Step 10',
     desc: 'AI-powered procurement analytics and self-serve insights.',
     intro: "Analytics is the nervous system of a mature procurement function — and AI is transforming what's possible, from natural language querying to predictive spend forecasting. This section explores how integrated your data is today and how AI is enabling — or could enable — faster, smarter decisions.",
     questions: [
-      { id: 'q-09-01', short: 'Integrated analytics layer',
+      { id: 'q-10-01', scored: true, short: 'Integrated analytics layer',
         text: 'Is procurement data — spend, supplier, contract, PO, invoice — integrated in a single near-real-time analytics layer? Can users access it without IT support?',
         scores: ['Procurement data siloed. Reporting requires manual extraction and consolidation.','BI tool in place but integration is incomplete. Significant manual effort for standard reports.','Integrated analytics layer with near-real-time dashboards covering spend, supplier, and operational KPIs — accessible without IT.','Fully integrated real-time data platform covering all domains, accessible organisation-wide as a self-service analytics layer.'] },
-      { id: 'q-09-02', short: 'AI in procurement analytics',
+      { id: 'q-10-02', scored: false, short: 'AI in procurement analytics',
         text: 'What AI analytics capabilities are in place? Describe specific use cases — natural language querying, anomaly detection, predictive spend forecasting, AI-generated insight summaries.',
         scores: ['No AI in analytics. All reporting is manual and backward-looking.','GenAI tools used informally to summarise reports but not integrated into the analytics platform.','At least one AI capability in production — natural language querying, anomaly detection, or AI-generated insight summaries.','AI-powered analytics is the primary interface — predictive forecasting, autonomous anomaly detection, and AI recommendations embedded in management reporting.'] },
-      { id: 'q-09-04', short: 'Predictive analytics',
+      { id: 'q-10-03', scored: false, short: 'Predictive analytics',
         text: 'Are predictive analytics used in procurement decisions — demand forecasting, price prediction, risk signal detection? What is the accuracy and business impact?',
         scores: ['No predictive analytics. All analysis is backward-looking.','Some experimentation with predictive models but not in production decision-making.','Predictive analytics in production for at least one area (demand forecasting, price prediction, or risk detection).','Predictive analytics embedded in core procurement decisions across multiple areas with tracked accuracy and business impact.'] }
     ]
   },
   's-ai': {
     title: 'AI Governance & Enablement',
-    tag: 'Step 10',
-    desc: 'AI governance framework, talent development, and enablement.',
-    intro: "You've reached the final section. AI governance and talent enablement are often the invisible difference between companies that pilot AI endlessly and those that scale it into operations. This section covers how your organisation governs AI decisions, develops AI capability in the procurement team, and manages adoption.",
+    tag: 'Step 11',
+    desc: 'AI governance framework, change management, and ethics.',
+    intro: "You've reached the final section. AI governance and enablement are often the invisible difference between companies that pilot AI endlessly and those that scale it into operations. This section covers how your organisation governs AI decisions, manages adoption, and ensures responsible use.",
     questions: [
-      { id: 'q-ai-01', short: 'AI governance framework',
+      { id: 'q-ai-01', scored: false, short: 'AI governance framework',
         text: 'Describe your AI governance framework for procurement. Who authorises AI deployments? Are there audit trails, data privacy controls, and oversight for autonomous AI decisions?',
         scores: ['No AI governance. Tools used without defined controls or oversight.','Basic usage guidelines exist but not formally enforced. No audit trails.','Formal AI governance framework — covering authorisation, audit trails, data privacy, and controls for AI decisions.','AI governance embedded in operations — autonomous AI bounded by formal controls, complete audit trails, governance reviewed regularly.'] },
-      { id: 'q-ai-02', short: 'AI talent & upskilling',
-        text: 'What structured AI training and upskilling is in place for procurement staff? Are programmes role-based (buyers, category managers, AP, leadership)? How is AI capability assessed and developed?',
-        scores: ['No AI training for procurement staff. AI literacy is ad hoc.','Some AI training available (e.g. company-wide digital literacy) but not tailored to procurement roles.','Role-based AI training in place for core procurement roles with defined capability levels and development tracks.','AI capability formally embedded in procurement career paths — role-based assessments, structured programmes, updated as capabilities advance.'] },
-      { id: 'q-ai-03', short: 'AI tool adoption & change management',
+      { id: 'q-ai-02', scored: false, short: 'AI tool adoption & change management',
         text: 'How are AI tools adopted across the procurement team? What change management approach is used? What is the adoption rate for deployed AI tools?',
         scores: ['AI tools deployed but adoption is very low. No change management programme.','Change management efforts underway but adoption remains inconsistent across teams.','Structured change management in place with tracked adoption rates. Most procurement staff actively use deployed AI tools.','High AI tool adoption across all procurement roles. Change management is proactive and continuous. AI usage is a core performance expectation.'] },
-      { id: 'q-ai-04', short: 'Data privacy & AI ethics',
+      { id: 'q-ai-03', scored: false, short: 'Data privacy & AI ethics',
         text: 'How does your organisation manage data privacy, ethics, and regulatory compliance for AI in procurement? Are supplier data, pricing data, and personal data handled appropriately in AI systems?',
         scores: ['No data privacy or ethics framework for AI in procurement.','Aware of data privacy requirements but no formal framework in place for AI specifically.','Formal data privacy and ethics guidelines for AI in procurement — covering supplier data, pricing, and personal data.','Comprehensive AI ethics and privacy framework — with regular audits, supplier data agreements, and regulatory compliance verified for all AI systems.'] }
     ]
@@ -990,22 +1002,23 @@ function getBand(score) {
   return BANDS.find(b => score >= b.min && score <= b.max) || BANDS[BANDS.length - 1];
 }
 
-const STEP_IDS = ['s-tech','s-01','s-02','s-03','s-04','s-05','s-06','s-07','s-08','s-09','s-ai'];
+const STEP_IDS = ['s-tech','s-01','s-02','s-03','s-04','s-05','s-06','s-07','s-08','s-09','s-10','s-ai'];
 const DIM_WEIGHTS = { D1: 0.30, D2: 0.45, D3: 0.25 };
 const DIM_NAMES   = { D1: 'Process & Digital Foundation', D2: 'AI in Production', D3: 'AI at Scale' };
 const DIM_SHORT   = { D1: 'Process Foundation', D2: 'AI in Production', D3: 'AI at Scale' };
 const STEP_LABELS = {
   's-tech': 'Tech Stack',
   's-01': '01 · Procurement Foundation & AI Strategy',
-  's-02': '02 · Category Management',
-  's-03': '03 · Supplier Management',
-  's-04': '04 · Strategic Sourcing (RFx)',
-  's-05': '05 · Contract Management',
-  's-06': '06 · PR & Requisition',
-  's-07': '07 · PO Management',
-  's-08': '08 · Invoice & AP',
-  's-09': '09 · Reporting & Analytics',
-  's-ai': '10 · AI Governance & Enablement'
+  's-02': '02 · People',
+  's-03': '03 · Category Management',
+  's-04': '04 · Supplier Management',
+  's-05': '05 · Strategic Sourcing (RFx)',
+  's-06': '06 · Contract Management',
+  's-07': '07 · PR & Requisition',
+  's-08': '08 · PO Management',
+  's-09': '09 · Invoice & AP',
+  's-10': '10 · Reporting & Analytics',
+  's-ai': '11 · AI Governance & Enablement'
 };
 
 </script>
@@ -1026,6 +1039,7 @@ let STATE = {
   currentSection: 's-cover',
   answers:        {},   // { stepId: { qId: { text, files: [] } } }
   techStack:      {},   // { erp: '', s2p: '', ... }
+  directScores:   {},   // { stepId: { qId: 1-4 } } — from rubric radio selection (scored=true questions)
   aiScores:       {},   // { stepId: { qId: score } } — from server after analysis
   aiReasoning:    {},   // { stepId: { qId: reasoning } } — BCG only
   analyzing:      false,
@@ -1220,10 +1234,11 @@ function applyRestoredState(data) {
   STATE.notes       = data.notes       || {};
   STATE.general     = data.general     || {};
   STATE.cmi         = data.cmi         || null;
-  STATE.answers     = data.answers     || {};
-  STATE.techStack   = data.techStack   || {};
-  STATE.aiScores    = data.aiScores    || {};
-  STATE.aiReasoning = data.aiReasoning || {};
+  STATE.answers      = data.answers      || {};
+  STATE.techStack    = data.techStack    || {};
+  STATE.directScores = data.directScores || {};
+  STATE.aiScores     = data.aiScores     || {};
+  STATE.aiReasoning  = data.aiReasoning  || {};
   STATE.analyzed    = data.analyzed    || false;
 }
 
@@ -1496,15 +1511,16 @@ function renderSurveyQuestion() {
 
   if (item.isWelcome) {
     const processSteps = [
-      { n:'02', label:'Category Management',        icon:'📊' },
-      { n:'03', label:'Supplier Management',         icon:'🤝' },
-      { n:'04', label:'Strategic Sourcing (RFx)',    icon:'🎯' },
-      { n:'05', label:'Contract Management',         icon:'📄' },
-      { n:'06', label:'PR & Requisition',            icon:'📋' },
-      { n:'07', label:'PO Management',               icon:'🔄' },
-      { n:'08', label:'Invoice & AP',                icon:'💳' },
-      { n:'09', label:'Measurement & Improvement',   icon:'📈' },
-      { n:'10', label:'AI Governance & Enablement',  icon:'⚙️' },
+      { n:'02', label:'People',                      icon:'👥' },
+      { n:'03', label:'Category Management',          icon:'📊' },
+      { n:'04', label:'Supplier Management',          icon:'🤝' },
+      { n:'05', label:'Strategic Sourcing (RFx)',     icon:'🎯' },
+      { n:'06', label:'Contract Management',          icon:'📄' },
+      { n:'07', label:'PR & Requisition',             icon:'📋' },
+      { n:'08', label:'PO Management',                icon:'🔄' },
+      { n:'09', label:'Invoice & AP',                 icon:'💳' },
+      { n:'10', label:'Reporting & Analytics',        icon:'📈' },
+      { n:'11', label:'AI Governance & Enablement',   icon:'⚙️' },
     ];
     const processList = processSteps.map(s =>
       `<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #f1f5f9">
@@ -1522,9 +1538,9 @@ function renderSurveyQuestion() {
         extra: null
       },
       {
-        icon:'🔁', color:'#7c3aed', badge:'STEPS 02 – 10',
+        icon:'🔁', color:'#7c3aed', badge:'STEPS 02 – 11',
         title:'End-to-End Process Assessment',
-        desc:'9 process areas across the full procurement lifecycle',
+        desc:'10 process areas across the full procurement lifecycle',
         extra: `<div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 16px">${processList}</div>`
       },
       {
@@ -1643,7 +1659,7 @@ function renderSurveyQuestion() {
     const surveyBody = document.querySelector('.survey-body');
     if (surveyBody) surveyBody.style.maxWidth = '860px';
     if (!STATE.bcgRatings) STATE.bcgRatings = {};
-    const phaseLabels = { 's-02':'Category Management','s-03':'Supplier Management','s-04':'Strategic Sourcing','s-05':'Contract Management','s-06':'PR & Requisition','s-07':'PO Management','s-08':'Invoice & AP','s-ai':'AI Governance & Enablement' };
+    const phaseLabels = { 's-03':'Category Management','s-04':'Supplier Management','s-05':'Strategic Sourcing','s-06':'Contract Management','s-07':'PR & Requisition','s-08':'PO Management','s-09':'Invoice & AP','s-ai':'AI Governance & Enablement' };
     const phases = [...new Set(BCG_USE_CASES.map(u => u.phase))];
     const groupsHtml = phases.map(ph => {
       const tools = BCG_USE_CASES.filter(u => u.phase === ph);
@@ -1717,28 +1733,60 @@ function renderSurveyQuestion() {
       return `<span class="survey-file-tag">📎 ${f.name} ${statusIcon} <span onclick="removeFile('${item.stepId}','${q.id}','${f.name}')" style="cursor:pointer;color:#ef4444">×</span></span>`;
     }).join('');
 
-    card.innerHTML = `
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
-        <span style="background:var(--green-light);color:var(--green);font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;text-transform:uppercase">${item.tag}</span>
-        <span style="font-size:12px;color:#94a3b8;font-weight:600">${q.short}</span>
-      </div>
-      <div class="survey-q-text">${q.text}</div>
-      <textarea class="survey-textarea" id="survey-answer-${q.id}"
-                placeholder="Describe your current situation in your own words..."
-                oninput="saveAnswer('${item.stepId}','${q.id}',this.value)">${saved.text || ''}</textarea>
-      <div class="survey-input-actions">
-        <button class="survey-voice-btn" id="voice-btn-${q.id}" onclick="toggleVoice('${item.stepId}','${q.id}')">
-          🎙️ Dictate
-        </button>
-        <label class="survey-upload-btn" for="file-upload-${q.id}">
-          📎 Attach file
-          <input type="file" id="file-upload-${q.id}" style="display:none" multiple
-                 onchange="handleFileUpload(event,'${item.stepId}','${q.id}')">
-        </label>
-        <span style="font-size:12px;color:#94a3b8;margin-left:auto">Answer in your own words — AI will evaluate your response</span>
-      </div>
-      ${filesHtml ? `<div class="survey-files-list">${filesHtml}</div>` : ''}
-    `;
+    const savedScore = STATE.directScores?.[item.stepId]?.[q.id];
+    const savedComment = STATE.notes?.[q.id] || '';
+
+    if (q.scored !== false) {
+      // SCORED question: 4 rubric radio options (description only, no grade shown) + optional comment
+      const rubricColors = ['#ef4444','#f97316','#3b82f6','#22c55e'];
+      const rubricBg     = ['#fef2f2','#fff7ed','#eff6ff','#f0fdf4'];
+      const rubricBorder = ['#fecaca','#fed7aa','#bfdbfe','#bbf7d0'];
+      const rubricsHtml  = (q.scores || []).map((desc, idx) => {
+        const val = idx + 1;
+        const isChecked = savedScore === val;
+        return `<label for="survey-rubric-${q.id}-${val}" style="display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:10px;border:2px solid ${isChecked ? rubricColors[idx] : rubricBorder[idx]};background:${isChecked ? rubricBg[idx] : '#fff'};cursor:pointer;transition:all 150ms;margin-bottom:8px" onclick="selectRubric('${item.stepId}','${q.id}',${val},this)">
+          <input type="radio" id="survey-rubric-${q.id}-${val}" name="survey-rubric-${q.id}" value="${val}" style="margin-top:3px;accent-color:${rubricColors[idx]}" ${isChecked ? 'checked' : ''} onchange="selectRubric('${item.stepId}','${q.id}',${val},this.closest('label'))">
+          <span style="font-size:13px;color:#334155;line-height:1.6">${desc}</span>
+        </label>`;
+      }).join('');
+
+      const commentOpen = savedComment ? 'block' : 'none';
+      card.innerHTML = `
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+          <span style="background:var(--green-light);color:var(--green);font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;text-transform:uppercase">${item.tag}</span>
+          <span style="font-size:12px;color:#94a3b8;font-weight:600">${q.short}</span>
+        </div>
+        <div class="survey-q-text" style="margin-bottom:16px">${q.text}</div>
+        <div id="survey-rubrics-${q.id}">${rubricsHtml}</div>
+        <div style="margin-top:12px">
+          <button onclick="toggleSurveyComment('${q.id}')" style="background:none;border:none;font-size:12px;color:#94a3b8;cursor:pointer;padding:0;font-family:inherit" id="comment-toggle-${q.id}">${savedComment ? '− Hide comment' : '+ Add comment'}</button>
+          <div id="survey-comment-area-${q.id}" style="display:${commentOpen};margin-top:8px">
+            <textarea class="survey-textarea" style="min-height:64px" id="survey-comment-${q.id}"
+              placeholder="Additional comments or context…"
+              oninput="saveNote('${q.id}',this.value)">${savedComment}</textarea>
+          </div>
+        </div>
+      `;
+    } else {
+      // OPEN question: free-text only
+      card.innerHTML = `
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+          <span style="background:var(--green-light);color:var(--green);font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;text-transform:uppercase">${item.tag}</span>
+          <span style="font-size:12px;color:#94a3b8;font-weight:600">${q.short}</span>
+        </div>
+        <div class="survey-q-text">${q.text}</div>
+        <textarea class="survey-textarea" id="survey-answer-${q.id}"
+                  placeholder="Describe your current situation in your own words..."
+                  oninput="saveAnswer('${item.stepId}','${q.id}',this.value)">${saved.text || ''}</textarea>
+        <div class="survey-input-actions">
+          <button class="survey-voice-btn" id="voice-btn-${q.id}" onclick="toggleVoice('${item.stepId}','${q.id}')">
+            🎙️ Dictate
+          </button>
+          <span style="font-size:12px;color:#94a3b8;margin-left:auto">Open question — share your current situation</span>
+        </div>
+        ${filesHtml ? `<div class="survey-files-list">${filesHtml}</div>` : ''}
+      `;
+    }
   }
 
 }
@@ -1748,6 +1796,44 @@ function saveAnswer(stepId, qId, text) {
   if (!STATE.answers[stepId][qId]) STATE.answers[stepId][qId] = { text: '', files: [] };
   STATE.answers[stepId][qId].text = text;
   saveSession();
+}
+
+function selectRubric(stepId, qId, val, labelEl) {
+  if (!STATE.directScores) STATE.directScores = {};
+  if (!STATE.directScores[stepId]) STATE.directScores[stepId] = {};
+  STATE.directScores[stepId][qId] = val;
+  // Update visual state of all rubric labels for this question
+  const rubricColors = ['#ef4444','#f97316','#3b82f6','#22c55e'];
+  const rubricBg     = ['#fef2f2','#fff7ed','#eff6ff','#f0fdf4'];
+  const rubricBorder = ['#fecaca','#fed7aa','#bfdbfe','#bbf7d0'];
+  for (let i = 1; i <= 4; i++) {
+    const lbl = document.querySelector(`label[for="survey-rubric-${qId}-${i}"]`);
+    if (lbl) {
+      const idx = i - 1;
+      if (i === val) {
+        lbl.style.border = `2px solid ${rubricColors[idx]}`;
+        lbl.style.background = rubricBg[idx];
+      } else {
+        lbl.style.border = `2px solid ${rubricBorder[idx]}`;
+        lbl.style.background = '#fff';
+      }
+    }
+  }
+  // Also persist as a text answer for compatibility
+  if (!STATE.answers[stepId]) STATE.answers[stepId] = {};
+  if (!STATE.answers[stepId][qId]) STATE.answers[stepId][qId] = { text: '', files: [] };
+  const q = QUESTIONS[stepId]?.questions?.find(q => q.id === qId);
+  if (q) STATE.answers[stepId][qId].text = `[SCORE:${val}] ${q.scores[val-1]}`;
+  saveSession();
+}
+
+function toggleSurveyComment(qId) {
+  const area   = document.getElementById('survey-comment-area-' + qId);
+  const toggle = document.getElementById('comment-toggle-' + qId);
+  if (!area) return;
+  const isOpen = area.style.display !== 'none';
+  area.style.display = isOpen ? 'none' : 'block';
+  if (toggle) toggle.textContent = isOpen ? '+ Add comment' : '− Hide comment';
 }
 
 function saveTechField(fieldId, value) {
@@ -1952,19 +2038,40 @@ async function surveySubmit() {
   `;
   document.body.appendChild(overlay);
 
+  // Build rubrics only for open (unscored) questions that need AI analysis
   const rubrics = {};
   for (const stepId of STEP_IDS) {
     const step = QUESTIONS[stepId];
     if (!step || step.isTechStack) continue;
     rubrics[stepId] = {};
     for (const q of (step.questions || [])) {
-      rubrics[stepId][q.id] = { text: q.text, scores: q.scores };
+      if (q.scored === false) {
+        rubrics[stepId][q.id] = { text: q.text, scores: q.scores, openOnly: true };
+      }
+    }
+  }
+
+  // Apply direct rubric scores immediately (no AI needed for scored questions)
+  const preScores = {};
+  for (const stepId of STEP_IDS) {
+    const step = QUESTIONS[stepId];
+    if (!step || step.isTechStack) continue;
+    const scoredQs = (step.questions || []).filter(q => q.scored !== false);
+    if (!scoredQs.length) continue;
+    const vals = scoredQs.map(q => STATE.directScores?.[stepId]?.[q.id]).filter(Boolean);
+    if (vals.length) {
+      preScores[stepId] = { D1: parseFloat((vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2)) };
     }
   }
 
   try {
-    const r = await api('POST', '/api/analyze', { answers: STATE.answers, rubrics, techStack: STATE.techStack, bcgRatings: STATE.bcgRatings, useCases: STATE.useCases });
-    STATE.scores      = r.scores      || {};
+    const r = await api('POST', '/api/analyze', { answers: STATE.answers, rubrics, techStack: STATE.techStack, bcgRatings: STATE.bcgRatings, useCases: STATE.useCases, directScores: STATE.directScores });
+    // Merge server scores with pre-computed direct scores (direct scores take precedence for scored steps)
+    const mergedScores = Object.assign({}, r.scores || {});
+    for (const [sid, sc] of Object.entries(preScores)) {
+      mergedScores[sid] = Object.assign({}, mergedScores[sid] || {}, sc);
+    }
+    STATE.scores      = mergedScores;
     STATE.cmi         = r.cmi         || null;
     STATE.aiScores    = r.aiScores    || {};
     STATE.aiReasoning = r.aiReasoning || {};
@@ -2017,10 +2124,8 @@ function populateCompanyDetails() {
   if (f('co-sector')) { f('co-sector').value = STATE.identity.sector || ''; }
   if (f('co-date'))   { f('co-date').value  = new Date().toISOString().split('T')[0]; }
   // Restore saved company meta
-  if (STATE.general['co-spend']   && f('co-spend'))   f('co-spend').value   = STATE.general['co-spend'];
-  if (STATE.general['co-ftes']    && f('co-ftes'))    f('co-ftes').value    = STATE.general['co-ftes'];
-  if (STATE.general['co-ftes-fo'] && f('co-ftes-fo')) f('co-ftes-fo').value = STATE.general['co-ftes-fo'];
-  if (STATE.general['co-erp']     && f('co-erp'))     f('co-erp').value     = STATE.general['co-erp'];
+  if (STATE.general['co-spend-direct']   && f('co-spend-direct'))   f('co-spend-direct').value   = STATE.general['co-spend-direct'];
+  if (STATE.general['co-spend-indirect'] && f('co-spend-indirect')) f('co-spend-indirect').value = STATE.general['co-spend-indirect'];
   // Restore general open answers
   Object.keys(STATE.general).forEach(k => {
     const el = document.getElementById(k);
@@ -2072,7 +2177,7 @@ function updateSidebar() {
 // ─── Render all step sections ─────────────────────────────────────────────────
 function renderAllSteps() {
   const bcgView = isBCG() || isAdmin();
-  const allSections = ['s-cover','s-01','s-02','s-03','s-04','s-05','s-06','s-07','s-08','s-09','s-ai','s-cmi','s-inv'];
+  const allSections = ['s-cover','s-01','s-02','s-03','s-04','s-05','s-06','s-07','s-08','s-09','s-10','s-ai','s-cmi','s-inv'];
 
   STEP_IDS.forEach(stepId => {
     const def = QUESTIONS[stepId];
@@ -2697,29 +2802,33 @@ function renderTechCards(companies, noTool) {
 
 // ─── Question renderer ────────────────────────────────────────────────────────
 function renderQuestion(q, num) {
-  const names  = ['None','Piloting','Deployed','Scaled'];
   const colors = ['so1','so2','so3','so4'];
   let html = `<div class="q-block">
-    <div class="q-text"><span class="q-num">${num}.</span> ${q.text}</div>
-    <div class="scale">`;
-  for (let i = 1; i <= 4; i++) {
-    const desc  = q.scores[i - 1] || '';
-    const short = desc.length > 65 ? desc.substring(0, 63) + '…' : desc;
-    html += `<div class="scale-opt ${colors[i-1]}">
-      <input type="radio" name="${q.id}" id="${q.id}-${i}" value="${i}" onchange="onScoreChange('${q.id}',${i})">
-      <label class="scale-lbl" for="${q.id}-${i}" title="${desc.replace(/"/g,'&quot;')}">
-        <span class="sc">${i}</span>
-        <span class="sn">${names[i-1]}</span>
-        <span class="sd">${short}</span>
-      </label>
-    </div>`;
-  }
-  html += `</div>
-    <span class="note-toggle" onclick="toggleNote('${q.id}')">+ Add note</span>
+    <div class="q-text"><span class="q-num">${num}.</span> ${q.text}</div>`;
+
+  if (q.scored !== false) {
+    // SCORED question: show 4 rubric descriptions as radio choices (no grade number/label shown)
+    html += `<div class="scale">`;
+    for (let i = 1; i <= 4; i++) {
+      const desc = q.scores[i - 1] || '';
+      html += `<div class="scale-opt ${colors[i-1]}">
+        <input type="radio" name="${q.id}" id="${q.id}-${i}" value="${i}" onchange="onScoreChange('${q.id}',${i})">
+        <label class="scale-lbl" for="${q.id}-${i}" title="${desc.replace(/"/g,'&quot;')}">
+          <span class="sd" style="padding-left:0">${desc}</span>
+        </label>
+      </div>`;
+    }
+    html += `</div>
+    <span class="note-toggle" onclick="toggleNote('${q.id}')">+ Add comment</span>
     <div class="note-area" id="note-${q.id}">
-      <textarea class="text-field" style="min-height:56px;margin-top:6px" placeholder="Evidence or context for this score…" onchange="saveNote('${q.id}',this.value)" id="note-t-${q.id}"></textarea>
-    </div>
-  </div>`;
+      <textarea class="text-field" style="min-height:56px;margin-top:6px" placeholder="Additional comments or context…" onchange="saveNote('${q.id}',this.value)" id="note-t-${q.id}"></textarea>
+    </div>`;
+  } else {
+    // OPEN question: free-text answer only, no rubric
+    html += `<textarea class="text-field" style="min-height:80px;margin-top:10px" placeholder="Your answer…" onchange="saveOpenAnswer('${q.id}',this.value)" id="open-t-${q.id}"></textarea>`;
+  }
+
+  html += `</div>`;
   return html;
 }
 
@@ -3008,7 +3117,7 @@ function expandAllRubrics() {
   }
   if (_reviewModeOn) {
     // Navigate to first scored step — rubrics stay closed by default
-    const steps = ['s-01','s-02','s-03','s-04','s-05','s-06','s-07','s-08','s-09','s-ai'];
+    const steps = ['s-01','s-02','s-03','s-04','s-05','s-06','s-07','s-08','s-09','s-10','s-ai'];
     const firstScored = steps.find(sid => Object.keys(STATE.scores[sid] || {}).length > 0) || 's-01';
     showSection(firstScored);
   }
@@ -3467,49 +3576,43 @@ function closeUCModal() {
 
 const BCG_PHASES = [
   { id: 'all',  label: 'All' },
-  { id: 's-02', label: '02 · Category Management' },
-  { id: 's-03', label: '03 · Supplier Management' },
-  { id: 's-04', label: '04 · Strategic Sourcing' },
-  { id: 's-05', label: '05 · Contract Management' },
-  { id: 's-06', label: '06 · PR & Requisition' },
-  { id: 's-07', label: '07 · PO Management' },
-  { id: 's-08', label: '08 · Invoice & AP' },
-  { id: 's-ai', label: '10 · AI Governance & Enablement' },
+  { id: 's-03', label: '03 · Category Management' },
+  { id: 's-04', label: '04 · Supplier Management' },
+  { id: 's-05', label: '05 · Strategic Sourcing' },
+  { id: 's-06', label: '06 · Contract Management' },
+  { id: 's-07', label: '07 · PR & Requisition' },
+  { id: 's-08', label: '08 · PO Management' },
+  { id: 's-09', label: '09 · Invoice & AP' },
+  { id: 's-ai', label: '11 · AI Governance & Enablement' },
 ];
 
 const BCG_USE_CASES = [
   // 02 · Category Management
-  { phase: 's-02', name: 'Value Finder', short: 'Value Finder', desc: 'AI spend classification engine that uncovers savings opportunities, supplier harmonization, and spend categorization. Includes a "chat-your-spend" interface for category-specific insights across direct and indirect spend.', impact: 'Deployed 100+ times across 30+ countries', tag: 'BCG' },
-  { phase: 's-02', name: 'Spotlight', short: 'Spotlight', desc: 'Integrates all business-critical spend for transparency and analytics across the entire supplier base. Identifies, estimates, and validates opportunities (e.g. supplier consolidation) across categories based on spend, demand, and payment terms.', impact: 'Deployed at >50 clients globally', tag: 'BCG' },
-  { phase: 's-02', name: 'Semico AI', short: 'Semico AI', desc: 'GenAI-enabled tool for semiconductor procurement. Identifies pin-to-pin alternatives for active and passive devices and applies commercial and negotiation levers by ECU and Tier 1 context to reduce chip costs.', impact: null, tag: 'BCG' },
-  { phase: 's-02', name: 'Should Cost AI', short: 'Should Cost AI', desc: 'AI-powered should-cost modelling and value engineering hub. Builds bottom-up cost models for components and assemblies, benchmarks against market indices, and enables design-to-cost analysis through teardowns and dynamic should-vs-actual cost breakdowns with CO₂ transparency.', impact: '1,000+ product teardowns of experience', tag: 'BCG' },
-  { phase: 's-02', name: 'Tech Optimizer', short: 'Tech Optimizer', desc: 'Automatically reads and extracts technical drawings at mass-data scale, suggests technical levers based on parameters (thickness, material, variance), and calculates cost-saving potential per measure and component.', impact: null, tag: 'BCG' },
-  { phase: 's-02', name: 'GEAR', short: 'GEAR', desc: 'Agentic AI for MRO spend optimization. Analyzes messy MRO line-item data to standardize specifications, identify comparable items, and uncover price gaps and consolidation or substitution opportunities across suppliers and sites.', impact: 'Analyzed 20K+ SKUs at a US utility', tag: 'BCG' },
-  { phase: 's-02', name: 'M365 Optimizer', short: 'M365 Optimizer', desc: 'AI-powered Microsoft 365 license optimization tool. Applies AI-based license analytics and persona modeling to clean up inactive accounts, right-size licenses, and optimize contract structures before true-up cycles.', impact: null, tag: 'BCG' },
+  { phase: 's-03', name: 'Spark', short: 'Spark', desc: 'Rapid opportunity assessment tool that automatically converts any spend extract into transaction-level categorized output in ~15 minutes. Cleans, standardizes, and classifies transactions into a common taxonomy to deliver a structured, decision-ready spend view for early diagnostic.', impact: '15 min to presentation-ready spend cuts; runs locally with CLI, web app, and agent-guided modes', tag: 'BCG' },
+  { phase: 's-03', name: 'Value Finder', short: 'Value Finder', desc: 'Spend intelligence platform enabling transparency and savings identification. AI-driven spend classification engine with analytics to uncover savings opportunities, supplier harmonization, and spend categorization. Includes a "chat your spend" interface, KPI-driven dashboards, and a workflow to trigger execution.', impact: '1–2% incremental savings on total spend; deployed 100+ times across 30+ countries', tag: 'Inverto' },
+  { phase: 's-03', name: 'Savings Radar', short: 'Savings Radar', desc: 'GenAI-enabled solution that identifies and prioritizes savings levers for B and C suppliers, quantifies potential, and recommends tailored negotiation arguments and techniques at scale. Combines an AI Negotiation Coach with commercial and technical lever recommendations per supplier and category.', impact: '5–7% savings increase with B & C suppliers; accelerated negotiation timeline', tag: 'BCG' },
+  { phase: 's-03', name: 'Should Costing', short: 'Should Costing', desc: 'AI-powered tool to break down product and component costs, link cost factors to relevant market indices, and identify negotiation opportunities. Enables fact-based cost transparency and supports design-to-cost decisions.', impact: null, tag: 'Inverto' },
+  { phase: 's-03', name: 'Product Cost Optimizer by BCG X', short: 'Product Cost Optimizer', desc: 'Value engineering hub enabling AI-supported cost intelligence through teardowns, benchmarks, and design-to-cost analysis. Features a dynamic should-costing tool, interactive breakdown of actual vs. should-costs, historic and forward-looking capabilities based on market indices, and CO₂ emission transparency. Backed by a state-of-the-art captive cost-engineering lab.', impact: 'Experience from 1,000+ product teardowns across cross-industrial products (PCBs, drives, pumps, HVAC, robotics, etc.)', tag: 'BCG' },
+  { phase: 's-03', name: 'GEAR', short: 'GEAR', desc: 'Agentic AI for MRO spend optimization. Analyzes messy MRO line-item data to standardize specifications, identify comparable items, and uncover price gaps and consolidation or substitution opportunities across suppliers and sites. Outputs clean standardized SKUs, cohesive groupings, vendor consolidation insights, and standardized specs across sites.', impact: 'Analyzed 20K SKUs at a US MedTech; classified 30K+ SKUs to uncover $35–50M opportunity at a US Utility', tag: 'BCG' },
+  { phase: 's-03', name: 'M365 Optimizer', short: 'M365 Optimizer', desc: 'AI tool to optimize Microsoft 365 spend via demand and usage analysis. Identifies inactive accounts, right-sizes licenses across user personas, and uncovers consolidation and renewal optimization opportunities before true-up cycles.', impact: null, tag: 'Inverto' },
   // 03 · Supplier Management
-  { phase: 's-03', name: 'Supplier Profiler', short: 'Supplier Profiler', desc: 'AI-enabled 360° supplier intelligence for negotiation preparation. Automatically generates detailed supplier views by curating internal and external databases, extracting key figures, KPIs, and news headlines for negotiation and event preparation.', impact: null, tag: 'BCG' },
-  { phase: 's-03', name: 'Supplier Risk Radar', short: 'Risk Radar', desc: 'AI tool for continuous supplier risk monitoring and assessment across financial, ESG, geopolitical, and quality dimensions. Flags emerging risks and recommends mitigation actions.', impact: null, tag: 'BCG' },
+  { phase: 's-04', name: 'Supplier Insights by BCG X', short: 'Supplier Insights', desc: 'GenAI-enabled generation of a detailed 360° view on suppliers by curating internal and external databases. Automatically extracts key figures, impact KPIs, and news headlines for negotiation and event preparation. Includes automatic generation of tailored supplier savings letters.', impact: '30% faster negotiation prep; +1–2% negotiation results', tag: 'BCG' },
+  { phase: 's-04', name: 'Supplier Risk Radar', short: 'Risk Radar', desc: 'AI tool to identify supplier risks across financial, operational, geopolitical, ESG, and cyber dimensions. Evaluates risk impact and suggests mitigation levers. Provides continuous, automated monitoring of the supplier base with differentiated risk profiles and escalation alerts.', impact: null, tag: 'BCG' },
   // 04 · Strategic Sourcing
-  { phase: 's-04', name: 'Tender Co-Pilot', short: 'Tender Co-Pilot', desc: 'AI-supported creation and customization of supplier tenders. Automatically generates tender documents based on pre-defined guidelines; procurement manager adapts output via AI chat interface. Template selection based on previous tenders.', impact: null, tag: 'BCG' },
-  { phase: 's-04', name: 'Offer Analyst', short: 'Offer Analyst', desc: 'AI-driven analysis, comparison, and summary of supplier offers across pre-defined KPIs. Highlights key differences across commercial, technical, and legal documents including version history and CO₂ footprint.', impact: null, tag: 'BCG' },
-  { phase: 's-04', name: 'Geo Source', short: 'Geo Source', desc: 'Best-cost country sourcing agentic workflow. Identifies and prioritizes sourcing shift opportunities, benchmarks spend factor costs across 25+ best-cost countries, suggests target suppliers, and builds concrete implementation timelines.', impact: null, tag: 'BCG' },
-  { phase: 's-04', name: 'Market Intelligence Engine', short: 'Market Intel', desc: 'Understands market solutions to challenge internal demand and requirements. Used in the go-to-market phase to shape sourcing strategies and identify alternative supply options through agentic web research.', impact: null, tag: 'BCG' },
-  { phase: 's-04', name: 'Negotiation Co-Pilot', short: 'Nego Co-Pilot', desc: 'AI-powered negotiation preparation and coaching for strategic suppliers. Combines game-theory simulation, dynamic LAA/MDO target setting, supplier factbook generation, and tailored lever recommendations based on learning from previous successful negotiations.', impact: null, tag: 'BCG' },
-  { phase: 's-04', name: 'Long Tail Optimizer', short: 'Long Tail', desc: 'AI-supported price reduction engine for C-suppliers. Determines optimal savings targets per supplier, selects the right communication tone, and automatically generates customized outreach in multiple languages — managed end-to-end without buyer involvement.', impact: null, tag: 'BCG' },
+  { phase: 's-05', name: 'Supplier Tender Assistant by BCG X', short: 'Tender Assistant', desc: 'AI-supported creation and customization of supplier tenders. Automatically generates best-in-class tender documents based on pre-defined guidelines and prior tender templates. Procurement managers can individually adapt output through an AI chat interface.', impact: '50% time reduction to generate & review supplier tenders', tag: 'BCG' },
+  { phase: 's-05', name: 'Supplier Offer Analyst by BCG X', short: 'Offer Analyst', desc: 'AI-driven analysis, comparison, and summary of supplier bids across pre-defined KPIs. Detects inconsistencies and attention points across commercial, technical, and legal tender documents (incl. version history). Analyses top KPIs such as price and CO₂ footprint across offers from multiple suppliers.', impact: '50% time reduction to evaluate bids', tag: 'BCG' },
+  { phase: 's-05', name: 'Geo Sourcing Evaluation by BCG X', short: 'Geo Sourcing', desc: 'Agentic best-cost country sourcing workflow. Identifies and prioritizes sourcing shift opportunities, quantifies savings potential based on dynamic product-level cost benchmarks, suggests a target supplier shortlist, and translates BCC opportunities into a concrete implementation timeline.', impact: null, tag: 'BCG' },
+  { phase: 's-05', name: 'Negotiation CoPilot', short: 'Nego CoPilot', desc: 'AI-powered negotiation preparation and execution support for A-suppliers. Features a detailed factbook and analytics module for each negotiation parameter, dynamic target setting for LAA and MDO based on internal and external benchmarks, game-theory based scenario modelling, and an agentic negotiation simulation to war-game supplier responses ahead of live negotiations. Also includes contract intelligence to benchmark existing contracts and identify optimization opportunities.', impact: '2–3% incremental savings on A-supplier spend; +50% time savings in negotiation preparation', tag: 'BCG' },
+  { phase: 's-05', name: 'Tail Negotiator', short: 'Tail Negotiator', desc: 'AI-supported price reduction and implementation workflow for C-suppliers. Determines the optimal savings target per supplier, automatically generates customized outreach letters in multiple languages with selectable tones, and manages AI-powered negotiation responses leveraging email context and supplier data points — end-to-end without buyer involvement.', impact: '3–5% cost savings from automated price reduction requests', tag: 'BCG' },
   // 05 · Contract Management
-  { phase: 's-05', name: 'Claim Scout', short: 'Claim Scout', desc: 'AI-enabled detection and recovery of supplier overpayments. Identifies discrepancies between invoices, POs, and supplier contracts. Automatically generates tailored claim recovery emails using NLP and LLMs.', impact: 'Deployed 14+ times across consumer, industrial, and energy sectors', tag: 'BCG' },
-  { phase: 's-05', name: 'Claim Defender', short: 'Claim Defender', desc: 'GenAI tool that standardizes and automates supplier claim assessment. Aggregates contract and cost data, validates claims, generates structured decision-ready responses, and proactively monitors inbound supplier price increase claims.', impact: null, tag: 'BCG' },
-  { phase: 's-05', name: 'Contract AI Analyst', short: 'Contract AI', desc: 'AI-powered contract intelligence layer that processes contracts into machine-searchable format, builds a contract hierarchy, identifies unfavorable terms, flags risks, suggests clause improvements, and provides portfolio-scale document and policy analytics to inform negotiations.', impact: null, tag: 'BCG' },
+  { phase: 's-06', name: 'Overspend Claim Scout by BCG X', short: 'Claim Scout', desc: 'AI-enabled detection and recovery of supplier overpayments. Identifies discrepancies between invoices, POs, and supplier contracts to claw back unjustified overpayments. Automatically generates tailored evidence packs and cost reduction letters with negotiation arguments.', impact: '0.5–1% savings on claimable spend; deployed 14 times across consumer, industrial goods, and energy clients', tag: 'BCG' },
+  { phase: 's-06', name: 'ClAIm Defender', short: 'Claim Defender', desc: 'GenAI tool that standardizes and automates supplier claim assessment. Aggregates contract and cost data, validates claims via ShouldCost AI and Raw Material Control Center index validation, and generates structured decision-ready responses. Provides a tool-based end-to-end process to systematically reduce supplier claims — from initial supplier screening through to AI-powered defense argumentation and payment decision.', impact: 'Up to 67% cost avoidance on supplier claims', tag: 'Inverto' },
   // 06 · PR & Requisition
-  { phase: 's-06', name: 'PR Triage', short: 'PR Triage', desc: 'AI intake management and demand challenging at the point of requisition. Ensures PR completeness, challenges demand validity, automatically routes spend to the most appropriate buying channel, and benchmarks requests against existing catalogues.', impact: null, tag: 'BCG' },
-  // 07 · PO Management
-  { phase: 's-07', name: 'PO Creation Agent', short: 'PO Creation', desc: 'Agentic capability that generates purchase orders automatically based on agreed contract terms and negotiated conditions. Reduces manual PO creation effort and ensures contractual compliance at the point of ordering.', impact: null, tag: 'BCG' },
-  // 08 · Invoice & AP
-  { phase: 's-08', name: 'Invoice Validation Agent', short: 'Invoice Validation', desc: 'Agentic capability to validate invoices against POs and contracts to ensure compliance with agreed terms. Automatically flags discrepancies and routes exceptions for human review.', impact: null, tag: 'BCG' },
+  { phase: 's-07', name: 'PR Triage', short: 'PR Triage', desc: 'AI intake management tool to challenge low-value spend at the point of requisition. Ensures PR data quality and demand validity, automatically moves spend to the most appropriate buying channel (e.g. catalogue), and benchmarks requests against existing catalogues. Back-end algorithm integrated in Ariba; LLM trained with buyer feedback during tailoring.', impact: '4–7% low-value spend demand reduction; up to 5% incremental savings through buying channel optimization', tag: 'BCG' },
   // 10 · AI Governance & Enablement
-  { phase: 's-ai', name: 'GenAI PRO Companion', short: 'PRO Companion', desc: 'The daily GenAI companion for the procurement organization. Includes a knowledge navigator, day-to-day chat interface (e.g. emails to suppliers), system connector (SharePoint, SAP Ariba), and use case connector to procurement AI tools.', impact: null, tag: 'BCG' },
-  { phase: 's-ai', name: 'Knowledge Search Bar', short: 'Knowledge Search', desc: 'GenAI-enabled extraction and curation of key information across the entire procurement department, including internal and external databases. Automatic document search, answer summarization, and source citation.', impact: null, tag: 'BCG' },
-  { phase: 's-ai', name: 'Procurement Board Expert', short: 'Board Expert', desc: 'AI agent for integrated scenario-based procurement decisions at executive and board level. Synthesizes portfolio-wide data to support strategic procurement decisions and board reporting.', impact: null, tag: 'BCG' },
+  { phase: 's-ai', name: 'Functional Excellence (PEM)', short: 'PEM', desc: 'AI-enabled procurement maturity assessment and peer benchmarking. A holistic e-survey with 70 questions (customizable, light version available) across 14 dimensions that evaluates operating model and capabilities, benchmarks performance against industry peers and best practice, and identifies targeted improvement priorities. Automatically displays results and defines first improvement hypotheses.', impact: '>160 peer companies in the global database; applied across multiple industries and geographies', tag: 'BCG' },
+  { phase: 's-ai', name: 'Initiative Tracking', short: 'Initiative Tracking', desc: 'E2E tracking of initiatives, savings, and project progress. Enables transparent monitoring of forecasted, approved, and realized savings across categories and time. Features >8 ready-to-use interactive Power BI dashboards and efficient reporting for regular steerco updates (e.g. weekly savings forecast). Ensures accountability and closure of savings initiatives.', impact: 'Deployed across sports equipment, precision manufacturing, agri-technology, water/environmental services, and specialty chemicals companies', tag: 'BCG' },
+  { phase: 's-ai', name: 'Inverto Implementation Insights', short: 'Impl. Insights', desc: 'Inverto tool to easily monitor the progress of sourcing programs and procurement initiatives. Provides KPI-driven dashboards for tracking execution across the procurement transformation portfolio.', impact: null, tag: 'Inverto' },
 ];
 
 function renderBcgLibrary() {
@@ -3517,13 +3620,13 @@ function renderBcgLibrary() {
   if (!colsEl) return;
 
   const phases = [
-    { id: 's-02', label: 'Category Management' },
-    { id: 's-03', label: 'Supplier Management' },
-    { id: 's-04', label: 'Strategic Sourcing (RFx)' },
-    { id: 's-05', label: 'Contract Management' },
-    { id: 's-06', label: 'PR & Requisition' },
-    { id: 's-07', label: 'PO Management' },
-    { id: 's-08', label: 'Invoice & AP' },
+    { id: 's-03', label: 'Category Management' },
+    { id: 's-04', label: 'Supplier Management' },
+    { id: 's-05', label: 'Strategic Sourcing (RFx)' },
+    { id: 's-06', label: 'Contract Management' },
+    { id: 's-07', label: 'PR & Requisition' },
+    { id: 's-08', label: 'PO Management' },
+    { id: 's-09', label: 'Invoice & AP' },
     { id: 's-ai', label: 'AI Governance & Enablement' },
   ];
 
@@ -3570,7 +3673,7 @@ function openBcgModal(idx) {
   const uc = BCG_USE_CASES[idx];
   if (!uc) return;
   const phaseColors = { 's-01':'#7c3aed','s-02':'#0369a1','s-03':'#047857','s-04':'#b45309','s-05':'#be185d','s-06':'#0891b2','s-07':'#4338ca','s-08':'#065f46','s-ai':'#1a2e4a' };
-  const phaseLabels = { 's-01':'01 · Foundation & AI Strategy','s-02':'02 · Category Management','s-03':'03 · Supplier Management','s-04':'04 · Strategic Sourcing','s-05':'05 · Contract Management','s-06':'06 · PR & Requisition','s-07':'07 · PO Management','s-08':'08 · Invoice & AP','s-ai':'10 · AI Governance & Enablement' };
+  const phaseLabels = { 's-01':'01 · Foundation & AI Strategy','s-02':'02 · People','s-03':'03 · Category Management','s-04':'04 · Supplier Management','s-05':'05 · Strategic Sourcing','s-06':'06 · Contract Management','s-07':'07 · PR & Requisition','s-08':'08 · PO Management','s-09':'09 · Invoice & AP','s-10':'10 · Reporting & Analytics','s-ai':'11 · AI Governance & Enablement' };
   const color = phaseColors[uc.phase] || '#1a2e4a';
   document.getElementById('bcg-uc-modal-content').innerHTML = `
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
@@ -3611,7 +3714,7 @@ function renderInvStats(portUCs) {
 async function saveProgress() {
   if (!canEdit()) { showToast('Read-only access — cannot save', 'warn'); return; }
   // Save company meta fields
-  ['co-spend','co-ftes','co-ftes-fo','co-erp'].forEach(f => {
+  ['co-spend-direct','co-spend-indirect'].forEach(f => {
     const el = document.getElementById(f);
     if (el) STATE.general[f] = el.value;
   });
