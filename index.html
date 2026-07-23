@@ -1387,7 +1387,9 @@ let SURVEY_INDEX = 0;
 
 function buildSurveyQuestions() {
   SURVEY_QUESTIONS = [];
-  // Welcome card first
+  // Company Details first
+  SURVEY_QUESTIONS.push({ isCompanyDetails: true });
+  // Then welcome card
   SURVEY_QUESTIONS.push({ isWelcome: true });
   for (const stepId of STEP_IDS) {
     const step = QUESTIONS[stepId];
@@ -1447,11 +1449,11 @@ function renderSurveyQuestion() {
   // Only count real questions (not welcome, intro, or upload slides)
   const realQuestions = SURVEY_QUESTIONS.filter(q => !q.isWelcome && !q.isIntro && !q.isTechUpload && !q.isUseCaseBlock && !q.isBcgRating);
   const realTotal = realQuestions.length;
-  const isCountable = !item.isWelcome && !item.isIntro && !item.isTechUpload && !item.isUseCaseBlock && !item.isBcgRating;
+  const isCountable = !item.isCompanyDetails && !item.isWelcome && !item.isIntro && !item.isTechUpload && !item.isUseCaseBlock && !item.isBcgRating;
   const realIndex = isCountable ? realQuestions.indexOf(item) + 1 : null;
 
   document.getElementById('survey-progress-fill').style.width = pct + '%';
-  document.getElementById('survey-step-label').textContent = item.isWelcome ? 'Welcome' : (item.isUseCaseBlock || item.isBcgRating) ? item.stepTitle : (item.tag + ' · ' + item.stepTitle);
+  document.getElementById('survey-step-label').textContent = item.isCompanyDetails ? 'Company Details' : item.isWelcome ? 'Welcome' : (item.isUseCaseBlock || item.isBcgRating) ? item.stepTitle : (item.tag + ' · ' + item.stepTitle);
   const counterEl = document.getElementById('survey-q-counter');
   if (isCountable) {
     counterEl.textContent = realIndex + ' / ' + realTotal;
@@ -1467,6 +1469,41 @@ function renderSurveyQuestion() {
   document.getElementById('survey-prev').style.display   = SURVEY_INDEX === 0 ? 'none' : 'inline-flex';
 
   const card = document.getElementById('survey-card');
+
+  if (item.isCompanyDetails) {
+    const g = STATE.general || {};
+    card.innerHTML = `
+      <div style="padding:8px 0">
+        <div style="font-size:22px;font-weight:800;color:#0F172A;margin-bottom:6px">Company Details</div>
+        <div style="font-size:14px;color:#64748b;margin-bottom:24px">Please fill in the company information before starting the assessment.</div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px">Company Name *</label>
+            <input id="cd-company" type="text" value="${g.company||''}" placeholder="e.g. Bracco Group" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;color:#0F172A;outline:none" oninput="STATE.general=STATE.general||{};STATE.general.company=this.value;saveSession()">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px">CPO Name</label>
+            <input id="cd-cpo" type="text" value="${g.cpo||''}" placeholder="e.g. Jane Smith" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;color:#0F172A;outline:none" oninput="STATE.general=STATE.general||{};STATE.general.cpo=this.value;saveSession()">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px">Sector / Industry</label>
+            <input id="cd-sector" type="text" value="${g.sector||''}" placeholder="e.g. Pharma, Manufacturing…" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;color:#0F172A;outline:none" oninput="STATE.general=STATE.general||{};STATE.general.sector=this.value;saveSession()">
+          </div>
+          <div style="display:flex;gap:12px">
+            <div style="flex:1">
+              <label style="display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px">Total Direct Spend (€M)</label>
+              <input id="cd-direct" type="number" value="${g.directSpend||''}" placeholder="e.g. 500" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;color:#0F172A;outline:none" oninput="STATE.general=STATE.general||{};STATE.general.directSpend=this.value;saveSession()">
+            </div>
+            <div style="flex:1">
+              <label style="display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px">Total Indirect Spend (€M)</label>
+              <input id="cd-indirect" type="number" value="${g.indirectSpend||''}" placeholder="e.g. 200" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;color:#0F172A;outline:none" oninput="STATE.general=STATE.general||{};STATE.general.indirectSpend=this.value;saveSession()">
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:10px;font-size:12px;color:#94a3b8">* Required. Other fields are optional and can be filled in later.</div>
+      </div>`;
+    return;
+  }
 
   if (item.isWelcome) {
     const processSteps = [
@@ -3525,20 +3562,20 @@ const BCG_USE_CASES = [
   { phase: 's-03', name: 'Value Finder', short: 'Value Finder', desc: 'Spend intelligence platform enabling transparency and savings identification. AI-driven spend classification engine with analytics to uncover savings opportunities, supplier harmonization, and spend categorization. Includes a "chat your spend" interface, KPI-driven dashboards, and a workflow to trigger execution.', impact: '1–2% incremental savings on total spend; deployed 100+ times across 30+ countries', tag: 'Inverto' },
   { phase: 's-03', name: 'Savings Radar', short: 'Savings Radar', desc: 'GenAI-enabled solution that identifies and prioritizes savings levers for B and C suppliers, quantifies potential, and recommends tailored negotiation arguments and techniques at scale. Combines an AI Negotiation Coach with commercial and technical lever recommendations per supplier and category.', impact: '5–7% savings increase with B & C suppliers; accelerated negotiation timeline', tag: 'BCG' },
   { phase: 's-03', name: 'Should Costing', short: 'Should Costing', desc: 'AI-powered tool to break down product and component costs, link cost factors to relevant market indices, and identify negotiation opportunities. Enables fact-based cost transparency and supports design-to-cost decisions.', impact: null, tag: 'Inverto' },
-  { phase: 's-03', name: 'Product Cost Optimizer by BCG X', short: 'Product Cost Optimizer', desc: 'Value engineering hub enabling AI-supported cost intelligence through teardowns, benchmarks, and design-to-cost analysis. Features a dynamic should-costing tool, interactive breakdown of actual vs. should-costs, historic and forward-looking capabilities based on market indices, and CO₂ emission transparency. Backed by a state-of-the-art captive cost-engineering lab.', impact: 'Experience from 1,000+ product teardowns across cross-industrial products (PCBs, drives, pumps, HVAC, robotics, etc.)', tag: 'BCG' },
+  { phase: 's-03', name: 'Product Cost Optimizer', short: 'Product Cost Optimizer', desc: 'Value engineering hub enabling AI-supported cost intelligence through teardowns, benchmarks, and design-to-cost analysis. Features a dynamic should-costing tool, interactive breakdown of actual vs. should-costs, historic and forward-looking capabilities based on market indices, and CO₂ emission transparency. Backed by a state-of-the-art captive cost-engineering lab.', impact: 'Experience from 1,000+ product teardowns across cross-industrial products (PCBs, drives, pumps, HVAC, robotics, etc.)', tag: 'BCG' },
   { phase: 's-03', name: 'GEAR', short: 'GEAR', desc: 'Agentic AI for MRO spend optimization. Analyzes messy MRO line-item data to standardize specifications, identify comparable items, and uncover price gaps and consolidation or substitution opportunities across suppliers and sites. Outputs clean standardized SKUs, cohesive groupings, vendor consolidation insights, and standardized specs across sites.', impact: 'Analyzed 20K SKUs at a US MedTech; classified 30K+ SKUs to uncover $35–50M opportunity at a US Utility', tag: 'BCG' },
   { phase: 's-03', name: 'M365 Optimizer', short: 'M365 Optimizer', desc: 'AI tool to optimize Microsoft 365 spend via demand and usage analysis. Identifies inactive accounts, right-sizes licenses across user personas, and uncovers consolidation and renewal optimization opportunities before true-up cycles.', impact: null, tag: 'Inverto' },
   // 04 · Supplier Management
-  { phase: 's-04', name: 'Supplier Insights by BCG X', short: 'Supplier Insights', desc: 'GenAI-enabled generation of a detailed 360° view on suppliers by curating internal and external databases. Automatically extracts key figures, impact KPIs, and news headlines for negotiation and event preparation. Includes automatic generation of tailored supplier savings letters.', impact: '30% faster negotiation prep; +1–2% negotiation results', tag: 'BCG' },
+  { phase: 's-04', name: 'Supplier Insights', short: 'Supplier Insights', desc: 'GenAI-enabled generation of a detailed 360° view on suppliers by curating internal and external databases. Automatically extracts key figures, impact KPIs, and news headlines for negotiation and event preparation. Includes automatic generation of tailored supplier savings letters.', impact: '30% faster negotiation prep; +1–2% negotiation results', tag: 'BCG' },
   { phase: 's-04', name: 'Supplier Risk Radar', short: 'Risk Radar', desc: 'AI tool to identify supplier risks across financial, operational, geopolitical, ESG, and cyber dimensions. Evaluates risk impact and suggests mitigation levers. Provides continuous, automated monitoring of the supplier base with differentiated risk profiles and escalation alerts.', impact: null, tag: 'BCG' },
   // 05 · Strategic Sourcing
-  { phase: 's-05', name: 'Supplier Tender Assistant by BCG X', short: 'Tender Assistant', desc: 'AI-supported creation and customization of supplier tenders. Automatically generates best-in-class tender documents based on pre-defined guidelines and prior tender templates. Procurement managers can individually adapt output through an AI chat interface.', impact: '50% time reduction to generate & review supplier tenders', tag: 'BCG' },
-  { phase: 's-05', name: 'Supplier Offer Analyst by BCG X', short: 'Offer Analyst', desc: 'AI-driven analysis, comparison, and summary of supplier bids across pre-defined KPIs. Detects inconsistencies and attention points across commercial, technical, and legal tender documents (incl. version history). Analyses top KPIs such as price and CO₂ footprint across offers from multiple suppliers.', impact: '50% time reduction to evaluate bids', tag: 'BCG' },
-  { phase: 's-05', name: 'Geo Sourcing Evaluation by BCG X', short: 'Geo Sourcing', desc: 'Agentic best-cost country sourcing workflow. Identifies and prioritizes sourcing shift opportunities, quantifies savings potential based on dynamic product-level cost benchmarks, suggests a target supplier shortlist, and translates BCC opportunities into a concrete implementation timeline.', impact: null, tag: 'BCG' },
+  { phase: 's-05', name: 'Supplier Tender Assistant', short: 'Tender Assistant', desc: 'AI-supported creation and customization of supplier tenders. Automatically generates best-in-class tender documents based on pre-defined guidelines and prior tender templates. Procurement managers can individually adapt output through an AI chat interface.', impact: '50% time reduction to generate & review supplier tenders', tag: 'BCG' },
+  { phase: 's-05', name: 'Supplier Offer Analyst', short: 'Offer Analyst', desc: 'AI-driven analysis, comparison, and summary of supplier bids across pre-defined KPIs. Detects inconsistencies and attention points across commercial, technical, and legal tender documents (incl. version history). Analyses top KPIs such as price and CO₂ footprint across offers from multiple suppliers.', impact: '50% time reduction to evaluate bids', tag: 'BCG' },
+  { phase: 's-05', name: 'Geo Sourcing Evaluation', short: 'Geo Sourcing', desc: 'Agentic best-cost country sourcing workflow. Identifies and prioritizes sourcing shift opportunities, quantifies savings potential based on dynamic product-level cost benchmarks, suggests a target supplier shortlist, and translates BCC opportunities into a concrete implementation timeline.', impact: null, tag: 'BCG' },
   { phase: 's-05', name: 'Negotiation CoPilot', short: 'Nego CoPilot', desc: 'AI-powered negotiation preparation and execution support for A-suppliers. Features a detailed factbook and analytics module for each negotiation parameter, dynamic target setting for LAA and MDO based on internal and external benchmarks, game-theory based scenario modelling, and an agentic negotiation simulation to war-game supplier responses ahead of live negotiations. Also includes contract intelligence to benchmark existing contracts and identify optimization opportunities.', impact: '2–3% incremental savings on A-supplier spend; +50% time savings in negotiation preparation', tag: 'BCG' },
   { phase: 's-05', name: 'Tail Negotiator', short: 'Tail Negotiator', desc: 'AI-supported price reduction and implementation workflow for C-suppliers. Determines the optimal savings target per supplier, automatically generates customized outreach letters in multiple languages with selectable tones, and manages AI-powered negotiation responses leveraging email context and supplier data points — end-to-end without buyer involvement.', impact: '3–5% cost savings from automated price reduction requests', tag: 'BCG' },
   // 06 · Contract Management
-  { phase: 's-06', name: 'Overspend Claim Scout by BCG X', short: 'Claim Scout', desc: 'AI-enabled detection and recovery of supplier overpayments. Identifies discrepancies between invoices, POs, and supplier contracts to claw back unjustified overpayments. Automatically generates tailored evidence packs and cost reduction letters with negotiation arguments.', impact: '0.5–1% savings on claimable spend; deployed 14 times across consumer, industrial goods, and energy clients', tag: 'BCG' },
+  { phase: 's-06', name: 'Overspend Claim Scout', short: 'Claim Scout', desc: 'AI-enabled detection and recovery of supplier overpayments. Identifies discrepancies between invoices, POs, and supplier contracts to claw back unjustified overpayments. Automatically generates tailored evidence packs and cost reduction letters with negotiation arguments.', impact: '0.5–1% savings on claimable spend; deployed 14 times across consumer, industrial goods, and energy clients', tag: 'BCG' },
   { phase: 's-06', name: 'ClAIm Defender', short: 'Claim Defender', desc: 'GenAI tool that standardizes and automates supplier claim assessment. Aggregates contract and cost data, validates claims via ShouldCost AI and Raw Material Control Center index validation, and generates structured decision-ready responses. Provides a tool-based end-to-end process to systematically reduce supplier claims — from initial supplier screening through to AI-powered defense argumentation and payment decision.', impact: 'Up to 67% cost avoidance on supplier claims', tag: 'Inverto' },
   // 07 · PR & Requisition
   { phase: 's-07', name: 'PR Triage', short: 'PR Triage', desc: 'AI intake management tool to challenge low-value spend at the point of requisition. Ensures PR data quality and demand validity, automatically moves spend to the most appropriate buying channel (e.g. catalogue), and benchmarks requests against existing catalogues. Back-end algorithm integrated in Ariba; LLM trained with buyer feedback during tailoring.', impact: '4–7% low-value spend demand reduction; up to 5% incremental savings through buying channel optimization', tag: 'BCG' },
