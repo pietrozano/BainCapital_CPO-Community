@@ -1738,14 +1738,11 @@ function renderSurveyQuestion() {
 
     if (q.scored !== false) {
       // SCORED question: 4 rubric radio options (description only, no grade shown) + optional comment
-      const rubricColors = ['#ef4444','#f97316','#3b82f6','#22c55e'];
-      const rubricBg     = ['#fef2f2','#fff7ed','#eff6ff','#f0fdf4'];
-      const rubricBorder = ['#fecaca','#fed7aa','#bfdbfe','#bbf7d0'];
       const rubricsHtml  = (q.scores || []).map((desc, idx) => {
         const val = idx + 1;
         const isChecked = savedScore === val;
-        return `<label for="survey-rubric-${q.id}-${val}" style="display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:10px;border:2px solid ${isChecked ? rubricColors[idx] : rubricBorder[idx]};background:${isChecked ? rubricBg[idx] : '#fff'};cursor:pointer;transition:all 150ms;margin-bottom:8px" onclick="selectRubric('${item.stepId}','${q.id}',${val},this)">
-          <input type="radio" id="survey-rubric-${q.id}-${val}" name="survey-rubric-${q.id}" value="${val}" style="margin-top:3px;accent-color:${rubricColors[idx]}" ${isChecked ? 'checked' : ''} onchange="selectRubric('${item.stepId}','${q.id}',${val},this.closest('label'))">
+        return `<label for="survey-rubric-${q.id}-${val}" style="display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:10px;border:2px solid ${isChecked ? '#1e3a5f' : '#e2e8f0'};background:${isChecked ? '#f0f4f8' : '#fff'};cursor:pointer;transition:all 150ms;margin-bottom:8px" onclick="selectRubric('${item.stepId}','${q.id}',${val},this)">
+          <input type="radio" id="survey-rubric-${q.id}-${val}" name="survey-rubric-${q.id}" value="${val}" style="margin-top:3px;accent-color:#1e3a5f" ${isChecked ? 'checked' : ''} onchange="selectRubric('${item.stepId}','${q.id}',${val},this.closest('label'))">
           <span style="font-size:13px;color:#334155;line-height:1.6">${desc}</span>
         </label>`;
       }).join('');
@@ -1803,18 +1800,15 @@ function selectRubric(stepId, qId, val, labelEl) {
   if (!STATE.directScores[stepId]) STATE.directScores[stepId] = {};
   STATE.directScores[stepId][qId] = val;
   // Update visual state of all rubric labels for this question
-  const rubricColors = ['#ef4444','#f97316','#3b82f6','#22c55e'];
-  const rubricBg     = ['#fef2f2','#fff7ed','#eff6ff','#f0fdf4'];
-  const rubricBorder = ['#fecaca','#fed7aa','#bfdbfe','#bbf7d0'];
   for (let i = 1; i <= 4; i++) {
-    const lbl = document.querySelector(`label[for="survey-rubric-${qId}-${i}"]`);
+    const lbl = document.querySelector(`label[for="survey-rubric-${qId}-${i}"]`) ||
+                document.querySelector(`label[for="survey-rubric-${qId}-${i}"]`);
     if (lbl) {
-      const idx = i - 1;
       if (i === val) {
-        lbl.style.border = `2px solid ${rubricColors[idx]}`;
-        lbl.style.background = rubricBg[idx];
+        lbl.style.border = '2px solid #1e3a5f';
+        lbl.style.background = '#f0f4f8';
       } else {
-        lbl.style.border = `2px solid ${rubricBorder[idx]}`;
+        lbl.style.border = '2px solid #e2e8f0';
         lbl.style.background = '#fff';
       }
     }
