@@ -560,48 +560,7 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
       </div>
     </div>
 
-    <!-- ── STEP 00: GENERAL ── -->
-    <div class="section" id="s-00">
-      <div class="sec-header">
-        <div class="sec-tag">Step 00 · General</div>
-        <div class="sec-title">General Procurement Context</div>
-        <div class="sec-desc">Open-ended questions to capture the overall procurement landscape. These provide qualitative context for the assessment and are shared with your BCG team.</div>
-      </div>
-      <div class="card">
-        <div class="card-hdr"><div class="card-title">Strategic Context &amp; Priorities</div></div>
-
-        <div class="q-block">
-          <div class="q-text"><span class="q-num">1.</span> Is the overall level of process automation in procurement high — or are most activities still manual and paper-based?</div>
-          <textarea class="text-field" id="q-00-01" onchange="saveGeneralAnswer('q-00-01',this.value)" placeholder="Describe current automation level, key manual processes, and any automation initiatives underway…"></textarea>
-        </div>
-        <div class="q-block">
-          <div class="q-text"><span class="q-num">2.</span> Does the organization have a defined AI strategy or roadmap for procurement — or are AI initiatives ad hoc and isolated?</div>
-          <textarea class="text-field" id="q-00-02" onchange="saveGeneralAnswer('q-00-02',this.value)" placeholder="Describe the AI strategy, key workstreams, owners, and timeline if any…"></textarea>
-        </div>
-        <div class="q-block">
-          <div class="q-text"><span class="q-num">3.</span> Is there organizational buy-in and executive sponsorship for AI adoption within the procurement function?</div>
-          <textarea class="text-field" id="q-00-03" onchange="saveGeneralAnswer('q-00-03',this.value)" placeholder="Who sponsors AI in procurement? What is the level of C-suite engagement?"></textarea>
-        </div>
-        <div class="q-block">
-          <div class="q-text"><span class="q-num">4.</span> What are the biggest procurement pain points the CPO wants to address — and where does AI represent the highest strategic opportunity?</div>
-          <textarea class="text-field" id="q-00-04" onchange="saveGeneralAnswer('q-00-04',this.value)" style="min-height:90px" placeholder="List the top 3–5 pain points and the AI use cases the CPO finds most compelling…"></textarea>
-        </div>
-        <div class="q-block">
-          <div class="q-text"><span class="q-num">5.</span> To what extent are core procurement skills and capabilities present — analytics, market knowledge, sourcing, SRM — and where do gaps exist?</div>
-          <textarea class="text-field" id="q-00-05" onchange="saveGeneralAnswer('q-00-05',this.value)" placeholder="Describe capability strengths and gaps by skill area…"></textarea>
-        </div>
-        <div class="q-block">
-          <div class="q-text"><span class="q-num">6.</span> Is procurement data (spend, contract, savings, compliance, supplier) centralized and reliable — or retrieved entity by entity?</div>
-          <textarea class="text-field" id="q-00-06" onchange="saveGeneralAnswer('q-00-06',this.value)" placeholder="Describe data availability, quality, and access model…"></textarea>
-        </div>
-      </div>
-      <div class="nav-btns">
-        <button class="btn-back" onclick="showSection('s-cover')">← Back</button>
-        <button class="btn-next" onclick="showSection('s-01')">Next: Procurement Foundation →</button>
-      </div>
-    </div>
-
-    <!-- ── STEPS 0A + 01–09 + AI — injected by renderAllSteps() ── -->
+    <!-- ── STEPS 01–10 + AI — injected by renderAllSteps() ── -->
 
     <div class="section" id="s-01"></div>
     <div class="section" id="s-02"></div>
@@ -717,7 +676,7 @@ body{font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;background:var(
           <span style="background:#1a2e4a;color:white;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;letter-spacing:.4px">BCG · INVERTO</span>
           <div class="card-title">AI use cases from BCG &amp; Inverto's procurement AI portfolio</div>
         </div>
-        <div style="font-size:12px;color:#64748b;margin-bottom:18px">24 proven AI use cases across 9 procurement phases — drawn from BCG &amp; Inverto engagements worldwide. Click any card to explore.</div>
+        <div style="font-size:12px;color:#64748b;margin-bottom:18px">20 proven AI use cases across 6 procurement phases — drawn from BCG &amp; Inverto engagements worldwide. Click any card to explore.</div>
 
         <!-- Kanban columns -->
         <div style="overflow-x:auto;padding-bottom:8px">
@@ -1042,7 +1001,6 @@ let STATE = {
   directScores:   {},   // { stepId: { qId: 1-4 } } — from rubric radio selection (scored=true questions)
   aiScores:       {},   // { stepId: { qId: score } } — from server after analysis
   aiReasoning:    {},   // { stepId: { qId: reasoning } } — BCG only
-  analyzing:      false,
   analyzed:       false
 };
 
@@ -1416,8 +1374,9 @@ function saveSession() {
       useCases: STATE.useCases, bcgRatings: STATE.bcgRatings, notes: STATE.notes,
       general: STATE.general, cmi: STATE.cmi,
       answers: STATE.answers, techStack: STATE.techStack,
+      directScores: STATE.directScores,
       aiScores: STATE.aiScores, aiReasoning: STATE.aiReasoning,
-      analyzed: STATE.analyzed
+      analyzed: STATE.analyzed, _techStackExtracted: STATE._techStackExtracted
     }
   }));
 }
@@ -1801,15 +1760,20 @@ function selectRubric(stepId, qId, val, labelEl) {
   STATE.directScores[stepId][qId] = val;
   // Update visual state of all rubric labels for this question
   for (let i = 1; i <= 4; i++) {
-    const lbl = document.querySelector(`label[for="survey-rubric-${qId}-${i}"]`) ||
-                document.querySelector(`label[for="survey-rubric-${qId}-${i}"]`);
+    // Update survey flow labels
+    const lbl = document.querySelector(`label[for="survey-rubric-${qId}-${i}"]`);
     if (lbl) {
-      if (i === val) {
-        lbl.style.border = '2px solid #1e3a5f';
-        lbl.style.background = '#f0f4f8';
-      } else {
-        lbl.style.border = '2px solid #e2e8f0';
-        lbl.style.background = '#fff';
+      lbl.style.border = i === val ? '2px solid #1e3a5f' : '2px solid #e2e8f0';
+      lbl.style.background = i === val ? '#f0f4f8' : '#fff';
+    }
+    // Update review panel radio inputs and parent divs
+    const radio = document.querySelector(`input[name="review-rubric-${stepId}-${qId}"][value="${i}"]`);
+    if (radio) {
+      radio.checked = (i === val);
+      const div = radio.closest('div[style*="border-radius:10px"]');
+      if (div) {
+        div.style.border = i === val ? '2px solid #1e3a5f' : '2px solid #e2e8f0';
+        div.style.background = i === val ? '#f0f4f8' : '#fff';
       }
     }
   }
@@ -2007,12 +1971,13 @@ async function surveySaveExit() {
   // Save current answers to server before logging out
   try {
     await api('POST', '/api/save', {
-      answers:    STATE.answers,
-      techStack:  STATE.techStack,
-      useCases:   STATE.useCases,
-      bcgRatings: STATE.bcgRatings,
-      notes:      STATE.notes,
-      general:    STATE.general
+      answers:      STATE.answers,
+      techStack:    STATE.techStack,
+      directScores: STATE.directScores,
+      useCases:     STATE.useCases,
+      bcgRatings:   STATE.bcgRatings,
+      notes:        STATE.notes,
+      general:      STATE.general
     });
   } catch {}
   saveSession(); // keep SURVEY_INDEX in localStorage so we resume here
@@ -2078,7 +2043,7 @@ async function surveySubmit() {
     populateCompanyDetails();
     renderAllSteps();
     updateSidebar();
-    showSection('s-cover');
+    showSection('s-cmi');
     renderCMI();
   } catch(err) {
     document.getElementById('analyzing-overlay')?.remove();
@@ -2799,36 +2764,6 @@ function renderTechCards(companies, noTool) {
 }
 
 // ─── Question renderer ────────────────────────────────────────────────────────
-function renderQuestion(q, num) {
-  const colors = ['so1','so2','so3','so4'];
-  let html = `<div class="q-block">
-    <div class="q-text"><span class="q-num">${num}.</span> ${q.text}</div>`;
-
-  if (q.scored !== false) {
-    // SCORED question: show 4 rubric descriptions as radio choices (no grade number/label shown)
-    html += `<div class="scale">`;
-    for (let i = 1; i <= 4; i++) {
-      const desc = q.scores[i - 1] || '';
-      html += `<div class="scale-opt ${colors[i-1]}">
-        <input type="radio" name="${q.id}" id="${q.id}-${i}" value="${i}" onchange="onScoreChange('${q.id}',${i})">
-        <label class="scale-lbl" for="${q.id}-${i}" title="${desc.replace(/"/g,'&quot;')}">
-          <span class="sd" style="padding-left:0">${desc}</span>
-        </label>
-      </div>`;
-    }
-    html += `</div>
-    <span class="note-toggle" onclick="toggleNote('${q.id}')">+ Add comment</span>
-    <div class="note-area" id="note-${q.id}">
-      <textarea class="text-field" style="min-height:56px;margin-top:6px" placeholder="Additional comments or context…" onchange="saveNote('${q.id}',this.value)" id="note-t-${q.id}"></textarea>
-    </div>`;
-  } else {
-    // OPEN question: free-text answer only, no rubric
-    html += `<textarea class="text-field" style="min-height:80px;margin-top:10px" placeholder="Your answer…" onchange="saveOpenAnswer('${q.id}',this.value)" id="open-t-${q.id}"></textarea>`;
-  }
-
-  html += `</div>`;
-  return html;
-}
 
 function renderScaleRow(qid, stepId, dim, scores) {
   const names  = ['None','Piloting','Deployed','Scaled'];
@@ -3188,7 +3123,8 @@ function updateNavScore(stepId) {
 
 function updateProgress() {
   const done = STEP_IDS.filter(sid => !QUESTIONS[sid]?.isTechStack && ['D1','D2'].some(d => STATE.scores[sid]?.[d])).length;
-  document.getElementById('progressBar').style.width = Math.round((done / STEP_IDS.length) * 100) + '%';
+  const scoredStepCount = STEP_IDS.filter(sid => \!QUESTIONS[sid]?.isTechStack).length;
+  document.getElementById('progressBar').style.width = Math.round((done / scoredStepCount) * 100) + '%';
 }
 
 // ─── CMI Dashboard ────────────────────────────────────────────────────────────
@@ -3579,13 +3515,12 @@ const BCG_PHASES = [
   { id: 's-05', label: '05 · Strategic Sourcing' },
   { id: 's-06', label: '06 · Contract Management' },
   { id: 's-07', label: '07 · PR & Requisition' },
-  { id: 's-08', label: '08 · PO Management' },
-  { id: 's-09', label: '09 · Invoice & AP' },
+  { id: 's-10', label: '10 · Reporting & Analytics' },
   { id: 's-ai', label: '11 · AI Governance & Enablement' },
 ];
 
 const BCG_USE_CASES = [
-  // 02 · Category Management
+  // 03 · Category Management
   { phase: 's-03', name: 'Spark', short: 'Spark', desc: 'Rapid opportunity assessment tool that automatically converts any spend extract into transaction-level categorized output in ~15 minutes. Cleans, standardizes, and classifies transactions into a common taxonomy to deliver a structured, decision-ready spend view for early diagnostic.', impact: '15 min to presentation-ready spend cuts; runs locally with CLI, web app, and agent-guided modes', tag: 'BCG' },
   { phase: 's-03', name: 'Value Finder', short: 'Value Finder', desc: 'Spend intelligence platform enabling transparency and savings identification. AI-driven spend classification engine with analytics to uncover savings opportunities, supplier harmonization, and spend categorization. Includes a "chat your spend" interface, KPI-driven dashboards, and a workflow to trigger execution.', impact: '1–2% incremental savings on total spend; deployed 100+ times across 30+ countries', tag: 'Inverto' },
   { phase: 's-03', name: 'Savings Radar', short: 'Savings Radar', desc: 'GenAI-enabled solution that identifies and prioritizes savings levers for B and C suppliers, quantifies potential, and recommends tailored negotiation arguments and techniques at scale. Combines an AI Negotiation Coach with commercial and technical lever recommendations per supplier and category.', impact: '5–7% savings increase with B & C suppliers; accelerated negotiation timeline', tag: 'BCG' },
@@ -3593,19 +3528,19 @@ const BCG_USE_CASES = [
   { phase: 's-03', name: 'Product Cost Optimizer by BCG X', short: 'Product Cost Optimizer', desc: 'Value engineering hub enabling AI-supported cost intelligence through teardowns, benchmarks, and design-to-cost analysis. Features a dynamic should-costing tool, interactive breakdown of actual vs. should-costs, historic and forward-looking capabilities based on market indices, and CO₂ emission transparency. Backed by a state-of-the-art captive cost-engineering lab.', impact: 'Experience from 1,000+ product teardowns across cross-industrial products (PCBs, drives, pumps, HVAC, robotics, etc.)', tag: 'BCG' },
   { phase: 's-03', name: 'GEAR', short: 'GEAR', desc: 'Agentic AI for MRO spend optimization. Analyzes messy MRO line-item data to standardize specifications, identify comparable items, and uncover price gaps and consolidation or substitution opportunities across suppliers and sites. Outputs clean standardized SKUs, cohesive groupings, vendor consolidation insights, and standardized specs across sites.', impact: 'Analyzed 20K SKUs at a US MedTech; classified 30K+ SKUs to uncover $35–50M opportunity at a US Utility', tag: 'BCG' },
   { phase: 's-03', name: 'M365 Optimizer', short: 'M365 Optimizer', desc: 'AI tool to optimize Microsoft 365 spend via demand and usage analysis. Identifies inactive accounts, right-sizes licenses across user personas, and uncovers consolidation and renewal optimization opportunities before true-up cycles.', impact: null, tag: 'Inverto' },
-  // 03 · Supplier Management
+  // 04 · Supplier Management
   { phase: 's-04', name: 'Supplier Insights by BCG X', short: 'Supplier Insights', desc: 'GenAI-enabled generation of a detailed 360° view on suppliers by curating internal and external databases. Automatically extracts key figures, impact KPIs, and news headlines for negotiation and event preparation. Includes automatic generation of tailored supplier savings letters.', impact: '30% faster negotiation prep; +1–2% negotiation results', tag: 'BCG' },
   { phase: 's-04', name: 'Supplier Risk Radar', short: 'Risk Radar', desc: 'AI tool to identify supplier risks across financial, operational, geopolitical, ESG, and cyber dimensions. Evaluates risk impact and suggests mitigation levers. Provides continuous, automated monitoring of the supplier base with differentiated risk profiles and escalation alerts.', impact: null, tag: 'BCG' },
-  // 04 · Strategic Sourcing
+  // 05 · Strategic Sourcing
   { phase: 's-05', name: 'Supplier Tender Assistant by BCG X', short: 'Tender Assistant', desc: 'AI-supported creation and customization of supplier tenders. Automatically generates best-in-class tender documents based on pre-defined guidelines and prior tender templates. Procurement managers can individually adapt output through an AI chat interface.', impact: '50% time reduction to generate & review supplier tenders', tag: 'BCG' },
   { phase: 's-05', name: 'Supplier Offer Analyst by BCG X', short: 'Offer Analyst', desc: 'AI-driven analysis, comparison, and summary of supplier bids across pre-defined KPIs. Detects inconsistencies and attention points across commercial, technical, and legal tender documents (incl. version history). Analyses top KPIs such as price and CO₂ footprint across offers from multiple suppliers.', impact: '50% time reduction to evaluate bids', tag: 'BCG' },
   { phase: 's-05', name: 'Geo Sourcing Evaluation by BCG X', short: 'Geo Sourcing', desc: 'Agentic best-cost country sourcing workflow. Identifies and prioritizes sourcing shift opportunities, quantifies savings potential based on dynamic product-level cost benchmarks, suggests a target supplier shortlist, and translates BCC opportunities into a concrete implementation timeline.', impact: null, tag: 'BCG' },
   { phase: 's-05', name: 'Negotiation CoPilot', short: 'Nego CoPilot', desc: 'AI-powered negotiation preparation and execution support for A-suppliers. Features a detailed factbook and analytics module for each negotiation parameter, dynamic target setting for LAA and MDO based on internal and external benchmarks, game-theory based scenario modelling, and an agentic negotiation simulation to war-game supplier responses ahead of live negotiations. Also includes contract intelligence to benchmark existing contracts and identify optimization opportunities.', impact: '2–3% incremental savings on A-supplier spend; +50% time savings in negotiation preparation', tag: 'BCG' },
   { phase: 's-05', name: 'Tail Negotiator', short: 'Tail Negotiator', desc: 'AI-supported price reduction and implementation workflow for C-suppliers. Determines the optimal savings target per supplier, automatically generates customized outreach letters in multiple languages with selectable tones, and manages AI-powered negotiation responses leveraging email context and supplier data points — end-to-end without buyer involvement.', impact: '3–5% cost savings from automated price reduction requests', tag: 'BCG' },
-  // 05 · Contract Management
+  // 06 · Contract Management
   { phase: 's-06', name: 'Overspend Claim Scout by BCG X', short: 'Claim Scout', desc: 'AI-enabled detection and recovery of supplier overpayments. Identifies discrepancies between invoices, POs, and supplier contracts to claw back unjustified overpayments. Automatically generates tailored evidence packs and cost reduction letters with negotiation arguments.', impact: '0.5–1% savings on claimable spend; deployed 14 times across consumer, industrial goods, and energy clients', tag: 'BCG' },
   { phase: 's-06', name: 'ClAIm Defender', short: 'Claim Defender', desc: 'GenAI tool that standardizes and automates supplier claim assessment. Aggregates contract and cost data, validates claims via ShouldCost AI and Raw Material Control Center index validation, and generates structured decision-ready responses. Provides a tool-based end-to-end process to systematically reduce supplier claims — from initial supplier screening through to AI-powered defense argumentation and payment decision.', impact: 'Up to 67% cost avoidance on supplier claims', tag: 'Inverto' },
-  // 06 · PR & Requisition
+  // 07 · PR & Requisition
   { phase: 's-07', name: 'PR Triage', short: 'PR Triage', desc: 'AI intake management tool to challenge low-value spend at the point of requisition. Ensures PR data quality and demand validity, automatically moves spend to the most appropriate buying channel (e.g. catalogue), and benchmarks requests against existing catalogues. Back-end algorithm integrated in Ariba; LLM trained with buyer feedback during tailoring.', impact: '4–7% low-value spend demand reduction; up to 5% incremental savings through buying channel optimization', tag: 'BCG' },
   // 10 · AI Governance & Enablement
   { phase: 's-ai', name: 'Functional Excellence (PEM)', short: 'PEM', desc: 'AI-enabled procurement maturity assessment and peer benchmarking. A holistic e-survey with 70 questions (customizable, light version available) across 14 dimensions that evaluates operating model and capabilities, benchmarks performance against industry peers and best practice, and identifies targeted improvement priorities. Automatically displays results and defines first improvement hypotheses.', impact: '>160 peer companies in the global database; applied across multiple industries and geographies', tag: 'BCG' },
@@ -3623,8 +3558,7 @@ function renderBcgLibrary() {
     { id: 's-05', label: 'Strategic Sourcing (RFx)' },
     { id: 's-06', label: 'Contract Management' },
     { id: 's-07', label: 'PR & Requisition' },
-    { id: 's-08', label: 'PO Management' },
-    { id: 's-09', label: 'Invoice & AP' },
+    { id: 's-10', label: 'Reporting & Analytics' },
     { id: 's-ai', label: 'AI Governance & Enablement' },
   ];
 
@@ -3712,7 +3646,7 @@ function renderInvStats(portUCs) {
 async function saveProgress() {
   if (!canEdit()) { showToast('Read-only access — cannot save', 'warn'); return; }
   // Save company meta fields
-  ['co-spend-direct','co-spend-indirect'].forEach(f => {
+  ['co-spend-direct','co-spend-indirect','co-cpo','co-sector'].forEach(f => {
     const el = document.getElementById(f);
     if (el) STATE.general[f] = el.value;
   });
@@ -3720,6 +3654,7 @@ async function saveProgress() {
     scores: STATE.scores, rawScores: STATE.rawScores,
     useCases: STATE.useCases, bcgRatings: STATE.bcgRatings, notes: STATE.notes,
     general: STATE.general, cmi: STATE.cmi,
+    directScores: STATE.directScores,
     _targetCompany: STATE.identity?.id
   };
   try {
