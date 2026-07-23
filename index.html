@@ -2323,14 +2323,44 @@ function renderAllSteps() {
         html += `<div class="q-block" style="padding:20px 0;border-bottom:1px solid #f1f5f9">
           <div class="q-text" style="margin-bottom:12px"><span class="q-num">${i + 1}.</span> ${q.text}</div>`;
 
-        if (isCompany()) {
-          // CPO: editable textarea so they can refine their answer
+        if (q.scored !== false) {
+          // SCORED question: show rubric as radio cards
+          const rubricColors = ['#ef4444','#f97316','#3b82f6','#22c55e'];
+          const rubricBg     = ['#fef2f2','#fff7ed','#eff6ff','#f0fdf4'];
+          const rubricBorder = ['#fecaca','#fed7aa','#bfdbfe','#bbf7d0'];
+          const selectedVal  = STATE.directScores?.[stepId]?.[q.id];
+          const rubricsHtml  = (q.scores || []).map((desc, idx) => {
+            const val = idx + 1;
+            const isSelected = selectedVal === val;
+            const editable = isCompany();
+            return `<div style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:10px;border:2px solid ${isSelected ? rubricColors[idx] : rubricBorder[idx]};background:${isSelected ? rubricBg[idx] : '#fff'};margin-bottom:8px;${editable ? 'cursor:pointer;' : ''}transition:all 150ms" ${editable ? `onclick="selectRubric('${stepId}','${q.id}',${val},this)"` : ''}>
+              ${editable ? `<input type="radio" name="review-rubric-${stepId}-${q.id}" value="${val}" style="margin-top:3px;accent-color:${rubricColors[idx]};flex-shrink:0" ${isSelected ? 'checked' : ''} onchange="selectRubric('${stepId}','${q.id}',${val},this.closest('div'))">` : `<div style="width:16px;height:16px;border-radius:50%;border:2px solid ${isSelected ? rubricColors[idx] : rubricBorder[idx]};background:${isSelected ? rubricColors[idx] : 'transparent'};flex-shrink:0;margin-top:2px"></div>`}
+              <span style="font-size:13px;color:${isSelected ? '#1e293b' : '#64748b'};line-height:1.6;font-weight:${isSelected ? '600' : '400'}">${desc}</span>
+              ${isSelected ? `<span style="margin-left:auto;font-size:9px;background:${rubricColors[idx]};color:white;border-radius:4px;padding:2px 6px;font-weight:700;white-space:nowrap;align-self:flex-start;flex-shrink:0">SELECTED</span>` : ''}
+            </div>`;
+          }).join('');
+          const savedComment = STATE.notes?.[q.id] || '';
+          const commentOpen  = savedComment ? 'block' : 'none';
+          html += `<div style="margin-bottom:12px">${rubricsHtml}</div>`;
+          if (savedComment || isCompany()) {
+            html += `<div style="margin-bottom:10px">
+              ${isCompany() ? `<button onclick="toggleSurveyComment('review-${stepId}-${q.id}')" style="background:none;border:none;font-size:12px;color:#94a3b8;cursor:pointer;padding:0;font-family:inherit" id="comment-toggle-review-${stepId}-${q.id}">${savedComment ? '− Hide comment' : '+ Add comment'}</button>` : (savedComment ? `<div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Comment</div>` : '')}
+              <div id="survey-comment-area-review-${stepId}-${q.id}" style="display:${savedComment ? 'block' : (isCompany() ? 'none' : 'none')};margin-top:6px">
+                ${isCompany()
+                  ? `<textarea class="survey-textarea" style="min-height:56px" id="survey-comment-review-${stepId}-${q.id}" placeholder="Additional comments or context…" oninput="saveNote('${q.id}',this.value)">${savedComment}</textarea>`
+                  : `<div style="background:#f8fafc;border-radius:8px;padding:10px 14px;font-size:13px;color:#334155;line-height:1.6;border:1px solid #e2e8f0">${savedComment}</div>`
+                }
+              </div>
+            </div>`;
+          }
+        } else if (isCompany()) {
+          // OPEN question — CPO editable textarea
           html += `<textarea class="survey-textarea" id="edit-ans-${stepId}-${q.id}"
             style="margin-bottom:10px;min-height:90px"
             placeholder="Describe your current situation in your own words..."
             oninput="saveAnswer('${stepId}','${q.id}',this.value)">${ans?.text || ''}</textarea>
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-              <span style="font-size:11px;color:#94a3b8">You can refine your answer — it will be re-scored by AI when you resubmit.</span>
+              <span style="font-size:11px;color:#94a3b8">Open question — you can update your answer here.</span>
             </div>`;
         } else if (ans?.text) {
           html += `<div style="background:#f8fafc;border-radius:10px;padding:14px 16px;font-size:13px;color:#334155;line-height:1.7;border:1px solid #e2e8f0;margin-bottom:10px">${ans.text}</div>`;
@@ -2357,49 +2387,23 @@ function renderAllSteps() {
           html += `<div style="margin-bottom:10px">${fileTags}</div>`;
         }
 
-        // AI score display — always show rubric trigger; pill clickable to open scoring guide
-        const rubricId = `rubric-${stepId}-${q.id}`;
-        const rubricData = encodeURIComponent(JSON.stringify({ scores: q.scores, qText: q.text.substring(0,80) }));
-        if (aiScore && band) {
-          html += `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px">
-            <div onclick="toggleRubric('${rubricId}')" title="Click to see scoring rubric"
-              style="display:inline-flex;align-items:center;gap:6px;background:${band.bg};border:1px solid ${band.color}44;border-radius:8px;padding:6px 14px;cursor:pointer;transition:box-shadow 150ms"
-              onmouseover="this.style.boxShadow='0 2px 8px ${band.color}33'" onmouseout="this.style.boxShadow=''">
-              <span style="font-size:15px;font-weight:800;color:${band.color}">${aiScore}</span>
-              <span style="font-size:11px;font-weight:700;color:${band.color};text-transform:uppercase">${band.label}</span>
-              <span style="font-size:10px;color:${band.color};opacity:.6;margin-left:2px">▾ rubric</span>
-            </div>
-            ${aiReason ? `<span style="font-size:12px;color:#64748b;flex:1;min-width:200px">${aiReason}</span>` : ''}
-          </div>`;
-        } else {
-          html += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-            <div onclick="toggleRubric('${rubricId}')" title="Click to see scoring rubric"
-              style="display:inline-flex;align-items:center;gap:6px;background:#f8fafc;border:1.5px dashed #cbd5e1;border-radius:8px;padding:5px 12px;cursor:pointer;transition:border-color 150ms"
-              onmouseover="this.style.borderColor='#94a3b8'" onmouseout="this.style.borderColor='#cbd5e1'">
-              <span style="font-size:11px;font-weight:600;color:#94a3b8">Not scored · </span>
-              <span style="font-size:10px;color:#94a3b8">▾ view rubric</span>
-            </div>
-          </div>`;
+        // Score display — only for open questions (scored questions show selection inline above)
+        if (q.scored === false) {
+          const rubricId = `rubric-${stepId}-${q.id}`;
+          if (aiScore && band) {
+            html += `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px">
+              <div onclick="toggleRubric('${rubricId}')" title="Click to see scoring rubric"
+                style="display:inline-flex;align-items:center;gap:6px;background:${band.bg};border:1px solid ${band.color}44;border-radius:8px;padding:6px 14px;cursor:pointer;transition:box-shadow 150ms"
+                onmouseover="this.style.boxShadow='0 2px 8px ${band.color}33'" onmouseout="this.style.boxShadow=''">
+                <span style="font-size:15px;font-weight:800;color:${band.color}">${aiScore}</span>
+                <span style="font-size:11px;font-weight:700;color:${band.color};text-transform:uppercase">${band.label}</span>
+              </div>
+              ${aiReason ? `<span style="font-size:12px;color:#64748b;flex:1;min-width:200px">${aiReason}</span>` : ''}
+            </div>`;
+          } else {
+            html += `<div style="font-size:12px;color:#94a3b8;font-style:italic;margin-bottom:4px">Open question — not scored</div>`;
+          }
         }
-        // Rubric panel (collapsed by default)
-        html += `<div id="${rubricId}" style="display:none;margin:8px 0 4px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden">
-          <div style="padding:8px 14px;background:#f1f5f9;border-bottom:1px solid #e2e8f0;font-size:10px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:.5px">Scoring Rubric</div>
-          <div style="padding:10px 14px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
-            ${q.scores.map((desc, si) => {
-              const lvl = si + 1;
-              const b = getBand(lvl) || { color: '#64748b', bg: '#f1f5f9', label: lvl };
-              const isActive = aiScore === lvl;
-              return `<div style="border-radius:7px;padding:8px 10px;border:1.5px solid ${isActive ? b.color : '#e2e8f0'};background:${isActive ? b.bg : 'white'}">
-                <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
-                  <span style="font-size:13px;font-weight:800;color:${b.color}">${lvl}</span>
-                  <span style="font-size:10px;font-weight:700;color:${b.color};text-transform:uppercase">${b.label}</span>
-                  ${isActive ? `<span style="margin-left:auto;font-size:9px;background:${b.color};color:white;border-radius:4px;padding:1px 5px;font-weight:700">YOUR SCORE</span>` : ''}
-                </div>
-                <div style="font-size:11px;color:#475569;line-height:1.5">${desc}</div>
-              </div>`;
-            }).join('')}
-          </div>
-        </div>`;
 
         // BCG override
         if (bcgView && ans?.text) {
