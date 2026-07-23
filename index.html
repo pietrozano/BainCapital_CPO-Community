@@ -3123,7 +3123,7 @@ function updateNavScore(stepId) {
 
 function updateProgress() {
   const done = STEP_IDS.filter(sid => !QUESTIONS[sid]?.isTechStack && ['D1','D2'].some(d => STATE.scores[sid]?.[d])).length;
-  const scoredStepCount = STEP_IDS.filter(sid => \!QUESTIONS[sid]?.isTechStack).length;
+  const scoredStepCount = STEP_IDS.filter(sid => !QUESTIONS[sid]?.isTechStack).length;
   document.getElementById('progressBar').style.width = Math.round((done / scoredStepCount) * 100) + '%';
 }
 
@@ -4352,45 +4352,6 @@ function exportAdminData() {
 // Auto-save every 90s
 setInterval(() => { if (STATE.token && canEdit()) saveProgress(); }, 90000);
 
-</script>
-<script>
-// ─── Extra render functions (CMI + Inventory enhancements) ────────────────────
-const _origRenderCMI = renderCMI;
-renderCMI = function() {
-  _origRenderCMI();
-  renderBarChart(STATE.portfolio?.peerScores);
-};
 
-const _origRenderInventory = renderInventory;
-renderInventory = function() {
-  _origRenderInventory();
-  renderInvStats();
-};
-
-function renderInvStats() {
-  const myUCs = [
-    ...(STATE.useCases['_all']?.existing||[]),
-    ...(STATE.useCases['_all']?.potential||[])
-  ].filter(u=>u.name);
-  const portUCs = STATE.portfolio?.allUseCases || [];
-  const portInPlace = portUCs.filter(u=>u.type==='existing'&&!u.isOwn);
-  const portOpp = portUCs.filter(u=>u.type==='potential'&&!u.isOwn);
-  const statsEl = document.getElementById('inv-stats');
-  if(!statsEl) return;
-  const stats = [
-    {label:'My Use Cases',val:myUCs.length,color:'#1a2e4a',bg:'white'},
-    {label:'Portfolio In Place',val:portInPlace.length,color:'#166534',bg:'#dcfce7'},
-    {label:'Portfolio Opportunities',val:portOpp.length,color:'#92400e',bg:'#fef3c7'},
-    {label:'Companies Submitted',val:STATE.portfolio?.portfolioStats?.submitted||0,color:'#1e40af',bg:'#dbeafe'}
-  ];
-  statsEl.innerHTML = stats.map(s=>`
-    <div style="background:${s.bg};border-radius:10px;padding:16px;border:1px solid var(--g200);text-align:center">
-      <div style="font-size:10px;font-weight:700;color:${s.color};text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">${s.label}</div>
-      <div style="font-size:36px;font-weight:800;color:${s.color};line-height:1">${s.val}</div>
-    </div>`).join('');
-}
-
-// Dead code removed: STATE.company no longer exists (replaced by STATE.identity)
-</script>
 </body>
 </html>
